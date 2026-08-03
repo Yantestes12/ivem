@@ -1,9 +1,12 @@
 {
-  "name": "gasctpna-plataforma-integra",
+  "name": "site-ivem-integra",
   "version": "1.0.0",
   "private": true,
-  "description": "Cadastro e Área do Aluno GASCTPNA",
+  "description": "Portal e Cadastro - IVEM",
   "scripts": {
-    "start": "npx serve ."
+    "start": "npx -y serve -s . -l 3000"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
   }
 }

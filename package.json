@@ -1,0 +1,9 @@
+{
+  "name": "gasctpna-plataforma-integra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cadastro e Área do Aluno GASCTPNA",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

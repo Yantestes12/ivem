@@ -930,13 +930,13 @@
             speak('Enviando seu cadastro...');
 
             const payload = {
-                instituicao: 'IVEM',
-                instituto: 'IVEM',
                 acao: 'criar_acesso',
                 name: nameInput.value.trim(),
                 phone: phoneInput.value.replace(/\D/g, ''),
                 email: emailInput.value.trim().toLowerCase(),
-                password: passwordInput.value
+                password: passwordInput.value,
+                instituto: 'IVEM',
+                instituicao: 'IVEM'
             };
 
             function setCookie(name, val, days = 30) {

@@ -1020,7 +1020,7 @@
                 }
                 
                 if (userEmail && userPass) {
-                    redirUrl += (redirUrl.includes('?') ? '&' : '?') + `email=${encodeURIComponent(userEmail)}&password=${encodeURIComponent(userPass)}&autologin=true`;
+                    redirUrl += (redirUrl.includes('?') ? '&' : '?') + `email=${encodeURIComponent(userEmail)}&password=${encodeURIComponent(userPass)}&autologin=true&instituto=IVEM`;
                 }
                 window.location.href = redirUrl;
             }, 1200);

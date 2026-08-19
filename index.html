@@ -32,8 +32,9 @@
             --bg-primary: #f0f9ff;
             --card-bg: #ffffff;
             --card-border: #93c5fd;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
+            --primary: #dc2626;
+            --primary-hover: #b91c1c; 
+            --primary-glow: rgba(220, 38, 38, 0.35);
             --primary-text: #ffffff;
             --text-main: #0f172a;
             --text-muted: #475569;
@@ -288,41 +289,19 @@
         }
 
         .btn-nav {
-            height: 52px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: var(--font-main);
-            transition: background-color 0.2s ease;
+            padding: 14px 24px; border: none; border-radius: var(--radius-md);
+            font-size: 15px; font-weight: 700; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .btn-back {
-            flex: 1;
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            border: 1.5px solid #cbd5e1;
+        .btn-back { background: var(--bg-body); color: var(--text-medium); border: 1px solid var(--border-light); }
+        .btn-back:hover { background: #e2e8f0; color: var(--text-dark); }
+        .btn-next, .btn-submit {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: #ffffff; box-shadow: 0 4px 14px -2px var(--primary-glow);
         }
-
-        .btn-back:hover {
-            background-color: #e2e8f0;
-        }
-
-        .btn-next,
-        .btn-submit {
-            flex: 2;
-            background-color: var(--primary);
-            color: var(--primary-text);
-            border: none;
-        }
-
-        .btn-next:hover,
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
+        .btn-next:hover, .btn-submit:hover {
+            transform: translateY(-2px); box-shadow: 0 8px 20px -2px var(--primary-glow);
         }
 
         .btn-next:disabled,
@@ -620,7 +599,7 @@
             </form>
 
             <footer class="card-footer">
-                Já possui uma conta? <a href="https://plataformaintegra.com.br/login.html" id="link-login-central">Fazer Login</a>
+                Já possui uma conta? <a href="login.html" id="link-login-central">Fazer Login</a>
             </footer>
 
             <script>

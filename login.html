@@ -32,9 +32,10 @@
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
 
-            --primary: #1e40af;
-            --primary-hover: #1e3a8a;
-            --primary-accent: #2563eb;
+            --primary: #dc2626;
+            --primary-hover: #b91c1c; 
+            --primary-glow: rgba(220, 38, 38, 0.35);
+            --primary-accent: #ef4444;
             --accent-green: #10b981;
             --accent-orange: #f97316;
 
@@ -392,31 +393,63 @@
         /* Botão Entrar Principal */
         .btn-primary-login {
             width: 100%;
-            padding: 12px 18px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 14px 24px;
             color: #ffffff;
-            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
             border: none;
             border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
-            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px -4px var(--primary-glow), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+            margin-top: 6px;
         }
 
         .btn-primary-login:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -4px var(--primary-glow);
         }
 
         .btn-primary-login:active {
-            transform: translateY(0);
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 4px 10px var(--primary-glow);
         }
+
+        .action-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0 14px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .action-divider::before, .action-divider::after {
+            content: ''; flex: 1; border-bottom: 1px solid var(--border-light);
+        }
+        .action-divider span { padding: 0 12px; }
+
+        .btn-secondary-register {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 13px 20px; background: #ffffff; color: var(--primary);
+            border: 2px solid var(--primary); border-radius: var(--radius-md);
+            font-size: 14.5px; font-weight: 700; text-decoration: none; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-sizing: border-box;
+        }
+        .btn-secondary-register:hover {
+            background: var(--primary); color: #ffffff !important; transform: translateY(-2px);
+            box-shadow: 0 8px 18px -4px var(--primary-glow);
+        }
+        .btn-secondary-register:active { transform: translateY(0); }
 
         /* Rodapé Humano */
         .login-footer {
@@ -623,10 +656,14 @@
             </button>
         </form>
 
-        <div class="login-footer">
-            Está sem acesso? 
-            <a href="https://gasctpna.plataformaintegra.com.br/">Criar acesso</a>
+        <div class="action-divider">
+            <span>Ainda não tem acesso?</span>
         </div>
+
+        <a href="index.html" id="linkCriarAcesso" class="btn-secondary-register">
+            <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i>
+            <span>Criar Nova Matrícula / Acesso</span>
+        </a>
     </div>
 
     <!-- ==========================================================================

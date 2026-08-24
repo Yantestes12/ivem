@@ -599,13 +599,13 @@
             </form>
 
             <footer class="card-footer">
-                Já possui uma conta? <a href="login.html" id="link-login-central">Fazer Login</a>
+                Já possui uma conta? <a href="https://plataformaintegra.com.br/ivem/login" id="link-login-central">Fazer Login</a>
             </footer>
 
             <script>
                 if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
                     const l = document.getElementById('link-login-central');
-                    if (l) l.href = 'login.html';
+                    if (l) l.href = 'https://plataformaintegra.com.br/ivem/login';
                 }
             </script>
 
@@ -993,7 +993,7 @@
             setTimeout(() => {
                 let redirUrl = 'index.html';
                 if (window.location.hostname.includes('plataformaintegra.com.br') || window.location.hostname.includes('ivem.com.br')) {
-                    redirUrl = 'https://plataformaintegra.com.br/login';
+                    redirUrl = 'https://plataformaintegra.com.br/ivem/login';
                 } else if (window.location.protocol === 'file:' || window.location.hostname === 'localhost') {
                     redirUrl = 'index.html';
                 }

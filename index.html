@@ -1718,8 +1718,8 @@
                         <div class="nucleos-tiles-grid" id="nucleosCardsContainer"></div>
                     </div>
 
-                    <!-- 4. Turno Pretendido (Opcional) -->
-                    <div class="form-group" style="margin-top: 18px;">
+                    <!-- 4. Turno Pretendido (Opcional - apenas para projetos de aula) -->
+                    <div class="form-group" id="blocoTurnoPretendido" style="margin-top: 18px;">
                         <label class="field-label" for="mat_turno">Turno Pretendido: <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(opcional)</span></label>
                         <select id="mat_turno" name="turno" class="field-select">
                             <option value="">Selecione o turno (ou deixe a definir)…</option>
@@ -2444,25 +2444,37 @@
 
             currentMatriculasList.forEach(item => {
                 const matId = item.id || item.matricula || '---';
+                const isEventoItem = Boolean(item.is_evento || Number(item.projeto_id) === 1 || String(item.projeto_nome || '').toLowerCase().includes('movimenta') || String(item.aplicabilidade || '').toLowerCase().includes('evento'));
                 let modNome = item.modalidade_nome || item.modalidade;
                 let nucNome = item.nucleo_nome || item.nucleo;
 
-                if (item.nucleo_id) {
-                    const nId = Number(item.nucleo_id);
-                    const meta = IVEM_METADATA_MAP[nId] || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
-                    if (meta) {
-                        if (!nucNome || nucNome === item.bairro) {
-                            nucNome = `${meta.nome || meta.bairro} (${meta.cidade})`;
-                        }
-                        if (!modNome) {
-                            modNome = meta.modalidade_nome || (meta.modalidade_id === 13 ? 'Voleibol' : 'Futsal');
+                if (isEventoItem) {
+                    if (!modNome) modNome = 'Treinamento Funcional';
+                    if (!nucNome || nucNome === item.bairro) {
+                        const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(item.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(item.nucleo_id));
+                        nucNome = loc ? `${loc.nome} (${loc.cidade})` : (item.bairro_escolhido || item.bairro || 'Curicica (Rio de Janeiro)');
+                    }
+                } else {
+                    if (item.nucleo_id) {
+                        const nId = Number(item.nucleo_id);
+                        const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
+                        if (nuc) {
+                            if (!nucNome || nucNome === item.bairro) {
+                                nucNome = `${nuc.nome || nuc.bairro} (${nuc.cidade})`;
+                            }
+                            if (!modNome) {
+                                modNome = nuc.modalidade_nome || obterNomeModalidade(nuc.modalidade_id);
+                            }
                         }
                     }
+                    if (!modNome) modNome = obterNomeModalidade(item.modalidade_id, item.modalidade_nome);
+                    if (!nucNome) nucNome = item.bairro_escolhido || item.bairro || 'Núcleo Central (Campos dos Goytacazes)';
                 }
 
-                if (!modNome) modNome = (Number(item.modalidade_id) === 13 ? 'Voleibol' : 'Futsal');
-                if (!nucNome) nucNome = item.bairro || 'Núcleo Oficial IVEM';
                 const turno = item.turno || 'A definir';
+                const turnoHtml = isEventoItem ? '' : `<span><strong>Turno:</strong> ${turno}</span>`;
+                const rotuloLocal = isEventoItem ? 'Local do Evento' : 'Núcleo';
+                const projNomeCard = item.projeto_nome || (isEventoItem ? 'MOVIMENTA RIO' : 'ESPORTE SEM PARAR');
 
                 // Cálculo da Janela de 6 Horas
                 const dataCriacao = item.created_at ? new Date(item.created_at) : new Date();
@@ -2511,7 +2523,7 @@
                     <div class="history-item-top">
                         <div>
                             <span style="font-size: 11px; font-weight: 800; color: var(--c-carmim); text-transform: uppercase;">Inscrição Oficial #${matId}</span>
-                            <div class="history-proj-title">INSTITUTO VIVER EM MOVIMENTO - IVEM</div>
+                            <div class="history-proj-title">${projNomeCard}</div>
                         </div>
                         <span class="history-badge-active">Confirmada</span>
                     </div>
@@ -2520,8 +2532,8 @@
 
                     <div class="history-details-grid">
                         <span><strong>Modalidade:</strong> ${modNome}</span>
-                        <span><strong>Núcleo:</strong> ${nucNome}</span>
-                        <span><strong>Turno:</strong> ${turno}</span>
+                        <span><strong>${rotuloLocal}:</strong> ${nucNome}</span>
+                        ${turnoHtml}
                         <span><strong>Data Registro:</strong> ${item.created_at ? new Date(item.created_at).toLocaleDateString('pt-BR') : 'Hoje'}</span>
                     </div>
 
@@ -2671,7 +2683,18 @@
                 preencherSelect('mat_camisa', mat.tamanho_camisa);
                 preencherSelect('mat_bermuda', mat.tamanho_calca);
                 preencherSelect('mat_calcado', mat.tamanho_calcado);
-                preencherSelect('mat_turno', mat.turno);
+
+                // Turno: Exibe apenas para projetos regulares de aula, oculta para eventos
+                const blocoTurno = document.getElementById('blocoTurnoPretendido');
+                if (blocoTurno) {
+                    blocoTurno.style.display = isEv ? 'none' : 'block';
+                }
+                if (!isEv) {
+                    preencherSelect('mat_turno', mat.turno);
+                } else {
+                    const selTurno = document.getElementById('mat_turno');
+                    if (selTurno) selTurno.value = '';
+                }
 
                 // Resolução da Localidade de Treino & Modalidade na IVEM (RJ)
                 let cidadeTreino = mat.cidade_treino || '';
@@ -2952,6 +2975,16 @@
                 if (ultimaMat.tamanho_calcado) preencherSelect('mat_calcado', ultimaMat.tamanho_calcado);
             }
 
+            // Turno: Exibe apenas para projetos regulares de aula, oculta para eventos
+            const blocoTurno = document.getElementById('blocoTurnoPretendido');
+            if (blocoTurno) {
+                blocoTurno.style.display = isEvento ? 'none' : 'block';
+            }
+            const selTurno = document.getElementById('mat_turno');
+            if (selTurno && isEvento) {
+                selTurno.value = '';
+            }
+
             carregarCidadesDoProjeto(item.id);
             irParaPasso(1);
             window.scrollTo({ top: 40, behavior: 'smooth' });
@@ -3070,6 +3103,12 @@
                 if (lblMod) lblMod.innerHTML = '2. Atividade / Modalidade do <strong>Evento</strong>: <span class="req">*</span>';
                 if (lblNuc) lblNuc.innerHTML = '3. Escolha o <strong>Local do Evento</strong>: <span class="req">*</span>';
 
+                // Turno: Não perguntar em eventos
+                const blocoTurno = document.getElementById('blocoTurnoPretendido');
+                if (blocoTurno) blocoTurno.style.display = 'none';
+                const selTurno = document.getElementById('mat_turno');
+                if (selTurno) selTurno.value = '';
+
                 const locais = (_cacheLocaisEventoIVEM && _cacheLocaisEventoIVEM.length > 0) ? _cacheLocaisEventoIVEM : LOCAIS_EVENTO_CATALOGO_IVEM;
                 const pIdNum = projId ? Number(projId) : (currentSelectedProject?.id ? Number(currentSelectedProject.id) : 1);
 
@@ -3113,6 +3152,10 @@
             // ── FLUXO DE PROJETO REGULAR (AULAS) ──
             if (lblMod) lblMod.innerHTML = '2. Selecione a <strong>Modalidade Esportiva</strong> desejada: <span class="req">*</span>';
             if (lblNuc) lblNuc.innerHTML = '3. Escolha o <strong>Núcleo / Bairro</strong> de treino: <span class="req">*</span>';
+
+            // Turno: Exibir em projetos regulares de aula
+            const blocoTurno = document.getElementById('blocoTurnoPretendido');
+            if (blocoTurno) blocoTurno.style.display = 'block';
 
             const pIdNum = projId ? Number(projId) : (currentSelectedProject?.id ? Number(currentSelectedProject.id) : null);
             const todosNucleos = (_cacheNucleos && _cacheNucleos.length > 0) ? _cacheNucleos : NUCLEOS_CATALOGO_IVEM;
@@ -3331,10 +3374,10 @@
                 payload.aluno_cpf = payload.cpf.replace(/\D/g, '');
                 payload.cpf = payload.aluno_cpf;
                 payload.origem = 'portal_ivem_oficial';
-                payload.timestamp = new Date().toISOString();
                 payload.cidade_treino = document.getElementById('select_cidade_filtro')?.value || '';
                 delete payload.email_confirm;
                 if (payload.resp_cpf) payload.resp_cpf = payload.resp_cpf.replace(/\D/g, '');
+                if (currentSelectedProject?.is_evento) payload.turno = '';
 
                 // Parentesco do Responsável: Garante envio com ambas as chaves para N8N e Supabase
                 const parentescoVal = document.getElementById('mat_resp_parentesco')?.value || payload.resp_parentesco || payload.grau_parentesco || '';
@@ -3702,23 +3745,38 @@
 
             const tituloArquivo = construirNomeArquivoMatricula(d);
             const numMatricula = String(d.id || d.matricula || '000000');
+            const isEventoDoc = Boolean(d.is_evento || Number(d.projeto_id) === 1 || String(d.projeto_nome || '').toLowerCase().includes('movimenta') || String(d.aplicabilidade || '').toLowerCase().includes('evento'));
             let modNome = d.modalidade_nome || d.modalidade;
             let nucNome = d.nucleo_nome || d.nucleo;
-            if (d.nucleo_id) {
-                const nId = Number(d.nucleo_id);
-                const meta = IVEM_METADATA_MAP[nId] || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
-                if (meta) {
-                    if (!nucNome || nucNome === d.bairro) {
-                        nucNome = `${meta.nome || meta.bairro} (${meta.cidade})`;
-                    }
-                    if (!modNome) {
-                        modNome = meta.modalidade_nome || (meta.modalidade_id === 13 ? 'Voleibol' : 'Futsal');
+
+            if (isEventoDoc) {
+                if (!modNome) modNome = 'Treinamento Funcional';
+                if (!nucNome || nucNome === d.bairro) {
+                    const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(d.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(d.nucleo_id));
+                    nucNome = loc ? `${loc.nome} (${loc.cidade})` : (d.bairro_escolhido || d.bairro || 'Curicica (Rio de Janeiro)');
+                }
+            } else {
+                if (d.nucleo_id) {
+                    const nId = Number(d.nucleo_id);
+                    const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
+                    if (nuc) {
+                        if (!nucNome || nucNome === d.bairro) {
+                            nucNome = `${nuc.nome || nuc.bairro} (${nuc.cidade})`;
+                        }
+                        if (!modNome) {
+                            modNome = nuc.modalidade_nome || obterNomeModalidade(nuc.modalidade_id);
+                        }
                     }
                 }
+                if (!modNome) modNome = obterNomeModalidade(d.modalidade_id, d.modalidade_nome);
+                if (!nucNome) nucNome = d.bairro_escolhido || d.bairro || 'Núcleo Central (Campos dos Goytacazes)';
             }
-            if (!modNome) modNome = (Number(d.modalidade_id) === 13 ? 'Voleibol' : 'Futsal');
-            if (!nucNome) nucNome = d.bairro || 'Núcleo Oficial IVEM';
+
             const turno = d.turno || 'A Definir';
+            const turnoPdfHtml = isEventoDoc ? '<div class="f-item"><span class="f-lbl">Tipo:</span> <strong>Evento Oficial</strong></div>' : `<div class="f-item"><span class="f-lbl">Turno:</span> ${turno}</div>`;
+            const rotuloLocalPdf = isEventoDoc ? 'Local do Evento' : 'Núcleo / Bairro';
+            const projNomePdf = d.projeto_nome || (isEventoDoc ? 'MOVIMENTA RIO' : 'ESPORTE SEM PARAR');
+            const tituloFicha = isEventoDoc ? 'FICHA OFICIAL DE INSCRIÇÃO EM EVENTO' : 'FICHA OFICIAL DE MATRÍCULA';
             const nAluno = d.aluno_nome || d.nome || currentStudentData?.nome || 'Não informado';
             const cAluno = formatarCPF(d.aluno_cpf || d.cpf || currentStudentData?.cpf || '');
             const dNasc = formatarDataInput(d.data_nascimento || currentStudentData?.data_nascimento || '');
@@ -3816,7 +3874,7 @@
                                 <img src="logo_integra_simbolo.gif" alt="INTEGRA" style="max-height: 34px;">
                             </div>
                         <div class="title-right">
-                            <div class="main-title">FICHA OFICIAL DE MATRÍCULA</div>
+                            <div class="main-title">${tituloFicha}</div>
                             <div class="sub-title">Instituto Viver em Movimento (IVEM)</div>
                         </div>
                     </div>
@@ -3824,10 +3882,10 @@
                     <div class="box" style="background:#f0faff;border-color:#cb0615;">
                         <div class="grid-3">
                             <div class="f-item"><span class="f-lbl">Nº Matrícula:</span> <strong>#${numMatricula}</strong></div>
-                            <div class="f-item"><span class="f-lbl">Projeto:</span> <strong>INSTITUTO VIVER EM MOVIMENTO - IVEM</strong></div>
+                            <div class="f-item"><span class="f-lbl">Projeto:</span> <strong>${projNomePdf}</strong></div>
                             <div class="f-item"><span class="f-lbl">Modalidade:</span> <strong>${modNome}</strong></div>
-                            <div class="f-item"><span class="f-lbl">Núcleo / Bairro:</span> ${nucNome}</div>
-                            <div class="f-item"><span class="f-lbl">Turno:</span> ${turno}</div>
+                            <div class="f-item"><span class="f-lbl">${rotuloLocalPdf}:</span> ${nucNome}</div>
+                            ${turnoPdfHtml}
                             <div class="f-item"><span class="f-lbl">Emissão:</span> ${dataHoje}</div>
                         </div>
                     </div>

@@ -1335,7 +1335,7 @@
             </div>
 
             <form id="formMatriculaIVEM" autocomplete="off" style="margin-top: 20px;">
-                <input type="hidden" id="hidden_projeto_id" name="projeto_id" value="6">
+                <input type="hidden" id="hidden_projeto_id" name="projeto_id" value="3">
                 <input type="hidden" id="hidden_projeto_nome" name="projeto_nome" value="INSTITUTO VIVER EM MOVIMENTO - IVEM">
                 <input type="hidden" id="hidden_nucleo_id" name="nucleo_id" value="">
                 <input type="hidden" id="hidden_nucleo_nome" name="nucleo_nome" value="">
@@ -1686,15 +1686,15 @@
                 <!-- ETAPA 3: Cidade, Modalidade, Núcleo e Uniforme -->
                 <div class="form-pane" data-step="3">
                     <h3 class="pane-title">3. Local de Treino & Modalidade Esportiva</h3>
-                    <p class="pane-subtitle">Selecione sua cidade em Minas Gerais, a modalidade e o fardamento oficial.</p>
+                    <p class="pane-subtitle">Selecione o local de treino, sua modalidade esportiva e tamanhos de uniforme.</p>
 
                     <!-- 1. Pergunta a Cidade Primeiro -->
                     <div class="form-group">
-                        <label class="field-label" for="select_cidade_filtro">
-                            1. Primeiro, selecione a Cidade do treino (Minas Gerais): <span class="req">*</span>
+                        <label class="field-label" for="select_cidade_filtro" id="lblCidadeFiltro">
+                            1. Primeiro, selecione a Cidade: <span class="req">*</span>
                         </label>
                         <select id="select_cidade_filtro" name="cidade_treino" class="field-select" required>
-                            <option value="">Selecione a cidade do treino…</option>
+                            <option value="">Selecione a cidade…</option>
                         </select>
                     </div>
 
@@ -1937,39 +1937,63 @@
             enviarMatriculaEvento: 'https://w.ibrase.com.br/webhook/matriculas-eventos-post'
         };
 
-        // ── CATÁLOGO OFICIAL DOS 7 NÚCLEOS IVEM EM MINAS GERAIS ──
+        // ── CATÁLOGO OFICIAL DO INSTITUTO VIVER EM MOVIMENTO (IVEM - RJ) ──
         const NUCLEOS_CATALOGO_IVEM = [
-            { id: 6,  projeto_id: 6, modalidade_id: 11, nome: "Integração",     cidade: "Araporã",              bairro: "Integração",     espaco_id: 6,  ativo: true },
-            { id: 7,  projeto_id: 6, modalidade_id: 11, nome: "Lourdes",        cidade: "Uberaba",              bairro: "Lourdes",        espaco_id: 7,  ativo: true },
-            { id: 11, projeto_id: 6, modalidade_id: 11, nome: "Centro",         cidade: "Chapada Gaúcha",       bairro: "Centro",         espaco_id: 11, ativo: true },
-            { id: 8,  projeto_id: 6, modalidade_id: 13, nome: "Centro",         cidade: "Santa Vitória",        bairro: "Centro",         espaco_id: 8,  ativo: true },
-            { id: 9,  projeto_id: 6, modalidade_id: 13, nome: "São Raimundo",   cidade: "Governador Valadares", bairro: "São Raimundo",   espaco_id: 9,  ativo: true },
-            { id: 12, projeto_id: 6, modalidade_id: 13, nome: "São Vicente",    cidade: "Patrocínio",           bairro: "São Vicente",    espaco_id: 12, ativo: true },
-            { id: 16, projeto_id: 6, modalidade_id: 13, nome: "Independência",  cidade: "Ituiutaba",            bairro: "Independência",  espaco_id: 16, ativo: true }
+            { id: 1, projeto_id: 3, modalidade_id: 5, nome: "Núcleo Central", cidade: "Campos dos Goytacazes", bairro: "Centro", espaco_id: 1, ativo: true }
         ];
-
-        const IVEM_METADATA_MAP = {
-            6:  { nome: "Integração",     cidade: "Araporã",              bairro: "Integração",     modalidade_id: 11, modalidade_nome: "Futsal",   espaco_id: 6 },
-            7:  { nome: "Lourdes",        cidade: "Uberaba",              bairro: "Lourdes",        modalidade_id: 11, modalidade_nome: "Futsal",   espaco_id: 7 },
-            8:  { nome: "Centro",         cidade: "Santa Vitória",        bairro: "Centro",         modalidade_id: 13, modalidade_nome: "Voleibol", espaco_id: 8 },
-            9:  { nome: "São Raimundo",   cidade: "Governador Valadares", bairro: "São Raimundo",   modalidade_id: 13, modalidade_nome: "Voleibol", espaco_id: 9 },
-            11: { nome: "Centro",         cidade: "Chapada Gaúcha",       bairro: "Centro",         modalidade_id: 11, modalidade_nome: "Futsal",   espaco_id: 11 },
-            12: { nome: "São Vicente",    cidade: "Patrocínio",           bairro: "São Vicente",    modalidade_id: 13, modalidade_nome: "Voleibol", espaco_id: 12 },
-            16: { nome: "Independência",  cidade: "Ituiutaba",            bairro: "Independência",  modalidade_id: 13, modalidade_nome: "Voleibol", espaco_id: 16 }
-        };
 
         const ESPACOS_CATALOGO_IVEM = [
-            { id: 6,  nome: "Integração",     cidade: "Araporã",              bairro: "Integração",     ativo: true },
-            { id: 7,  nome: "Lourdes",        cidade: "Uberaba",              bairro: "Lourdes",        ativo: true },
-            { id: 11, nome: "Centro",         cidade: "Chapada Gaúcha",       bairro: "Centro",         ativo: true },
-            { id: 8,  nome: "Centro",         cidade: "Santa Vitória",        bairro: "Centro",         ativo: true },
-            { id: 9,  nome: "São Raimundo",   cidade: "Governador Valadares", bairro: "São Raimundo",   ativo: true },
-            { id: 12, nome: "São Vicente",    cidade: "Patrocínio",           bairro: "São Vicente",    ativo: true },
-            { id: 16, nome: "Independência",  cidade: "Ituiutaba",            bairro: "Independência",  ativo: true }
+            { id: 1, projeto_id: 3, modalidade_id: 5, nome: "Núcleo Central", cidade: "Campos dos Goytacazes", bairro: "Centro", uf: "RJ", ativo: true },
+            { id: 2, projeto_id: 1, modalidade_id: 16, nome: "Curicica", cidade: "Rio de Janeiro", bairro: "Curicica", uf: "RJ", ativo: true }
         ];
+
+        const LOCAIS_EVENTO_CATALOGO_IVEM = [
+            { id: 3, projeto_id: 1, modalidade_id: 16, nome: "Curicica", cidade: "Rio de Janeiro", bairro: "Curicica", uf: "RJ", rua: "Rua Guamare", numero: "30", ativo: true }
+        ];
+
+        const MODALIDADES_FALLBACK = {
+            1: "Atletismo", 2: "Basquete", 3: "Boxe", 4: "Capoeira", 5: "Jiu-Jitsu",
+            6: "Judô", 7: "Karatê", 8: "Muay Thai", 9: "Futebol de Campo", 10: "Futsal",
+            11: "Futsal", 12: "Ginástica Artística", 13: "Voleibol", 14: "Vôlei de Praia",
+            15: "Handebol", 16: "Treinamento Funcional", 17: "Pilates", 18: "Natação",
+            19: "Hidroginástica", 20: "Xadrez", 21: "Dança", 22: "Ciclismo",
+            23: "Skate", 24: "Surf", 25: "Tênis", 26: "Tênis de Mesa", 27: "Badminton",
+            28: "Taekwondo", 29: "Kickboxing", 30: "Wrestling", 31: "Yoga",
+            32: "Crossfit", 33: "Capoeira Infantil", 34: "Outros"
+        };
+
+        function obterNomeModalidade(id, nomePadrao = '') {
+            if (nomePadrao && typeof nomePadrao === 'string' && nomePadrao.trim()) return nomePadrao.trim();
+            const idNum = Number(id);
+            if (MODALIDADES_FALLBACK[idNum]) return MODALIDADES_FALLBACK[idNum];
+            if (idNum === 5) return 'Jiu-Jitsu';
+            if (idNum === 16) return 'Treinamento Funcional';
+            return 'Modalidade Esportiva';
+        }
+
+        function obterIconeModalidade(nomeMod) {
+            const n = (nomeMod || '').toLowerCase();
+            if (n.includes('jiu') || n.includes('judô') || n.includes('karatê') || n.includes('luta') || n.includes('boxe') || n.includes('taekwondo') || n.includes('muay')) return '🥋';
+            if (n.includes('funcional') || n.includes('crossfit') || n.includes('musculação') || n.includes('fitness')) return '🏋️';
+            if (n.includes('futebol') || n.includes('futsal')) return '⚽';
+            if (n.includes('vôlei') || n.includes('voleibol')) return '🏐';
+            if (n.includes('basquete')) return '🏀';
+            if (n.includes('corrida') || n.includes('atletismo') || n.includes('caminhada')) return '🏃';
+            if (n.includes('dança')) return '💃';
+            if (n.includes('natação') || n.includes('hidro')) return '🏊';
+            if (n.includes('tênis')) return '🎾';
+            if (n.includes('ciclismo')) return '🚴';
+            if (n.includes('skate')) return '🛹';
+            if (n.includes('surf')) return '🏄';
+            if (n.includes('xadrez')) return '♟️';
+            if (n.includes('yoga') || n.includes('pilates')) return '🧘';
+            return '🏅';
+        }
 
         let _cacheNucleos = JSON.parse(JSON.stringify(NUCLEOS_CATALOGO_IVEM));
         let _cacheEspacos = [...ESPACOS_CATALOGO_IVEM];
+        let _cacheLocaisEventoIVEM = [...LOCAIS_EVENTO_CATALOGO_IVEM];
+        let _cacheProjetosIVEM = [];
         const _cacheCidadesIBGE = {};
         let currentStudentData = null;
         let currentProjectsList = [];
@@ -2048,31 +2072,49 @@
 
         async function carregarCachesIVEM() {
             try {
-                const [respN, respE] = await Promise.all([
+                const [respN, respE, respL] = await Promise.all([
                     fetch(API.buscarNucleos).then(r => r.json()).catch(() => null),
-                    fetch(API.buscarEspacos).then(r => r.json()).catch(() => null)
+                    fetch(API.buscarEspacos).then(r => r.json()).catch(() => null),
+                    fetch(API.buscarLocaisEvento).then(r => r.json()).catch(() => null)
                 ]);
+
                 const eList = Array.isArray(respE) ? respE : (respE?.espacos || respE?.data || []);
                 if (eList.length > 0) _cacheEspacos = eList;
+                else _cacheEspacos = [...ESPACOS_CATALOGO_IVEM];
+
+                const lList = Array.isArray(respL) ? respL : (respL?.locais || respL?.data || []);
+                if (lList.length > 0) _cacheLocaisEventoIVEM = lList;
+                else _cacheLocaisEventoIVEM = [...LOCAIS_EVENTO_CATALOGO_IVEM];
 
                 const nList = Array.isArray(respN) ? respN : (respN?.nucleos || respN?.data || []);
                 if (nList.length > 0) {
                     _cacheNucleos = nList.map(n => {
-                        const meta = IVEM_METADATA_MAP[n.id] || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === Number(n.id) || (c.nome && n.nome && c.nome.toLowerCase() === n.nome.toLowerCase()));
-                        const espaco = _cacheEspacos.find(e => Number(e.id) === Number(n.espaco_id));
+                        const espaco = _cacheEspacos.find(e => 
+                            (n.espaco_id && Number(e.id) === Number(n.espaco_id)) ||
+                            (n.bairro_id && Number(e.id) === Number(n.bairro_id)) ||
+                            (e.nome && n.nome && e.nome.trim().toLowerCase() === n.nome.trim().toLowerCase())
+                        );
+                        const cid = n.cidade || espaco?.cidade || 'Campos dos Goytacazes';
+                        const bai = n.bairro || espaco?.bairro || n.nome || 'Centro';
+                        const modId = Number(n.modalidade_id || espaco?.modalidade_id) || 5;
+                        const modNome = obterNomeModalidade(modId, n.modalidade_nome);
                         return {
-                            ...meta,
                             ...n,
-                            cidade: meta?.cidade || espaco?.cidade || n.cidade || 'Minas Gerais',
-                            bairro: n.bairro || meta?.bairro || espaco?.bairro || n.nome,
-                            modalidade_id: n.modalidade_id || meta?.modalidade_id || 11,
-                            modalidade_nome: (Number(n.modalidade_id) === 13 || meta?.modalidade_id === 13) ? 'Voleibol' : 'Futsal',
-                            ativo: true
+                            cidade: cid,
+                            bairro: bai,
+                            modalidade_id: modId,
+                            modalidade_nome: modNome,
+                            ativo: n.ativo !== false && n.ativo !== 'false' && n.ativo !== 0
                         };
                     });
+                } else {
+                    _cacheNucleos = JSON.parse(JSON.stringify(NUCLEOS_CATALOGO_IVEM));
                 }
             } catch(e) {
                 console.warn('Usando catálogo oficial de núcleos da IVEM:', e);
+                _cacheNucleos = JSON.parse(JSON.stringify(NUCLEOS_CATALOGO_IVEM));
+                _cacheEspacos = [...ESPACOS_CATALOGO_IVEM];
+                _cacheLocaisEventoIVEM = [...LOCAIS_EVENTO_CATALOGO_IVEM];
             }
         }
 
@@ -2534,7 +2576,20 @@
                 document.getElementById('hidden_modo_edicao').value = 'true';
                 document.getElementById('btnSubmitEnrollText').textContent = 'Salvar Alterações';
 
-                currentSelectedProject = { id: 6, nome: "INSTITUTO VIVER EM MOVIMENTO - IVEM", idade_min: 7, idade_max: 20 };
+                const projId = mat.projeto_id ? Number(mat.projeto_id) : 3;
+                const projNome = mat.projeto_nome || (projId === 1 ? 'MOVIMENTA RIO' : 'ESPORTE SEM PARAR');
+                const isEv = Boolean(mat.is_evento || projId === 1 || String(mat.aplicabilidade || '').toLowerCase().includes('evento'));
+
+                currentSelectedProject = { 
+                    id: projId, 
+                    nome: projNome, 
+                    is_evento: isEv, 
+                    idade_min: isEv ? 6 : 7, 
+                    idade_max: isEv ? 80 : 20 
+                };
+                document.getElementById('formCurrentProjBadge').textContent = projNome;
+                document.getElementById('hidden_projeto_id').value = projId;
+                document.getElementById('hidden_projeto_nome').value = projNome;
 
                 // Preenche dados do aluno com segurança contra null
                 const nomeAluno = mat.aluno_nome || mat.nome || currentStudentData?.nome || '';
@@ -2618,32 +2673,29 @@
                 preencherSelect('mat_calcado', mat.tamanho_calcado);
                 preencherSelect('mat_turno', mat.turno);
 
-                // Resolução Inteligente da Localidade de Treino & Modalidade na IVEM (Minas Gerais)
+                // Resolução da Localidade de Treino & Modalidade na IVEM (RJ)
                 let cidadeTreino = mat.cidade_treino || '';
                 const targetNucId = mat.nucleo_id ? Number(mat.nucleo_id) : null;
-                const targetModId = mat.modalidade_id ? Number(mat.modalidade_id) : (mat.modalidade_nome === 'Voleibol' ? 13 : 11);
+                const targetModId = mat.modalidade_id ? Number(mat.modalidade_id) : (isEv ? 16 : 5);
 
                 if (!cidadeTreino && targetNucId) {
-                    const meta = IVEM_METADATA_MAP[targetNucId] || 
-                                 NUCLEOS_CATALOGO_IVEM.find(n => Number(n.id) === targetNucId) || 
-                                 _cacheNucleos.find(n => Number(n.id) === targetNucId);
-                    if (meta?.cidade) cidadeTreino = meta.cidade;
-                }
-                if (!cidadeTreino && (mat.nucleo_nome || mat.bairro_escolhido || mat.bairro)) {
-                    const termo = String(mat.nucleo_nome || mat.bairro_escolhido || mat.bairro).trim().toLowerCase();
-                    const nucMatch = NUCLEOS_CATALOGO_IVEM.find(n => 
-                        (n.nome && n.nome.toLowerCase() === termo) || 
-                        (n.bairro && n.bairro.toLowerCase() === termo)
-                    );
-                    if (nucMatch?.cidade) cidadeTreino = nucMatch.cidade;
+                    if (isEv) {
+                        const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === targetNucId) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === targetNucId);
+                        if (loc?.cidade) cidadeTreino = loc.cidade;
+                    } else {
+                        const nuc = _cacheNucleos.find(n => Number(n.id) === targetNucId) || NUCLEOS_CATALOGO_IVEM.find(n => Number(n.id) === targetNucId);
+                        if (nuc?.cidade) cidadeTreino = nuc.cidade;
+                    }
                 }
                 if (!cidadeTreino && mat.cidade) {
-                    const cidMatch = NUCLEOS_CATALOGO_IVEM.find(n => n.cidade.toLowerCase() === String(mat.cidade).trim().toLowerCase());
-                    if (cidMatch?.cidade) cidadeTreino = cidMatch.cidade;
+                    cidadeTreino = mat.cidade;
+                }
+                if (!cidadeTreino) {
+                    cidadeTreino = isEv ? 'Rio de Janeiro' : 'Campos dos Goytacazes';
                 }
 
                 // Carrega cidades e seleciona automaticamente cidade, modalidade e núcleo
-                carregarCidadesDoProjeto(6, cidadeTreino, targetModId, targetNucId);
+                carregarCidadesDoProjeto(projId, cidadeTreino, targetModId, targetNucId);
 
                 irParaPasso(1);
                 window.scrollTo({ top: 40, behavior: 'smooth' });
@@ -2900,7 +2952,7 @@
                 if (ultimaMat.tamanho_calcado) preencherSelect('mat_calcado', ultimaMat.tamanho_calcado);
             }
 
-            carregarCidadesDoProjeto(6);
+            carregarCidadesDoProjeto(item.id);
             irParaPasso(1);
             window.scrollTo({ top: 40, behavior: 'smooth' });
 
@@ -2909,39 +2961,64 @@
             }
         }
 
-        // ── CARREGAR CIDADES DOS NÚCLEOS DA IVEM ──
+        // ── CARREGAR CIDADES DOS NÚCLEOS / EVENTOS DA IVEM ──
         function carregarCidadesDoProjeto(projId, cidadePreSelecionada = '', targetModId = null, targetNucId = null) {
             const selectCid = document.getElementById('select_cidade_filtro');
             if (!selectCid) return;
 
-            const isEv = currentSelectedProject?.is_evento;
+            const isEv = Boolean(currentSelectedProject?.is_evento || 
+                         (currentSelectedProject?.aplicabilidade && ['eventos', 'evento'].includes(currentSelectedProject.aplicabilidade.toLowerCase())));
+            const pIdNum = projId ? Number(projId) : (currentSelectedProject?.id ? Number(currentSelectedProject.id) : null);
+
             const cidadesSet = new Set();
 
             if (isEv) {
-                // Evento: Cidades dos locais de evento (Rio de Janeiro, etc.)
-                if (_cacheLocaisEventoIVEM && _cacheLocaisEventoIVEM.length > 0) {
-                    _cacheLocaisEventoIVEM.forEach(l => {
-                        if (l.cidade) cidadesSet.add(l.cidade.trim());
-                    });
-                }
-                if (cidadesSet.size === 0) cidadesSet.add('Rio de Janeiro');
-            } else {
-                // Regular: Cidades dos núcleos (Campos dos Goytacazes, etc.)
-                _cacheNucleos.forEach(n => {
-                    const meta = IVEM_METADATA_MAP[n.id] || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === Number(n.id));
-                    if (!n.cidade && meta) n.cidade = meta.cidade;
-                    if (!n.bairro && meta) n.bairro = meta.bairro;
-                    if (!n.modalidade_id && meta) n.modalidade_id = meta.modalidade_id;
-                    n.ativo = true;
-                    if (n.cidade) cidadesSet.add(n.cidade.trim());
+                // Eventos: busca cidades dos locais de evento (Rio de Janeiro, etc.)
+                const locais = (_cacheLocaisEventoIVEM && _cacheLocaisEventoIVEM.length > 0) ? _cacheLocaisEventoIVEM : LOCAIS_EVENTO_CATALOGO_IVEM;
+                locais.forEach(l => {
+                    if ((!pIdNum || Number(l.projeto_id) === pIdNum) && l.cidade) {
+                        cidadesSet.add(l.cidade.trim());
+                    }
                 });
                 if (cidadesSet.size === 0) {
-                    NUCLEOS_CATALOGO_IVEM.forEach(c => cidadesSet.add(c.cidade));
+                    locais.forEach(l => { if (l.cidade) cidadesSet.add(l.cidade.trim()); });
+                }
+                if (cidadesSet.size === 0) {
+                    cidadesSet.add('Rio de Janeiro');
+                }
+            } else {
+                // Regular (Aulas): busca cidades dos núcleos pertencentes ao projeto (Campos dos Goytacazes, etc.)
+                const nucleos = (_cacheNucleos && _cacheNucleos.length > 0) ? _cacheNucleos : NUCLEOS_CATALOGO_IVEM;
+                nucleos.forEach(n => {
+                    const espaco = _cacheEspacos.find(e => 
+                        (n.espaco_id && Number(e.id) === Number(n.espaco_id)) ||
+                        (n.bairro_id && Number(e.id) === Number(n.bairro_id)) ||
+                        (e.nome && n.nome && e.nome.trim().toLowerCase() === n.nome.trim().toLowerCase())
+                    );
+                    if (!n.cidade && espaco?.cidade) n.cidade = espaco.cidade;
+                    if (!n.cidade) n.cidade = 'Campos dos Goytacazes';
+                    if (!n.modalidade_id && espaco?.modalidade_id) n.modalidade_id = espaco.modalidade_id;
+                    if (!n.modalidade_id) n.modalidade_id = 5;
+                    n.modalidade_nome = obterNomeModalidade(n.modalidade_id, n.modalidade_nome);
+
+                    if (!pIdNum || Number(n.projeto_id) === pIdNum) {
+                        if (n.cidade) cidadesSet.add(n.cidade.trim());
+                    }
+                });
+                if (cidadesSet.size === 0) {
+                    nucleos.forEach(n => {
+                        if (n.cidade) cidadesSet.add(n.cidade.trim());
+                    });
+                }
+                if (cidadesSet.size === 0) {
+                    cidadesSet.add('Campos dos Goytacazes');
                 }
             }
 
+            const cidadesArr = Array.from(cidadesSet).filter(Boolean).sort((a, b) => a.localeCompare(b));
             const placeholder = isEv ? 'Selecione a cidade do evento…' : 'Selecione a cidade do treino…';
             selectCid.innerHTML = `<option value="">${placeholder}</option>`;
+
             cidadesArr.forEach(c => {
                 const opt = document.createElement('option');
                 opt.value = c;
@@ -2959,11 +3036,11 @@
 
             if (cidParaSelecionar) {
                 selectCid.value = cidParaSelecionar;
-                carregarModalidadesDaCidade(cidParaSelecionar, projId, targetModId, targetNucId);
+                carregarModalidadesDaCidade(cidParaSelecionar, pIdNum, targetModId, targetNucId);
             }
 
             selectCid.onchange = () => {
-                carregarModalidadesDaCidade(selectCid.value, projId);
+                carregarModalidadesDaCidade(selectCid.value, pIdNum);
             };
         }
 
@@ -2971,7 +3048,8 @@
         function carregarModalidadesDaCidade(cidadeEscolhida, projId, targetModId = null, targetNucId = null) {
             const modContainer = document.getElementById('modalidadesCardsContainer');
             const nucBloco = document.getElementById('blocoQuadradinhosNucleos');
-            const nucContainer = document.getElementById('nucleosCardsContainer');
+            const lblMod = document.getElementById('lblModalidadeEsportiva');
+            const lblNuc = document.getElementById('lblNucleoTreino');
 
             document.getElementById('hidden_nucleo_id').value = '';
             document.getElementById('hidden_nucleo_nome').value = '';
@@ -2980,39 +3058,98 @@
             if (nucBloco) nucBloco.style.display = 'none';
 
             if (!cidadeEscolhida) {
-                modContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; border: 1.5px dashed var(--border-pencil); border-radius: var(--radius-input);">Selecione a cidade acima para carregar as modalidades.</div>';
+                modContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; border: 1.5px dashed var(--border-pencil); border-radius: var(--radius-input);">Selecione a cidade acima para carregar as opções disponíveis.</div>';
                 return;
             }
 
-            // Filtra núcleos correspondentes à cidade (com fallback ao catálogo)
-            let nucleos = _cacheNucleos.filter(n => 
-                String(n.cidade || '').trim().toLowerCase() === String(cidadeEscolhida).trim().toLowerCase()
-            );
+            const isEv = Boolean(currentSelectedProject?.is_evento || 
+                         (currentSelectedProject?.aplicabilidade && ['eventos', 'evento'].includes(currentSelectedProject.aplicabilidade.toLowerCase())));
+
+            if (isEv) {
+                // ── FLUXO DE EVENTO OFICIAL ──
+                if (lblMod) lblMod.innerHTML = '2. Atividade / Modalidade do <strong>Evento</strong>: <span class="req">*</span>';
+                if (lblNuc) lblNuc.innerHTML = '3. Escolha o <strong>Local do Evento</strong>: <span class="req">*</span>';
+
+                const locais = (_cacheLocaisEventoIVEM && _cacheLocaisEventoIVEM.length > 0) ? _cacheLocaisEventoIVEM : LOCAIS_EVENTO_CATALOGO_IVEM;
+                const pIdNum = projId ? Number(projId) : (currentSelectedProject?.id ? Number(currentSelectedProject.id) : 1);
+
+                let locaisFiltrados = locais.filter(l => 
+                    String(l.cidade || '').trim().toLowerCase() === String(cidadeEscolhida).trim().toLowerCase() &&
+                    (!pIdNum || Number(l.projeto_id) === pIdNum)
+                );
+                if (locaisFiltrados.length === 0) {
+                    locaisFiltrados = locais.filter(l => String(l.cidade || '').trim().toLowerCase() === String(cidadeEscolhida).trim().toLowerCase());
+                }
+                if (locaisFiltrados.length === 0) {
+                    locaisFiltrados = LOCAIS_EVENTO_CATALOGO_IVEM;
+                }
+
+                const modId = 16;
+                const modNome = 'Treinamento Funcional';
+                const icone = '🏋️';
+
+                modContainer.innerHTML = '';
+                const cardMod = document.createElement('div');
+                cardMod.className = 'modalidade-sport-card selected';
+                cardMod.setAttribute('data-id', modId);
+                cardMod.innerHTML = `
+                    <div class="mod-icon-badge">${icone}</div>
+                    <div class="mod-text-wrap">
+                        <h5>${modNome}</h5>
+                        <p>${locaisFiltrados.length} local(is) de evento disponível(is)</p>
+                    </div>
+                    <div class="mod-check-badge">✓</div>
+                `;
+                modContainer.appendChild(cardMod);
+
+                document.getElementById('hidden_modalidade_id').value = modId;
+                document.getElementById('hidden_modalidade_nome').value = modNome;
+
+                if (nucBloco) nucBloco.style.display = 'block';
+                renderizarLocaisDoEvento(locaisFiltrados, modId, modNome, targetNucId);
+                return;
+            }
+
+            // ── FLUXO DE PROJETO REGULAR (AULAS) ──
+            if (lblMod) lblMod.innerHTML = '2. Selecione a <strong>Modalidade Esportiva</strong> desejada: <span class="req">*</span>';
+            if (lblNuc) lblNuc.innerHTML = '3. Escolha o <strong>Núcleo / Bairro</strong> de treino: <span class="req">*</span>';
+
+            const pIdNum = projId ? Number(projId) : (currentSelectedProject?.id ? Number(currentSelectedProject.id) : null);
+            const todosNucleos = (_cacheNucleos && _cacheNucleos.length > 0) ? _cacheNucleos : NUCLEOS_CATALOGO_IVEM;
+
+            let nucleos = todosNucleos.filter(n => {
+                const cMatch = String(n.cidade || '').trim().toLowerCase() === String(cidadeEscolhida).trim().toLowerCase();
+                const pMatch = !pIdNum || Number(n.projeto_id) === pIdNum;
+                return cMatch && pMatch;
+            });
 
             if (nucleos.length === 0) {
-                nucleos = NUCLEOS_CATALOGO_IVEM.filter(n => 
+                nucleos = todosNucleos.filter(n => 
                     String(n.cidade || '').trim().toLowerCase() === String(cidadeEscolhida).trim().toLowerCase()
                 );
             }
-
             if (nucleos.length === 0) {
-                modContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; border: 1.5px dashed var(--border-pencil); border-radius: var(--radius-input);">Nenhuma modalidade ativa encontrada para esta localidade.</div>';
-                return;
+                nucleos = NUCLEOS_CATALOGO_IVEM;
             }
 
             // Agrupa por modalidade
             const modMap = new Map();
             nucleos.forEach(n => {
-                const modId = Number(n.modalidade_id) === 13 ? 13 : 11;
-                const modNome = modId === 13 ? 'Voleibol' : 'Futsal';
-                if (!modMap.has(modId)) {
-                    modMap.set(modId, { id: modId, nome: modNome, nucleos: [] });
+                const mId = Number(n.modalidade_id) || 5;
+                const mNome = n.modalidade_nome || obterNomeModalidade(mId);
+                if (!modMap.has(mId)) {
+                    modMap.set(mId, { id: mId, nome: mNome, nucleos: [] });
                 }
-                modMap.get(modId).nucleos.push(n);
+                modMap.get(mId).nucleos.push(n);
             });
 
             modContainer.innerHTML = '';
             const modalidadesArr = Array.from(modMap.values());
+
+            if (modalidadesArr.length === 0) {
+                modContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; border: 1.5px dashed var(--border-pencil); border-radius: var(--radius-input);">Nenhuma modalidade ativa encontrada para esta localidade.</div>';
+                return;
+            }
 
             let cardModParaClicar = null;
 
@@ -3020,7 +3157,7 @@
                 const card = document.createElement('div');
                 card.className = 'modalidade-sport-card';
                 card.setAttribute('data-id', mod.id);
-                const icone = mod.id === 13 ? '🏐' : '⚽';
+                const icone = obterIconeModalidade(mod.nome);
 
                 card.innerHTML = `
                     <div class="mod-icon-badge">${icone}</div>
@@ -3038,7 +3175,7 @@
                     document.getElementById('hidden_modalidade_id').value = mod.id;
                     document.getElementById('hidden_modalidade_nome').value = mod.nome;
 
-                    nucBloco.style.display = 'block';
+                    if (nucBloco) nucBloco.style.display = 'block';
                     renderizarNucleosDaModalidade(mod.nucleos, mod.id, mod.nome, targetNucId);
                 });
 
@@ -3056,9 +3193,60 @@
             }
         }
 
+        // ── RENDERIZAR LOCAIS DO EVENTO ──
+        function renderizarLocaisDoEvento(locais, modId, modNome, targetLocId = null) {
+            const container = document.getElementById('nucleosCardsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let cardParaClicar = null;
+
+            locais.forEach((loc, idx) => {
+                const card = document.createElement('div');
+                card.className = 'nucleo-square-tile';
+                card.setAttribute('data-id', loc.id);
+                const locNome = loc.nome || loc.bairro || 'Local Oficial';
+                const enderecoTxt = [loc.rua, loc.numero].filter(Boolean).join(', ') || loc.bairro || loc.cidade || 'Rio de Janeiro';
+
+                card.innerHTML = `
+                    <div class="tile-check-pill">✓</div>
+                    <span class="tile-mod-badge" style="background: rgba(0, 159, 227, 0.1); color: var(--c-azure);">${modNome}</span>
+                    <div class="tile-bairro-title">${locNome}</div>
+                    <div class="tile-ref-info">
+                        <i data-lucide="map-pin" style="width: 12px; height: 12px; color: var(--c-carmim); flex-shrink: 0;"></i>
+                        <span>${enderecoTxt}</span>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.nucleo-square-tile').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+
+                    document.getElementById('hidden_nucleo_id').value = loc.id;
+                    document.getElementById('hidden_nucleo_nome').value = locNome;
+                    document.getElementById('hidden_bairro_escolhido').value = loc.bairro || locNome;
+                });
+
+                container.appendChild(card);
+
+                if (targetLocId && Number(loc.id) === Number(targetLocId)) {
+                    cardParaClicar = card;
+                } else if (!cardParaClicar && (locais.length === 1 && idx === 0)) {
+                    cardParaClicar = card;
+                }
+            });
+
+            if (cardParaClicar) {
+                setTimeout(() => cardParaClicar.click(), 40);
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
         // ── RENDERIZAR NÚCLEOS DA MODALIDADE ──
         function renderizarNucleosDaModalidade(nucleosDaMod, modId, modNome, targetNucId = null) {
             const container = document.getElementById('nucleosCardsContainer');
+            if (!container) return;
             container.innerHTML = '';
 
             let cardNucParaClicar = null;
@@ -3068,6 +3256,7 @@
                 card.className = 'nucleo-square-tile';
                 card.setAttribute('data-id', n.id);
                 const bairroNome = n.bairro || n.nome || 'Núcleo Central';
+                const cidadeNome = n.cidade || 'Campos dos Goytacazes';
 
                 card.innerHTML = `
                     <div class="tile-check-pill">✓</div>
@@ -3075,7 +3264,7 @@
                     <div class="tile-bairro-title">${bairroNome}</div>
                     <div class="tile-ref-info">
                         <i data-lucide="map-pin" style="width: 12px; height: 12px; color: var(--c-carmim); flex-shrink: 0;"></i>
-                        <span>Núcleo ${n.nome} (${n.cidade || 'MG'})</span>
+                        <span>${n.nome || bairroNome} • ${cidadeNome}</span>
                     </div>
                 `;
 
@@ -3275,6 +3464,13 @@
                 btnSubmit.style.display = 'none';
             }
 
+            if (passo === 3) {
+                const selCid = document.getElementById('select_cidade_filtro');
+                if (selCid && selCid.options.length <= 1) {
+                    carregarCidadesDoProjeto(currentSelectedProject?.id);
+                }
+            }
+
             window.scrollTo({ top: 60, behavior: 'smooth' });
         }
 
@@ -3298,7 +3494,7 @@
                     return false;
                 }
 
-                // 2. Validação da Data de Nascimento e Faixa Etária Oficial (7 a 20 anos)
+                // 2. Validação da Data de Nascimento e Faixa Etária Oficial do Projeto
                 const nascInput = document.getElementById('mat_nasc');
                 if (!nascInput || !nascInput.value) {
                     alert('Por favor, informe a data de nascimento.');
@@ -3311,8 +3507,10 @@
                     nascInput?.focus();
                     return false;
                 }
-                if (idadeCalc < 7 || idadeCalc > 20) {
-                    alert(`Inscrição bloqueada: A data informada indica ${idadeCalc} anos. As inscrições nesta iniciativa da IVEM são exclusivas para a faixa de 7 a 20 anos completos.`);
+                const minProj = currentSelectedProject?.idade_min !== undefined && currentSelectedProject?.idade_min !== null ? Number(currentSelectedProject.idade_min) : 7;
+                const maxProj = currentSelectedProject?.idade_max !== undefined && currentSelectedProject?.idade_max !== null ? Number(currentSelectedProject.idade_max) : 20;
+                if (idadeCalc < minProj || idadeCalc > maxProj) {
+                    alert(`Inscrição bloqueada: A data informada indica ${idadeCalc} anos. As inscrições nesta iniciativa (${currentSelectedProject?.nome || 'IVEM'}) são exclusivas para a faixa de ${minProj} a ${maxProj} anos completos.`);
                     nascInput?.focus();
                     return false;
                 }
@@ -3389,7 +3587,7 @@
                     return false;
                 }
                 if (!document.getElementById('hidden_nucleo_id')?.value) {
-                    alert('Por favor, selecione o núcleo / bairro para as aulas.');
+                    alert(currentSelectedProject?.is_evento ? 'Por favor, selecione o local do evento.' : 'Por favor, selecione o núcleo / bairro para as aulas.');
                     return false;
                 }
             }

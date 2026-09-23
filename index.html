@@ -434,16 +434,25 @@
         }
 
         .btn-switch-cpf {
-            font-size: 12.5px;
+            font-size: 13px;
             color: var(--c-carmim);
             font-weight: 700;
             background: none;
-            border: none;
+            border: 1px solid transparent;
             cursor: pointer;
-            text-decoration: underline;
-            padding: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
-        .btn-switch-cpf:hover { color: var(--c-vermelho); }
+        .btn-switch-cpf:hover { 
+            color: var(--c-vermelho); 
+            background: rgba(203, 6, 21, 0.06);
+            border-color: rgba(203, 6, 21, 0.15);
+        }
 
         /* ── BLOCO: INSCRIÇÕES ATIVAS DO ALUNO (COM JANELA DE 6 HORAS) ── */
         .section-history {
@@ -1267,8 +1276,9 @@
                     <h3 id="studentDisplayName">Carregando participante...</h3>
                     <p id="studentDisplayCPF">CPF: 000.000.000-00</p>
                 </div>
-                <button type="button" class="btn-switch-cpf" id="btnTrocarCPF">
-                    Trocar CPF
+                <button type="button" class="btn-switch-cpf" id="btnTrocarCPF" title="Sair do portal">
+                    <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+                    <span>Sair</span>
                 </button>
             </div>
 
@@ -2443,8 +2453,10 @@
                 : 'Novo Cadastro';
             document.getElementById('studentDisplayCPF').textContent = `CPF: ${formatarCPF(currentStudentData.cpf)} • ${txtIdade}`;
 
+            if (window.lucide) lucide.createIcons();
             await carregarProjetosIVEM(currentStudentData.idade);
             renderizarMatriculasExistentesIVEM();
+            if (window.lucide) lucide.createIcons();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 

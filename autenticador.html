@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Autenticador de Matrícula — AUNI / INTEGRA</title>
+  
+  <link rel="icon" type="image/x-icon" href="favicon_auni.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* PALETA OFICIAL AUNI */
+      --primary: #1c3388;         /* 1. Azul-escuro (Dominante) */
+      --primary-dark: #12225e;
+      --accent-pink: #e1059d;     /* 2. Rosa (Acento) */
+      --accent-yellow: #c3a526;   /* 3. Amarelo apagado */
+      --accent-azure: #74d4fd;    /* 4. Azure pastel */
+      --bg-color: #f8fafc;
+      --surface: #ffffff;         /* 5. Branco */
+      --text-main: #000000;       /* 6. Preto */
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      
+      --success: #1c3388;
+      --success-light: #eff6ff;
+      
+      --font-main: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .header-logo {
+      margin-top: 16px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-container-dark {
+      background: #1c3388;
+      padding: 6px 14px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(28, 51, 136, 0.18);
+    }
+
+    .header-logo img.logo-auni {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-logo img.logo-integra {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(28, 51, 136, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+      width: 100%;
+      max-width: 480px;
+      padding: 30px 24px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+      border: 1px solid var(--border);
+    }
+
+    .card.show {
+      display: block;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Loading State */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 40px 0;
+    }
+    
+    .spinner {
+      width: 46px;
+      height: 46px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-right-color: var(--accent-pink);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Success State */
+    .seal-success {
+      width: 76px;
+      height: 76px;
+      background: var(--success-light);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      position: relative;
+    }
+    
+    .seal-success::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px dashed var(--accent-azure);
+      opacity: 0.8;
+      animation: rotate-slow 12s linear infinite;
+    }
+
+    @keyframes rotate-slow {
+      to { transform: rotate(360deg); }
+    }
+
+    .seal-success .material-symbols-outlined {
+      font-size: 38px;
+      color: var(--primary);
+    }
+
+    .title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      background: #f8fafc;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .info-item:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .status-badge-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(28, 51, 136, 0.08);
+      color: var(--primary);
+      border: 1px solid var(--accent-azure);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      width: fit-content;
+      margin-top: 2px;
+    }
+
+    /* Error State */
+    .seal-error {
+      width: 76px;
+      height: 76px;
+      background: var(--danger-light);
+      color: var(--danger);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+
+    .seal-error .material-symbols-outlined {
+      font-size: 38px;
+    }
+
+    .footer-stamp {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px dashed var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .btn-retry {
+      display: block;
+      width: 100%;
+      margin-top: 18px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-retry:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-logo">
+    <div class="logo-container-dark">
+      <img src="logo_auni.png" alt="AUNI" class="logo-auni">
+    </div>
+    <span style="font-weight: 800; color: var(--accent-azure); font-size: 18px;">×</span>
+    <img src="logo_integra_simbolo.gif" alt="INTEGRA" class="logo-integra">
+  </header>
+
+  <!-- CARD 1: CARREGANDO -->
+  <main id="card-loading" class="card show">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <div style="font-weight: 700; font-size: 15px; color: var(--primary);">Autenticando inscrição...</div>
+      <div style="font-size: 13px; color: var(--text-muted); text-align: center;">Consultando registros oficiais da Associação Nacional União (AUNI).</div>
+    </div>
+  </main>
+
+  <!-- CARD 2: SUCESSO / AUTENTICADA -->
+  <main id="card-success" class="card">
+    <div class="seal-success">
+      <span class="material-symbols-outlined">verified</span>
+    </div>
+    <h1 class="title">Matrícula Autenticada</h1>
+    <p class="subtitle">Documento eletrônico validado com sucesso nos registros oficiais da instituição.</p>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Status da Inscrição</span>
+        <div class="status-badge-ok">
+          <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
+          Válida & Deferida
+        </div>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Nº da Matrícula</span>
+        <span class="info-value" id="val-matricula">#000000</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Participante / Aluno</span>
+        <span class="info-value" id="val-nome">---</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">CPF</span>
+        <span class="info-value" id="val-cpf">***.***.***-**</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Iniciativa / Projeto</span>
+        <span class="info-value" id="val-projeto">ASSOCIAÇÃO NACIONAL UNIÃO - AUNI</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Modalidade Esportiva</span>
+        <span class="info-value" id="val-modalidade">---</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Núcleo / Local de Treino</span>
+        <span class="info-value" id="val-nucleo">---</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Turno</span>
+        <span class="info-value" id="val-turno">---</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">Data de Registro</span>
+        <span class="info-value" id="val-data">---</span>
+      </div>
+    </div>
+
+    <div class="footer-stamp">
+      <span class="material-symbols-outlined" style="font-size: 16px; color: var(--accent-pink);">security</span>
+      <span>Associação Nacional União • Plataforma INTEGRA</span>
+    </div>
+
+    <a href="index.html" class="btn-retry" style="background: var(--primary); margin-top: 16px;">Acessar Portal de Matrícula</a>
+  </main>
+
+  <!-- CARD 3: ERRO / NÃO ENCONTRADA -->
+  <main id="card-error" class="card">
+    <div class="seal-error">
+      <span class="material-symbols-outlined">gpp_maybe</span>
+    </div>
+    <h1 class="title" style="color: var(--danger);">Inscrição Não Localizada</h1>
+    <p class="subtitle" id="error-desc">Não encontramos nenhum registro oficial correspondente aos parâmetros fornecidos no banco de dados da AUNI.</p>
+
+    <div class="info-grid" style="background: var(--danger-light); border-color: rgba(239, 68, 68, 0.2);">
+      <div class="info-item">
+        <span class="info-label" style="color: var(--danger);">Possíveis Motivos:</span>
+        <span class="info-value" style="font-weight: 500; font-size: 13.5px; color: #7f1d1d; line-height: 1.5;">
+          • O QR Code lido é de outra instituição ou formato antigo.<br>
+          • O código identificador informado está incorreto.<br>
+          • A matrícula ainda está em fase de processamento.<br>
+          • A inscrição foi cancelada ou substituída.
+        </span>
+      </div>
+    </div>
+
+    <a href="index.html" class="btn-retry">Ir para a Página Inicial</a>
+  </main>
+
+  <script>
+    (async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id') || urlParams.get('matricula') || urlParams.get('token');
+      const inst = (urlParams.get('inst') || urlParams.get('instituto') || 'AUNI').toUpperCase();
+
+      const cardLoading = document.getElementById('card-loading');
+      const cardSuccess = document.getElementById('card-success');
+      const cardError = document.getElementById('card-error');
+
+      function showCard(card) {
+        cardLoading.classList.remove('show');
+        cardSuccess.classList.remove('show');
+        cardError.classList.remove('show');
+        card.classList.add('show');
+      }
+
+      if (!id) {
+        document.getElementById('error-desc').textContent = 'Nenhum identificador de matrícula foi fornecido no link de validação.';
+        showCard(cardError);
+        return;
+      }
+
+      try {
+        const url = `https://w.ibrase.com.br/webhook/buscarmatricula?id=${encodeURIComponent(id)}&instituto=AUNI`;
+        const resp = await fetch(url);
+        
+        if (!resp.ok) {
+          throw new Error('Falha de resposta do servidor: ' + resp.status);
+        }
+
+        const data = await resp.json();
+        const item = Array.isArray(data) ? data[0] : (data?.dados || data?.result || data);
+
+        if (!item || (!item.id && !item.aluno_nome && !item.nome)) {
+          showCard(cardError);
+          return;
+        }
+
+        // Preenchimento dos dados com fallback robusto
+        document.getElementById('val-matricula').textContent = '#' + (item.id || item.matricula || id);
+        document.getElementById('val-nome').textContent = item.aluno_nome || item.nome || 'Não informado';
+        
+        const rawCpf = String(item.aluno_cpf || item.cpf || '').replace(/\D/g, '');
+        if (rawCpf.length === 11) {
+          document.getElementById('val-cpf').textContent = `***.${rawCpf.slice(3,6)}.${rawCpf.slice(6,9)}-**`;
+        } else {
+          document.getElementById('val-cpf').textContent = 'Informado na inscrição';
+        }
+
+        document.getElementById('val-projeto').textContent = item.projeto_nome || item.projeto || 'ASSOCIAÇÃO NACIONAL UNIÃO - AUNI';
+        document.getElementById('val-modalidade').textContent = item.modalidade_nome || item.modalidade || (item.modalidade_id === 13 ? 'Voleibol' : 'Futsal');
+        document.getElementById('val-nucleo').textContent = item.nucleo_nome || item.nucleo || item.bairro || 'Núcleo Oficial AUNI';
+        document.getElementById('val-turno').textContent = item.turno || 'A definir';
+
+        let dataFormatada = 'Registrada no Sistema';
+        if (item.created_at) {
+          try {
+            dataFormatada = new Date(item.created_at).toLocaleString('pt-BR');
+          } catch(e) {}
+        }
+        document.getElementById('val-data').textContent = dataFormatada;
+
+        showCard(cardSuccess);
+
+      } catch (err) {
+        console.error('Erro na autenticação:', err);
+        document.getElementById('error-desc').textContent = 'Não foi possível verificar a autenticidade da matrícula no momento. Verifique sua conexão e tente novamente.';
+        showCard(cardError);
+      }
+    })();
+  </script>
+</body>
+</html>

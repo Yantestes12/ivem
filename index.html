@@ -1913,7 +1913,7 @@
          ========================================================================== -->
     <script>
         // ── CONTROLE AUTOMÁTICO DE VERSÃO & LIMPEZA DE CACHE ──
-        const APP_BUILD_VERSION = '2026.09.23_ivem_v1_portal_completo';
+        const APP_BUILD_VERSION = '2026.09.23_ivem_v3_ficha_eventos_oficial';
         try {
             const lastVer = localStorage.getItem('ivem_app_version');
             if (lastVer !== APP_BUILD_VERSION) {
@@ -2343,15 +2343,35 @@
                     const listaEv = Array.isArray(respEv) ? respEv : (respEv?.data || respEv?.value || []);
 
                     const matsReg = listaReg.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
-                    const matsEv = listaEv.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum).map(e => ({
-                        ...e,
-                        is_evento: true,
-                        projeto_nome: e.projeto_nome || 'MOVIMENTA RIO',
-                        nucleo_nome: e.local_nome || 'Curicica (Rio de Janeiro)',
-                        modalidade_nome: e.modalidade_nome || 'Treinamento Funcional / Corrida'
-                    }));
+                    const matsEv = listaEv.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
 
-                    matriculasEncontradas = [...matsReg, ...matsEv];
+                    matriculasEncontradas = [...matsReg, ...matsEv].map(m => {
+                        const isEv = Boolean(m.is_evento || Number(m.projeto_id) === 1 || String(m.projeto_nome || '').toLowerCase().includes('movimenta') || String(m.aplicabilidade || '').toLowerCase().includes('evento'));
+                        if (isEv) {
+                            const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(m.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(m.nucleo_id));
+                            return {
+                                ...m,
+                                is_evento: true,
+                                projeto_id: m.projeto_id || 1,
+                                projeto_nome: m.projeto_nome || 'MOVIMENTA RIO',
+                                modalidade_id: m.modalidade_id || 16,
+                                modalidade_nome: m.modalidade_nome || 'Treinamento Funcional',
+                                nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (loc ? `${loc.nome} (${loc.cidade})` : 'Curicica (Rio de Janeiro)')
+                            };
+                        } else {
+                            const nId = Number(m.nucleo_id);
+                            const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
+                            return {
+                                ...m,
+                                is_evento: false,
+                                projeto_id: m.projeto_id || 3,
+                                projeto_nome: m.projeto_nome || 'ESPORTE SEM PARAR',
+                                modalidade_id: m.modalidade_id || nuc?.modalidade_id || 5,
+                                modalidade_nome: m.modalidade_nome || (nuc?.modalidade_nome) || obterNomeModalidade(m.modalidade_id || nuc?.modalidade_id),
+                                nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (nuc ? `${nuc.nome || nuc.bairro} (${nuc.cidade})` : (m.bairro || 'Núcleo Central (Campos dos Goytacazes)'))
+                            };
+                        }
+                    });
                 } catch(e) {
                     console.warn('Histórico de matrículas IVEM indisponível no momento:', e);
                 }
@@ -3429,6 +3449,26 @@
                         payload.id = numMatricula;
                     }
 
+                    // Enriquecimento explícito de nomes para a emissão imediata da Ficha Oficial (PDF)
+                    if (currentSelectedProject?.is_evento) {
+                        payload.is_evento = true;
+                        payload.projeto_id = payload.projeto_id || currentSelectedProject.id || 1;
+                        payload.projeto_nome = currentSelectedProject.nome || 'MOVIMENTA RIO';
+                        payload.modalidade_id = payload.modalidade_id || 16;
+                        payload.modalidade_nome = 'Treinamento Funcional';
+                        const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(payload.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(payload.nucleo_id));
+                        payload.nucleo_nome = loc ? `${loc.nome} (${loc.cidade})` : (payload.bairro_escolhido || 'Curicica (Rio de Janeiro)');
+                    } else {
+                        const nId = Number(payload.nucleo_id);
+                        const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
+                        payload.is_evento = false;
+                        payload.projeto_id = payload.projeto_id || 3;
+                        payload.projeto_nome = currentSelectedProject?.nome || 'ESPORTE SEM PARAR';
+                        payload.modalidade_id = payload.modalidade_id || nuc?.modalidade_id || 5;
+                        payload.modalidade_nome = payload.modalidade_nome || nuc?.modalidade_nome || obterNomeModalidade(payload.modalidade_id);
+                        payload.nucleo_nome = payload.nucleo_nome || (nuc ? `${nuc.nome || nuc.bairro} (${nuc.cidade})` : 'Núcleo Central');
+                    }
+
                     // Exibe tela final
                     document.getElementById('formEnrollmentWrapper').style.display = 'none';
                     const paneSucesso = document.getElementById('paneSucessoFinal');
@@ -3703,7 +3743,8 @@
 
         function construirNomeArquivoMatricula(d) {
             const nAluno = (d?.aluno_nome || d?.nome || currentStudentData?.nome || 'Participante').trim();
-            let projNome = (d?.projeto_nome || d?.iniciativa_nome || d?.projeto || currentSelectedProject?.nome || 'INSTITUTO VIVER EM MOVIMENTO - IVEM').trim();
+            const isEv = Boolean(d?.is_evento || Number(d?.projeto_id) === 1 || String(d?.projeto_nome || '').toLowerCase().includes('movimenta') || String(d?.aplicabilidade || '').toLowerCase().includes('evento'));
+            let projNome = (d?.projeto_nome || d?.iniciativa_nome || d?.projeto || (isEv ? 'MOVIMENTA RIO' : (currentSelectedProject?.nome || 'ESPORTE SEM PARAR'))).trim();
             const nAlunoLimpo = sanitizarNomeArquivo(nAluno);
             let projLimpo = sanitizarNomeArquivo(projNome);
             if (!/IVEM/i.test(projLimpo)) {
@@ -3714,10 +3755,10 @@
 
         async function emitirFichaOficialPDF(matId, dadosDiretos) {
             let d = dadosDiretos || currentMatriculasList.find(m => String(m.id) === String(matId));
-            const tituloInicial = d ? construirNomeArquivoMatricula(d) : 'Matrícula - IVEM';
 
             const win = window.open('', '_blank');
             if (win) {
+                const tituloInicial = d ? construirNomeArquivoMatricula(d) : 'Matrícula - IVEM';
                 win.document.write(`<!DOCTYPE html><html><head><title>${tituloInicial}</title></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:90vh;"><div style="text-align:center;"><h2>⏳ Gerando Ficha Oficial de Matrícula...</h2><p style="color:#666;">Buscando registros da Instituto Viver em Movimento (IVEM).</p></div></body></html>`);
                 win.document.close();
                 try { win.document.title = tituloInicial; } catch(e){}
@@ -3728,6 +3769,26 @@
                     const resp = await fetch(`${API.buscarMatriculaId}?id=${encodeURIComponent(matId)}&instituto=IVEM`);
                     const json = await resp.json();
                     d = Array.isArray(json) ? json[0] : (json?.dados || json);
+                }
+                if (d) {
+                    const isEv = Boolean(d.is_evento || Number(d.projeto_id) === 1 || String(d.projeto_nome || '').toLowerCase().includes('movimenta') || String(d.aplicabilidade || '').toLowerCase().includes('evento'));
+                    if (isEv) {
+                        d.is_evento = true;
+                        if (!d.projeto_nome) d.projeto_nome = 'MOVIMENTA RIO';
+                        if (!d.modalidade_nome) d.modalidade_nome = 'Treinamento Funcional';
+                        if (!d.nucleo_nome || d.nucleo_nome === d.bairro) {
+                            const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(d.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(d.nucleo_id));
+                            d.nucleo_nome = loc ? `${loc.nome} (${loc.cidade})` : (d.bairro_escolhido || d.bairro || 'Curicica (Rio de Janeiro)');
+                        }
+                    } else {
+                        const nId = Number(d.nucleo_id);
+                        const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
+                        if (!d.projeto_nome) d.projeto_nome = 'ESPORTE SEM PARAR';
+                        if (!d.modalidade_nome) d.modalidade_nome = nuc?.modalidade_nome || obterNomeModalidade(d.modalidade_id || nuc?.modalidade_id);
+                        if (!d.nucleo_nome || d.nucleo_nome === d.bairro) {
+                            d.nucleo_nome = nuc ? `${nuc.nome || nuc.bairro} (${nuc.cidade})` : (d.bairro || 'Núcleo Central');
+                        }
+                    }
                 }
                 gerarFichaPDFIVEM(d || { id: matId }, win);
             } catch(e) {

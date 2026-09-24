@@ -2320,71 +2320,123 @@
             }
         }
 
+        let _isConsultandoCPF = false;
+        let _lastCpfConsultado = null;
+        let _lastCpfCache = null;
+
+        // Utilitário infalível: fetch com timeout que cobre conexão E parsing do JSON
+        async function fetchJsonWithTimeout(url, opts = {}, timeoutMs = 3000) {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+            try {
+                const resp = await fetch(url, { ...opts, signal: ctrl.signal });
+                if (!resp.ok) return null;
+                const data = await resp.json();
+                return data;
+            } catch (err) {
+                return null;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
         // ── Executar Consulta do CPF ──
         async function executarConsultaCPF(cpfNum) {
+            if (_isConsultandoCPF) return;
+
+            // Se o mesmo CPF já foi consultado e o aluno só está confirmando a data de nascimento:
+            if (_lastCpfConsultado === cpfNum && _lastCpfCache) {
+                const inputNascNovo = document.getElementById('inputNascNovo');
+                const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
+                if (!dataDigitada) {
+                    mostrarFeedback('error', 'Por favor, informe a data de nascimento.');
+                    if (inputNascNovo) inputNascNovo.focus();
+                    return;
+                }
+                const idadeVal = calcularIdade(dataDigitada);
+                if (idadeVal === null || isNaN(idadeVal) || idadeVal < 0 || idadeVal > 120) {
+                    mostrarFeedback('error', 'Por favor, informe uma data de nascimento válida.');
+                    if (inputNascNovo) inputNascNovo.focus();
+                    return;
+                }
+
+                // Prossegue INSTANTANEAMENTE sem refazer consultas na rede!
+                const { dadosAluno, matriculasEncontradas, nomeAluno, temNomeBanco } = _lastCpfCache;
+                currentMatriculasList = matriculasEncontradas;
+                currentStudentData = {
+                    cpf: cpfNum,
+                    nome: nomeAluno,
+                    data_nascimento: dataDigitada,
+                    idade: idadeVal,
+                    dados_recentes: dadosAluno?.dados_recentes || {},
+                    projetos_inscritos_ids: matriculasEncontradas.map(m => m.projeto_id).filter(Boolean)
+                };
+
+                mostrarFeedback('success', `Data confirmada (${idadeVal} anos)! Redirecionando...`);
+                setTimeout(() => apresentarPainelDoAluno(), 200);
+                return;
+            }
+
+            _isConsultandoCPF = true;
             mostrarFeedback('loading', 'Consultando CPF e inscrições oficiais na IVEM...');
-            document.getElementById('btnConsultarCPF').disabled = true;
+            const btnConsultar = document.getElementById('btnConsultarCPF');
+            if (btnConsultar) btnConsultar.disabled = true;
 
             try {
-                // 1. Consulta dados do aluno
-                const url = `${API.consultarCPF}?cpf=${encodeURIComponent(cpfNum)}&instituicao=IVEM&instituto=IVEM`;
-                let dadosAluno = null;
+                const urlCPF = `${API.consultarCPF}?cpf=${encodeURIComponent(cpfNum)}&instituicao=IVEM&instituto=IVEM`;
+                const urlReg = `${API.buscarMatriculas}&cpf=${encodeURIComponent(cpfNum)}`;
+                const urlEv = `${API.buscarMatriculasEventos}&cpf=${encodeURIComponent(cpfNum)}`;
 
-                try {
-                    const ctrlCPF = new AbortController();
-                    const timerCPF = setTimeout(() => ctrlCPF.abort(), 3500);
-                    const resp = await fetch(url, { signal: ctrlCPF.signal });
-                    clearTimeout(timerCPF);
-                    const json = await resp.json();
+                // Consultas paralelas blindadas contra travamento (timeout máximo de 3.5s)
+                const [resCPF, resReg, resEv] = await Promise.allSettled([
+                    fetchJsonWithTimeout(urlCPF, {}, 3500),
+                    fetchJsonWithTimeout(urlReg, {}, 3000),
+                    fetchJsonWithTimeout(urlEv, {}, 3000)
+                ]);
+
+                let dadosAluno = null;
+                if (resCPF.status === 'fulfilled' && resCPF.value) {
+                    const json = resCPF.value;
                     const item = Array.isArray(json) ? json[0] : json;
                     dadosAluno = item?.result || item?.dados || item;
-                } catch(e) {
-                    console.warn('Consulta webhook CPF demorou, prosseguindo...');
                 }
 
-                // 2. Busca histórico de matrículas regulares e de eventos na IVEM
                 let matriculasEncontradas = [];
-                try {
-                    const [respReg, respEv] = await Promise.all([
-                        fetch(API.buscarMatriculas).then(r => r.json()).catch(() => []),
-                        fetch(API.buscarMatriculasEventos).then(r => r.json()).catch(() => [])
-                    ]);
-                    const listaReg = Array.isArray(respReg) ? respReg : (respReg?.data || respReg?.value || []);
-                    const listaEv = Array.isArray(respEv) ? respEv : (respEv?.data || respEv?.value || []);
+                const dataReg = (resReg.status === 'fulfilled' && resReg.value) ? resReg.value : [];
+                const dataEv = (resEv.status === 'fulfilled' && resEv.value) ? resEv.value : [];
+                const listaReg = Array.isArray(dataReg) ? dataReg : (dataReg?.data || dataReg?.value || []);
+                const listaEv = Array.isArray(dataEv) ? dataEv : (dataEv?.data || dataEv?.value || []);
 
-                    const matsReg = listaReg.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
-                    const matsEv = listaEv.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
+                const matsReg = listaReg.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
+                const matsEv = listaEv.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
 
-                    matriculasEncontradas = [...matsReg, ...matsEv].map(m => {
-                        const isEv = Boolean(m.is_evento || Number(m.projeto_id) === 1 || String(m.projeto_nome || '').toLowerCase().includes('movimenta') || String(m.aplicabilidade || '').toLowerCase().includes('evento'));
-                        if (isEv) {
-                            const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(m.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(m.nucleo_id));
-                            return {
-                                ...m,
-                                is_evento: true,
-                                projeto_id: m.projeto_id || 1,
-                                projeto_nome: m.projeto_nome || 'MOVIMENTA RIO',
-                                modalidade_id: m.modalidade_id || 16,
-                                modalidade_nome: m.modalidade_nome || 'Treinamento Funcional',
-                                nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (loc ? `${loc.nome} (${loc.cidade})` : 'Curicica (Rio de Janeiro)')
-                            };
-                        } else {
-                            const nId = Number(m.nucleo_id);
-                            const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
-                            return {
-                                ...m,
-                                is_evento: false,
-                                projeto_id: m.projeto_id || 3,
-                                projeto_nome: m.projeto_nome || 'ESPORTE SEM PARAR',
-                                modalidade_id: m.modalidade_id || nuc?.modalidade_id || 5,
-                                modalidade_nome: m.modalidade_nome || (nuc?.modalidade_nome) || obterNomeModalidade(m.modalidade_id || nuc?.modalidade_id),
-                                nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (nuc ? `${nuc.nome || nuc.bairro} (${nuc.cidade})` : (m.bairro || 'Núcleo Central (Campos dos Goytacazes)'))
-                            };
-                        }
-                    });
-                } catch(e) {
-                    console.warn('Histórico de matrículas IVEM indisponível no momento:', e);
-                }
+                matriculasEncontradas = [...matsReg, ...matsEv].map(m => {
+                    const isEv = Boolean(m.is_evento || Number(m.projeto_id) === 1 || String(m.projeto_nome || '').toLowerCase().includes('movimenta') || String(m.aplicabilidade || '').toLowerCase().includes('evento'));
+                    if (isEv) {
+                        const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(m.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(m.nucleo_id));
+                        return {
+                            ...m,
+                            is_evento: true,
+                            projeto_id: m.projeto_id || 1,
+                            projeto_nome: m.projeto_nome || 'MOVIMENTA RIO',
+                            modalidade_id: m.modalidade_id || 16,
+                            modalidade_nome: m.modalidade_nome || 'Treinamento Funcional',
+                            nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (loc ? `${loc.nome} (${loc.cidade})` : 'Curicica (Rio de Janeiro)')
+                        };
+                    } else {
+                        const nId = Number(m.nucleo_id);
+                        const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
+                        return {
+                            ...m,
+                            is_evento: false,
+                            projeto_id: m.projeto_id || 3,
+                            projeto_nome: m.projeto_nome || 'ESPORTE SEM PARAR',
+                            modalidade_id: m.modalidade_id || nuc?.modalidade_id || 5,
+                            modalidade_nome: m.modalidade_nome || (nuc?.modalidade_nome) || obterNomeModalidade(m.modalidade_id || nuc?.modalidade_id),
+                            nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (nuc ? `${nuc.nome || nuc.bairro} (${nuc.cidade})` : (m.bairro || 'Núcleo Central (Campos dos Goytacazes)'))
+                        };
+                    }
+                });
 
                 currentMatriculasList = matriculasEncontradas;
 
@@ -2397,20 +2449,27 @@
                 const inputNascNovo = document.getElementById('inputNascNovo');
 
                 if (!nascAluno) {
-                    const dataDigitada = inputNascNovo ? inputNascNovo.value : '';
+                    const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
                     if (!dataDigitada) {
+                        _lastCpfConsultado = cpfNum;
+                        _lastCpfCache = {
+                            dadosAluno,
+                            matriculasEncontradas,
+                            nomeAluno,
+                            temNomeBanco
+                        };
+
                         if (boxDataNasc) boxDataNasc.style.display = 'block';
-                        document.getElementById('btnConsultarCPFText').textContent = 'Confirmar Data e Acessar';
+                        const txtEl = document.getElementById('btnConsultarCPFText');
+                        if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
                         mostrarFeedback('info', 'Participante não localizado no histórico. Por favor, informe a Data de Nascimento para identificarmos as vagas compatíveis.');
                         if (inputNascNovo) inputNascNovo.focus();
-                        document.getElementById('btnConsultarCPF').disabled = false;
                         return; // Interrompe para aguardar a data de nascimento
                     } else {
                         const idadeVal = calcularIdade(dataDigitada);
                         if (idadeVal === null || isNaN(idadeVal) || idadeVal < 0 || idadeVal > 120) {
                             mostrarFeedback('error', 'Por favor, informe uma data de nascimento válida.');
                             if (inputNascNovo) inputNascNovo.focus();
-                            document.getElementById('btnConsultarCPF').disabled = false;
                             return;
                         }
                         nascAluno = dataDigitada;
@@ -2436,7 +2495,9 @@
                 console.error('Erro na consulta:', err);
                 mostrarFeedback('error', 'Falha ao consultar CPF. Tente novamente.');
             } finally {
-                document.getElementById('btnConsultarCPF').disabled = false;
+                _isConsultandoCPF = false;
+                const btnConsultar = document.getElementById('btnConsultarCPF');
+                if (btnConsultar) btnConsultar.disabled = false;
             }
         }
 
@@ -2780,15 +2841,19 @@
             if (window.lucide) lucide.createIcons();
 
             try {
-                const [respProj, respLocais, respNuc] = await Promise.all([
-                    fetch(API.buscarProjetos).then(r => r.json()).catch(() => []),
-                    fetch(API.buscarLocaisEvento).then(r => r.json()).catch(() => []),
-                    fetch(API.buscarNucleos).then(r => r.json()).catch(() => [])
+                const [respProj, respLocais, respNuc] = await Promise.allSettled([
+                    fetchJsonWithTimeout(API.buscarProjetos, {}, 5000),
+                    fetchJsonWithTimeout(API.buscarLocaisEvento, {}, 5000),
+                    fetchJsonWithTimeout(API.buscarNucleos, {}, 5000)
                 ]);
 
-                const projs = Array.isArray(respProj) ? respProj : (respProj?.value || respProj?.data || []);
-                const locais = Array.isArray(respLocais) ? respLocais : (respLocais?.value || respLocais?.data || []);
-                const nucleos = Array.isArray(respNuc) ? respNuc : (respNuc?.value || respNuc?.data || []);
+                const dataProj = (respProj.status === 'fulfilled' && respProj.value) ? respProj.value : [];
+                const dataLocais = (respLocais.status === 'fulfilled' && respLocais.value) ? respLocais.value : [];
+                const dataNuc = (respNuc.status === 'fulfilled' && respNuc.value) ? respNuc.value : [];
+
+                const projs = Array.isArray(dataProj) ? dataProj : (dataProj?.value || dataProj?.data || []);
+                const locais = Array.isArray(dataLocais) ? dataLocais : (dataLocais?.value || dataLocais?.data || []);
+                const nucleos = Array.isArray(dataNuc) ? dataNuc : (dataNuc?.value || dataNuc?.data || []);
 
                 _cacheProjetosIVEM = projs;
                 _cacheLocaisEventoIVEM = locais;
@@ -4386,6 +4451,10 @@
             currentMatriculasList = [];
             currentSelectedProject = null;
             currentFormStep = 1;
+
+            _isConsultandoCPF = false;
+            _lastCpfConsultado = null;
+            _lastCpfCache = null;
 
             const form = document.getElementById('formMatriculaIVEM');
             if (form) form.reset();

@@ -2696,12 +2696,21 @@
                 document.getElementById('hidden_projeto_id').value = projId;
                 document.getElementById('hidden_projeto_nome').value = projNome;
 
-                // Preenche dados do aluno com segurança contra null
-                const nomeAluno = mat.aluno_nome || mat.nome || currentStudentData?.nome || '';
+                const nomeAluno = (mat.aluno_nome || mat.nome || currentStudentData?.nome || '').trim();
                 const cpfAluno = mat.aluno_cpf || mat.cpf || currentStudentData?.cpf || '';
                 const nascAluno = mat.data_nascimento || mat.nascimento || currentStudentData?.data_nascimento || '';
 
-                preencher('mat_nome', nomeAluno);
+                const isNomeNovo = !nomeAluno || nomeAluno.toLowerCase() === 'novo participante';
+                const inputNome = document.getElementById('mat_nome');
+                if (inputNome) {
+                    if (isNomeNovo) {
+                        inputNome.value = '';
+                        inputNome.placeholder = 'Digite seu nome completo (obrigatório)';
+                    } else {
+                        inputNome.value = nomeAluno;
+                        inputNome.placeholder = 'Digite o nome completo';
+                    }
+                }
                 preencher('mat_cpf', formatarCPF(cpfAluno));
                 preencher('mat_nasc', formatarDataInput(nascAluno));
 

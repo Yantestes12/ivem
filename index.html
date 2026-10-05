@@ -1959,7 +1959,7 @@
          ========================================================================== -->
     <script>
         // ── CONTROLE AUTOMÁTICO DE VERSÃO & LIMPEZA DE CACHE ──
-        const APP_BUILD_VERSION = '2026.09.23_ivem_v3_ficha_eventos_oficial';
+        const APP_BUILD_VERSION = '2026.10.05_ivem_v4';
         try {
             const lastVer = localStorage.getItem('ivem_app_version');
             if (lastVer !== APP_BUILD_VERSION) {
@@ -2117,11 +2117,19 @@
         }
 
         async function carregarCachesIVEM() {
+            const fetchWithTimeout = (url, opts = {}, ms = 15000) => {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), ms);
+                return fetch(url, { ...opts, signal: ctrl.signal })
+                    .then(r => r.json())
+                    .catch(() => null)
+                    .finally(() => clearTimeout(timer));
+            };
             try {
                 const [respN, respE, respL] = await Promise.all([
-                    fetch(API.buscarNucleos).then(r => r.json()).catch(() => null),
-                    fetch(API.buscarEspacos).then(r => r.json()).catch(() => null),
-                    fetch(API.buscarLocaisEvento).then(r => r.json()).catch(() => null)
+                    fetchWithTimeout(API.buscarNucleos),
+                    fetchWithTimeout(API.buscarEspacos),
+                    fetchWithTimeout(API.buscarLocaisEvento)
                 ]);
 
                 const eList = Array.isArray(respE) ? respE : (respE?.espacos || respE?.data || []);
@@ -3034,9 +3042,9 @@
 
             try {
                 const [respProj, respLocais, respNuc] = await Promise.allSettled([
-                    fetchJsonWithTimeout(API.buscarProjetos, {}, 5000),
-                    fetchJsonWithTimeout(API.buscarLocaisEvento, {}, 5000),
-                    fetchJsonWithTimeout(API.buscarNucleos, {}, 5000)
+                    fetchJsonWithTimeout(API.buscarProjetos, {}, 15000),
+                    fetchJsonWithTimeout(API.buscarLocaisEvento, {}, 15000),
+                    fetchJsonWithTimeout(API.buscarNucleos, {}, 15000)
                 ]);
 
                 const dataProj = (respProj.status === 'fulfilled' && respProj.value) ? respProj.value : [];

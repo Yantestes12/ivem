@@ -1959,7 +1959,7 @@
          ========================================================================== -->
     <script>
         // ── CONTROLE AUTOMÁTICO DE VERSÃO & LIMPEZA DE CACHE ──
-        const APP_BUILD_VERSION = '2026.10.05_ivem_v4';
+        const APP_BUILD_VERSION = '2026.10.06_ivem_v5';
         try {
             const lastVer = localStorage.getItem('ivem_app_version');
             if (lastVer !== APP_BUILD_VERSION) {
@@ -3595,7 +3595,7 @@
                 const card = document.createElement('div');
                 card.className = 'nucleo-square-tile';
                 card.setAttribute('data-id', n.id);
-                const bairroNome = n.bairro || n.nome || 'Núcleo Central';
+                const bairroNome = n.nome || n.bairro || 'Núcleo Central';
                 const cidadeNome = n.cidade || 'Campos dos Goytacazes';
 
                 card.innerHTML = `

@@ -1959,7 +1959,7 @@
          ========================================================================== -->
     <script>
         // ── CONTROLE AUTOMÁTICO DE VERSÃO & LIMPEZA DE CACHE ──
-        const APP_BUILD_VERSION = '2026.10.06_ivem_v6';
+        const APP_BUILD_VERSION = '2026.10.07_ivem_v7';
         try {
             const lastVer = localStorage.getItem('ivem_app_version');
             if (lastVer !== APP_BUILD_VERSION) {
@@ -1978,7 +1978,7 @@
             buscarMatriculasEventos: 'https://w.ibrase.com.br/webhook/matriculas-eventos-get?instituto=IVEM&t=' + Date.now(),
             buscarLocaisEvento: 'https://w.ibrase.com.br/webhook/locais-evento-get?instituto=IVEM&t=' + Date.now(),
             buscarMatriculaId: 'https://w.ibrase.com.br/webhook/buscarmatricula',
-            enviarMatricula: 'https://w.ibrase.com.br/webhook/matricula',
+            enviarMatricula: 'https://w.ibrase.com.br/webhook/matricula-v2',
             atualizarMatricula: 'https://w.ibrase.com.br/webhook/matriculaatualizar',
             enviarMatriculaEvento: 'https://w.ibrase.com.br/webhook/matriculas-eventos-post'
         };

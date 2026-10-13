@@ -2140,14 +2140,44 @@
                 if (lList.length > 0) _cacheLocaisEventoIVEM = lList;
                 else _cacheLocaisEventoIVEM = [...LOCAIS_EVENTO_CATALOGO_IVEM];
 
+                function resolverEspacoIVEM(n, listaEspacos) {
+                    if (!n) return null;
+                    const fontes = [listaEspacos, _cacheEspacos, (typeof ESPACOS_CATALOGO_IVEM !== 'undefined' ? ESPACOS_CATALOGO_IVEM : null)].filter(arr => Array.isArray(arr) && arr.length > 0);
+
+                    // 1. Prioridade máxima: ID estrito
+                    if (n.espaco_id) {
+                        for (const l of fontes) {
+                            const achou = l.find(e => e && Number(e.id) === Number(n.espaco_id));
+                            if (achou) return achou;
+                        }
+                    }
+                    if (n.bairro_id) {
+                        for (const l of fontes) {
+                            const achou = l.find(e => e && Number(e.id) === Number(n.bairro_id));
+                            if (achou) return achou;
+                        }
+                    }
+                    // 2. Projeto + Nome
+                    if (n.nome) {
+                        const nomeNorm = String(n.nome).trim().toLowerCase();
+                        if (n.projeto_id) {
+                            for (const l of fontes) {
+                                const achou = l.find(e => e && e.projeto_id && Number(e.projeto_id) === Number(n.projeto_id) && e.nome && String(e.nome).trim().toLowerCase() === nomeNorm);
+                                if (achou) return achou;
+                            }
+                        }
+                        for (const l of fontes) {
+                            const achou = l.find(e => e && e.nome && String(e.nome).trim().toLowerCase() === nomeNorm);
+                            if (achou) return achou;
+                        }
+                    }
+                    return null;
+                }
+
                 const nList = Array.isArray(respN) ? respN : (respN?.nucleos || respN?.data || []);
                 if (nList.length > 0) {
                     _cacheNucleos = nList.map(n => {
-                        const espaco = _cacheEspacos.find(e => 
-                            (n.espaco_id && Number(e.id) === Number(n.espaco_id)) ||
-                            (n.bairro_id && Number(e.id) === Number(n.bairro_id)) ||
-                            (e.nome && n.nome && e.nome.trim().toLowerCase() === n.nome.trim().toLowerCase())
-                        );
+                        const espaco = resolverEspacoIVEM(n, _cacheEspacos);
                         const cid = n.cidade || espaco?.cidade || 'Campos dos Goytacazes';
                         const bai = n.bairro || espaco?.bairro || n.nome || 'Centro';
                         const modId = Number(n.modalidade_id || espaco?.modalidade_id) || 5;
@@ -3319,12 +3349,21 @@
             } else {
                 // Regular (Aulas): busca cidades dos núcleos pertencentes ao projeto (Campos dos Goytacazes, etc.)
                 const nucleos = (_cacheNucleos && _cacheNucleos.length > 0) ? _cacheNucleos : NUCLEOS_CATALOGO_IVEM;
+                function resolverEspacoLocal(n) {
+                    if (typeof resolverEspacoIVEM === 'function') return resolverEspacoIVEM(n, _cacheEspacos);
+                    if (n && n.espaco_id) {
+                        const achou = _cacheEspacos.find(e => e && Number(e.id) === Number(n.espaco_id));
+                        if (achou) return achou;
+                    }
+                    if (n && n.bairro_id) {
+                        const achou = _cacheEspacos.find(e => e && Number(e.id) === Number(n.bairro_id));
+                        if (achou) return achou;
+                    }
+                    return _cacheEspacos.find(e => e && e.nome && n && n.nome && String(e.nome).trim().toLowerCase() === String(n.nome).trim().toLowerCase()) || null;
+                }
+
                 nucleos.forEach(n => {
-                    const espaco = _cacheEspacos.find(e => 
-                        (n.espaco_id && Number(e.id) === Number(n.espaco_id)) ||
-                        (n.bairro_id && Number(e.id) === Number(n.bairro_id)) ||
-                        (e.nome && n.nome && e.nome.trim().toLowerCase() === n.nome.trim().toLowerCase())
-                    );
+                    const espaco = resolverEspacoLocal(n);
                     if (!n.cidade && espaco?.cidade) n.cidade = espaco.cidade;
                     if (!n.cidade) n.cidade = 'Campos dos Goytacazes';
                     if (!n.modalidade_id && espaco?.modalidade_id) n.modalidade_id = espaco.modalidade_id;

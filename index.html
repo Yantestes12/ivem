@@ -1278,17 +1278,35 @@
                     </div>
                 </div>
 
-                <!-- CAMPO CONDICIONAL DE DATA DE NASCIMENTO (QUANDO NÃO LOCALIZADO) -->
+                <!-- CAMPO CONDICIONAL DE DADOS DO NOVO PARTICIPANTE -->
                 <div id="boxDataNascNovo" style="display: none; margin-bottom: 14px; animation: fadeIn 0.25s ease;">
-                    <label class="field-label" for="inputNascNovo">Data de Nascimento do Participante: <span class="req" style="color:var(--c-carmim);">*</span></label>
-                    <input 
-                        type="date" 
-                        id="inputNascNovo" 
-                        class="cpf-field-native" 
-                        style="padding: 0 16px; font-size: 15px;"
-                    >
+                    <div style="background: var(--bg-body); border: 1.5px dashed var(--border-pencil-dark); border-radius: var(--radius-input); padding: 14px; margin-bottom: 10px;">
+                        <span style="font-size: 11px; font-weight: 800; color: var(--c-carmim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">
+                            Novo Participante — Identificação Inicial
+                        </span>
+                        <div style="margin-bottom: 10px;">
+                            <label class="field-label" for="inputNomeNovo" style="margin-bottom: 4px; font-size: 13px;">Nome Completo: <span class="req" style="color:var(--c-carmim);">*</span></label>
+                            <input 
+                                type="text" 
+                                id="inputNomeNovo" 
+                                class="cpf-field-native" 
+                                placeholder="Digite seu nome completo oficial"
+                                style="padding: 0 14px; font-size: 14.5px; height: 42px;"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label" for="inputNascNovo" style="margin-bottom: 4px; font-size: 13px;">Data de Nascimento: <span class="req" style="color:var(--c-carmim);">*</span></label>
+                            <input 
+                                type="date" 
+                                id="inputNascNovo" 
+                                class="cpf-field-native" 
+                                style="padding: 0 14px; font-size: 14.5px; height: 42px;"
+                            >
+                            <span id="feedbackIdadeNovo" style="display: none; font-size: 12px; font-weight: 700; margin-top: 4px;"></span>
+                        </div>
+                    </div>
                     <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                        Informe a data de nascimento para filtrar as turmas disponíveis para a sua idade.
+                        Informe seus dados para identificarmos as vagas e projetos compatíveis. A idade mínima é de 6 anos completos.
                     </p>
                 </div>
 
@@ -2203,15 +2221,20 @@
         }
 
         // ── Validação de Padrões Falsos e Sequências de CPF ──
+        // ═══════════════════════════════════════════════════════════════════════
+        // NÚCLEO DE VALIDAÇÕES BLINDADAS E PADRONIZAÇÃO (PADRÃO OFICIAL)
+        // ═══════════════════════════════════════════════════════════════════════
+
+        // 1. Validador Oficial de CPF (Algoritmo Módulo 11 da Receita Federal)
         function validarCPF(cpf) {
             if (!cpf) return false;
             const clean = String(cpf).replace(/\D/g, '');
             if (clean.length !== 11) return false;
-            
+
             // Rejeita sequências de 11 dígitos repetidos (00000000000, 11111111111, ..., 99999999999)
             if (/^(\d)\1{10}$/.test(clean)) return false;
-            
-            // Rejeita sequências óbvias conhecidas
+
+            // Rejeita sequências conhecidas inválidas
             const sequenciasFalsas = [
                 '12345678901', '12345678909', '12345678910', '12345678900',
                 '01234567890', '01234567891', '98765432100', '98765432109',
@@ -2219,7 +2242,158 @@
             ];
             if (sequenciasFalsas.includes(clean)) return false;
 
+            // Cálculo do 1º Dígito Verificador (pesos de 10 a 2)
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(clean.charAt(i), 10) * (10 - i);
+            }
+            let resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(clean.charAt(9), 10)) return false;
+
+            // Cálculo do 2º Dígito Verificador (pesos de 11 a 2)
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(clean.charAt(i), 10) * (11 - i);
+            }
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(clean.charAt(10), 10)) return false;
+
             return true;
+        }
+
+        // 2. Validador Estrito de Telefone / WhatsApp Anti-Padrões Fakes (Anatel / DDD Brasil)
+        function validarTelefone(tel) {
+            if (!tel) return false;
+            const clean = String(tel).replace(/\D/g, '');
+
+            // Telefones válidos no Brasil possuem 10 (fixo) ou 11 (celular) dígitos com DDD
+            if (clean.length !== 10 && clean.length !== 11) return false;
+
+            // Rejeita todos os dígitos idênticos (00000000000, 11111111111, ..., 99999999999)
+            if (/^(\d)\1+$/.test(clean)) return false;
+
+            // DDDs oficiais e válidos no Brasil
+            const ddd = parseInt(clean.substring(0, 2), 10);
+            const dddsValidos = [
+                11, 12, 13, 14, 15, 16, 17, 18, 19, // SP
+                21, 22, 24,                         // RJ
+                27, 28,                             // ES
+                31, 32, 33, 34, 35, 37, 38,         // MG
+                41, 42, 43, 44, 45, 46,             // PR
+                47, 48, 49,                         // SC
+                51, 53, 54, 55,                     // RS
+                61, 62, 64, 63,                     // DF / GO / TO
+                65, 66, 67, 68, 69,                 // MT / MS / RO / AC
+                71, 73, 74, 75, 77, 79,             // BA / SE
+                81, 87, 82, 83, 84, 85, 88, 86, 89, // PE / AL / PB / RN / CE / PI
+                91, 93, 94, 96, 92, 97, 95, 98, 99  // PA / AP / AM / RR / MA
+            ];
+            if (!dddsValidos.includes(ddd)) return false;
+
+            const numero = clean.substring(2);
+
+            // O corpo do número não pode ser todo composto pelo mesmo dígito (ex: 00000000 ou 999999999)
+            if (/^(\d)\1+$/.test(numero)) return false;
+
+            // Celulares (11 dígitos): o 1º dígito após DDD deve ser 9
+            if (clean.length === 11) {
+                if (numero.charAt(0) !== '9') return false;
+                const apos9 = numero.substring(1);
+                // Não pode ser 8 dígitos repetidos após o 9 (ex: 900000000, 999999999)
+                if (/^(\d)\1+$/.test(apos9)) return false;
+                // Não pode ser sequências fakes comuns
+                if (['12345678', '87654321', '01234567', '76543210', '00000000', '99999999'].includes(apos9)) return false;
+            } else {
+                // Fixos (10 dígitos): primeiro dígito entre 2 e 5
+                const prim = parseInt(numero.charAt(0), 10);
+                if (prim < 2 || prim > 5) return false;
+                if (['1234567', '7654321', '0000000'].includes(numero.substring(1))) return false;
+            }
+
+            return true;
+        }
+
+        // 3. Padronização e Validação Avançada de Nomes
+        function padronizarNome(nome) {
+            if (!nome) return '';
+            // Permite letras (com acentos), apóstrofos e hífens. Remove pontuação indesejada e números
+            let limpo = String(nome).replace(/[^a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ'\-\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (!limpo) return '';
+
+            let palavras = limpo.split(' ').filter(p => p.length > 0);
+
+            // Remove palavras consecutivas repetidas (ex: "Yan Yan" -> "Yan", "Silva Silva" -> "Silva")
+            palavras = palavras.filter((w, i) => i === 0 || w.toLowerCase() !== palavras[i - 1].toLowerCase());
+
+            const preposicoes = new Set(['de', 'da', 'do', 'dos', 'das', 'e', 'em', 'del', 'la']);
+
+            return palavras.map((w, idx) => {
+                const lower = w.toLowerCase();
+                if (idx > 0 && preposicoes.has(lower)) {
+                    return lower;
+                }
+                return lower.charAt(0).toUpperCase() + lower.slice(1);
+            }).join(' ');
+        }
+
+        function validarNome(nome) {
+            if (!nome) return { valido: false, erro: 'Por favor, informe o nome completo.' };
+            const padronizado = padronizarNome(nome);
+            const palavras = padronizado.split(' ');
+
+            if (palavras.length < 2) {
+                return { valido: false, erro: 'Informe o nome completo (primeiro nome e ao menos um sobrenome).' };
+            }
+            if (padronizado.length < 5) {
+                return { valido: false, erro: 'O nome informado é muito curto. Verifique a digitação.' };
+            }
+            // Rejeita 3 ou mais caracteres repetidos consecutivos (ex: "Aaaa", "Joooao")
+            if (/([a-zA-Z])\1{2,}/i.test(padronizado)) {
+                return { valido: false, erro: 'O nome contém letras repetidas de forma inválida. Verifique a digitação.' };
+            }
+            // Rejeita palavras com 4 ou mais letras sem nenhuma vogal (spam de teclado)
+            const semVogais = palavras.some(p => p.length >= 4 && !/[aeiouyáàâãéèêíïóôõöúçñ]/i.test(p));
+            if (semVogais) {
+                return { valido: false, erro: 'Nome inválido. Digite um nome real com letras válidas.' };
+            }
+
+            return { valido: true, nome: padronizado };
+        }
+
+        // 4. Cálculo Exato de Idade por Dia, Mês e Ano
+        function calcularIdade(nasc) {
+            if (!nasc) return null;
+            let ano, mes, dia;
+            if (typeof nasc === 'string' && nasc.includes('/')) {
+                const p = nasc.split('/');
+                dia = parseInt(p[0], 10);
+                mes = parseInt(p[1], 10) - 1;
+                ano = parseInt(p[2], 10);
+            } else if (typeof nasc === 'string' && nasc.includes('-')) {
+                const p = nasc.split('-');
+                ano = parseInt(p[0], 10);
+                mes = parseInt(p[1], 10) - 1;
+                dia = parseInt(p[2], 10);
+            } else {
+                const d = new Date(nasc);
+                if (isNaN(d.getTime())) return null;
+                dia = d.getDate();
+                mes = d.getMonth();
+                ano = d.getFullYear();
+            }
+            if (!ano || isNaN(ano) || isNaN(mes) || !dia || isNaN(dia)) return null;
+
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - ano;
+            const m = hoje.getMonth() - mes;
+            if (m < 0 || (m === 0 && hoje.getDate() < dia)) {
+                idade--;
+            }
+            return idade;
         }
 
         // ── Configuração de Entrada e Consulta de CPF ──
@@ -2667,11 +2841,13 @@
 
                 if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
 
-                // Se não há data de nascimento no cadastro (novo participante), solicita antes de entrar no portal
-
-                if (!nascAluno) {
+                // Se não há data de nascimento ou nome no cadastro (novo participante), solicita antes de entrar no portal
+                if (!nascAluno || !temNomeBanco) {
                     const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
-                    if (!dataDigitada) {
+                    const inputNomeNovo = document.getElementById('inputNomeNovo');
+                    const nomeDigitado = inputNomeNovo ? inputNomeNovo.value.trim() : '';
+
+                    if (!dataDigitada || (!temNomeBanco && !nomeDigitado)) {
                         _lastCpfConsultado = cpfNum;
                         _lastCpfCache = {
                             dadosAluno,
@@ -2682,14 +2858,31 @@
 
                         if (boxDataNasc) boxDataNasc.style.display = 'block';
                         const txtEl = document.getElementById('btnConsultarCPFText');
-                        if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
-                        mostrarFeedback('info', 'Participante não localizado no histórico. Por favor, informe a Data de Nascimento para identificarmos as vagas compatíveis.');
-                        if (inputNascNovo) inputNascNovo.focus();
-                        return; // Interrompe para aguardar a data de nascimento
+                        if (txtEl) txtEl.textContent = 'Confirmar Dados e Acessar';
+                        mostrarFeedback('info', 'Participante não localizado no histórico. Por favor, informe seu Nome Completo e Data de Nascimento para identificarmos as vagas compatíveis.');
+                        if (!nomeDigitado && inputNomeNovo) inputNomeNovo.focus();
+                        else if (inputNascNovo) inputNascNovo.focus();
+                        return; // Interrompe aguardando dados
                     } else {
+                        if (!temNomeBanco) {
+                            const valNome = validarNome(nomeDigitado);
+                            if (!valNome.valido) {
+                                mostrarFeedback('error', valNome.erro);
+                                if (inputNomeNovo) inputNomeNovo.focus();
+                                return;
+                            }
+                            nomeAluno = valNome.nome;
+                            if (inputNomeNovo) inputNomeNovo.value = valNome.nome;
+                        }
+
                         const idadeVal = calcularIdade(dataDigitada);
                         if (idadeVal === null || isNaN(idadeVal) || idadeVal < 0 || idadeVal > 120) {
                             mostrarFeedback('error', 'Por favor, informe uma data de nascimento válida.');
+                            if (inputNascNovo) inputNascNovo.focus();
+                            return;
+                        }
+                        if (idadeVal < 6) {
+                            mostrarFeedback('error', 'A idade mínima permitida para matrícula é de 6 anos completos.');
                             if (inputNascNovo) inputNascNovo.focus();
                             return;
                         }
@@ -3721,15 +3914,33 @@
                 if (payload.resp_cpf) {
                     const cleanResp = payload.resp_cpf.replace(/\D/g, '');
                     const blocoResp = document.getElementById('blocoResponsavel');
-                    if (blocoResp && blocoResp.style.display !== 'none' && !validarCPF(cleanResp)) {
-                        alert('Erro: O CPF do responsável legal informado não é válido ou não existe.');
-                        btnSubmit.disabled = false;
-                        btnSubmit.innerHTML = (payload.modo_edicao === 'true' || payload.modo_edicao === true) ? '<i data-lucide="check-circle" style="width:18px;height:18px;"></i> Salvar Alterações' : '<i data-lucide="check-circle" style="width:18px;height:18px;"></i> Concluir Matrícula';
-                        if (window.lucide) lucide.createIcons();
-                        irParaPasso(1);
-                        return;
+                    if (blocoResp && blocoResp.style.display !== 'none') {
+                        if (!validarCPF(cleanResp)) {
+                            alert('Erro: O CPF do responsável legal informado não é válido ou não existe.');
+                            btnSubmit.disabled = false;
+                            btnSubmit.innerHTML = (payload.modo_edicao === 'true' || payload.modo_edicao === true) ? '<i data-lucide="check-circle" style="width:18px;height:18px;"></i> Salvar Alterações' : '<i data-lucide="check-circle" style="width:18px;height:18px;"></i> Concluir Matrícula';
+                            if (window.lucide) lucide.createIcons();
+                            irParaPasso(1);
+                            return;
+                        }
+                        if (cleanResp === payload.cpf) {
+                            alert('Erro: O participante menor de idade não pode ser seu próprio responsável legal.');
+                            btnSubmit.disabled = false;
+                            btnSubmit.innerHTML = (payload.modo_edicao === 'true' || payload.modo_edicao === true) ? '<i data-lucide="check-circle" style="width:18px;height:18px;"></i> Salvar Alterações' : '<i data-lucide="check-circle" style="width:18px;height:18px;"></i> Concluir Matrícula';
+                            if (window.lucide) lucide.createIcons();
+                            irParaPasso(1);
+                            return;
+                        }
                     }
                     payload.resp_cpf = cleanResp;
+                }
+
+                // Saneamento e enriquecimento do WhatsApp do responsável
+                if (payload.resp_whatsapp) {
+                    const cleanRespWhats = payload.resp_whatsapp.replace(/\D/g, '');
+                    payload.resp_whatsapp = cleanRespWhats;
+                    payload.resp_telefone = cleanRespWhats;
+                    payload.telefone_responsavel = cleanRespWhats;
                 }
 
                 payload.origem = 'portal_ivem_oficial';
@@ -3945,12 +4156,13 @@
                     nomeInput?.focus();
                     return false;
                 }
-                const partesNome = nomeVal.split(/\s+/).filter(Boolean);
-                if (partesNome.length < 2) {
-                    alert('Por favor, informe seu nome completo (ao menos primeiro nome e sobrenome).');
+                const valNome = validarNome(nomeVal);
+                if (!valNome.valido) {
+                    alert(valNome.erro);
                     nomeInput?.focus();
                     return false;
                 }
+                nomeInput.value = valNome.nome;
 
                 // 2. Validação da Data de Nascimento e Faixa Etária Oficial do Projeto
                 const nascInput = document.getElementById('mat_nasc');
@@ -3975,9 +4187,9 @@
 
                 // 3. Validação de WhatsApp / Telefone
                 const w = document.getElementById('mat_whatsapp');
-                if (w && w.value && w.value.replace(/\D/g, '').length < 10) {
-                    alert('Por favor, informe um WhatsApp/telefone válido com DDD (mínimo 10 dígitos).');
-                    w.focus();
+                if (!validarTelefone(w?.value)) {
+                    alert('Por favor, informe um número de Telefone / WhatsApp válido com DDD oficial (ex: (22) 99876-5432).\nNúmeros com dígitos repetidos ou padrões inválidos (ex: 2200000000, 999999999) não são permitidos.');
+                    w?.focus();
                     return false;
                 }
 
@@ -4025,16 +4237,33 @@
                 // 6. Validação de Responsável Legal (obrigatório se menor de 18 anos)
                 const blocoResp = document.getElementById('blocoResponsavel');
                 if (blocoResp && blocoResp.style.display !== 'none') {
+                    const respNomeEl = document.getElementById('mat_resp_nome');
+                    const valRespNome = validarNome(respNomeEl?.value);
+                    if (!valRespNome.valido) {
+                        alert('Responsável Legal: ' + valRespNome.erro);
+                        respNomeEl?.focus();
+                        return false;
+                    }
+                    respNomeEl.value = valRespNome.nome;
+
                     const respCpfEl = document.getElementById('mat_resp_cpf');
                     const cleanRespCpf = (respCpfEl?.value || '').replace(/\D/g, '');
                     if (!validarCPF(cleanRespCpf)) {
-                        alert('O CPF do responsável legal informado não é válido ou não existe.\nPor favor, informe um CPF real com 11 dígitos.');
+                        alert('O CPF do responsável legal informado não é válido.\nPor favor, informe um CPF real com 11 dígitos.');
                         respCpfEl?.focus();
                         return false;
                     }
-                    if (!document.getElementById('mat_resp_nome')?.value.trim()) {
-                        alert('Informe o nome completo do responsável legal.');
-                        document.getElementById('mat_resp_nome')?.focus();
+
+                    if (cleanRespCpf === cleanAlunoCpf) {
+                        alert('O participante menor de idade não pode ser seu próprio responsável legal.\nO CPF do responsável deve pertencer ao pai, mãe ou tutor legal.');
+                        respCpfEl?.focus();
+                        return false;
+                    }
+
+                    const respWhatsEl = document.getElementById('mat_resp_whatsapp');
+                    if (!validarTelefone(respWhatsEl?.value)) {
+                        alert('Por favor, informe um Telefone / WhatsApp válido para o responsável legal com DDD (ex: (22) 99876-5432).\nNúmeros com dígitos repetidos ou fictícios não são aceitos.');
+                        respWhatsEl?.focus();
                         return false;
                     }
                 }
@@ -4501,27 +4730,7 @@
             return dStr;
         }
 
-        function calcularIdade(nasc) {
-            if (!nasc) return null;
-            let d;
-            if (nasc.includes('/')) {
-                const p = nasc.split('/');
-                d = new Date(p[2], p[1] - 1, p[0]);
-            } else if (nasc.includes('-')) {
-                const p = nasc.split('-');
-                d = new Date(p[0], p[1] - 1, p[2]);
-            } else {
-                d = new Date(nasc);
-            }
-            if (isNaN(d.getTime())) return null;
-            const hoje = new Date();
-            let idade = hoje.getFullYear() - d.getFullYear();
-            const m = hoje.getMonth() - d.getMonth();
-            if (m < 0 || (m === 0 && hoje.getDate() < d.getDate())) {
-                idade--;
-            }
-            return idade;
-        }
+        // calcularIdade oficial unificado no topo do script
 
         function setupPhoneMask() {
             const phoneInputs = document.querySelectorAll('#mat_whatsapp, #mat_resp_whatsapp, #solicitacao_whatsapp');
@@ -4546,23 +4755,87 @@
             const nascInput = document.getElementById('mat_nasc');
             if (!nascInput) return;
 
+            // Limites de calendário: Mínimo 6 anos e Máximo 115 anos
+            const hoje = new Date();
+            const maxAno = hoje.getFullYear() - 6;
+            const minAno = hoje.getFullYear() - 115;
+            const mStr = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dStr = String(hoje.getDate()).padStart(2, '0');
+            nascInput.max = `${maxAno}-${mStr}-${dStr}`;
+            nascInput.min = `${minAno}-01-01`;
+
+            const inputNascNovo = document.getElementById('inputNascNovo');
+            if (inputNascNovo) {
+                inputNascNovo.max = `${maxAno}-${mStr}-${dStr}`;
+                inputNascNovo.min = `${minAno}-01-01`;
+                inputNascNovo.addEventListener('input', () => {
+                    const fb = document.getElementById('feedbackIdadeNovo');
+                    if (!fb) return;
+                    if (!inputNascNovo.value) { fb.style.display = 'none'; return; }
+                    const id = calcularIdade(inputNascNovo.value);
+                    fb.style.display = 'block';
+                    if (id === null || id < 0) {
+                        fb.style.color = 'var(--c-marrom-verm)';
+                        fb.textContent = 'Data de nascimento inválida.';
+                    } else if (id < 6) {
+                        fb.style.color = 'var(--c-marrom-verm)';
+                        fb.textContent = `Idade: ${id} ano(s). Idade mínima permitida: 6 anos.`;
+                    } else {
+                        fb.style.color = 'var(--c-verde-escuro)';
+                        fb.textContent = `Idade calculada: ${id} anos completos.`;
+                    }
+                });
+            }
+
             const handleNascChange = () => {
                 if (!nascInput.value) {
-                    document.getElementById('blocoResponsavel').style.display = 'none';
+                    const blocoResp = document.getElementById('blocoResponsavel');
+                    if (blocoResp) blocoResp.style.display = 'none';
+                    ['mat_resp_nome', 'mat_resp_cpf', 'mat_resp_whatsapp'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.required = false;
+                    });
+                    const fb = document.getElementById('feedbackIdadeMat');
+                    if (fb) fb.style.display = 'none';
                     return;
                 }
                 const idade = calcularIdade(nascInput.value);
-                if (idade !== null && idade >= 0 && idade <= 120) {
-                    if (currentStudentData) currentStudentData.idade = idade;
-                    const isMenor = idade < 18;
-                    const blocoResp = document.getElementById('blocoResponsavel');
-                    if (blocoResp) blocoResp.style.display = isMenor ? 'block' : 'none';
-                    const respNome = document.getElementById('mat_resp_nome');
-                    const respCpf = document.getElementById('mat_resp_cpf');
-                    if (respNome) respNome.required = isMenor;
-                    if (respCpf) respCpf.required = isMenor;
+                let fb = document.getElementById('feedbackIdadeMat');
+                if (!fb) {
+                    fb = document.createElement('div');
+                    fb.id = 'feedbackIdadeMat';
+                    fb.style.fontSize = '12px';
+                    fb.style.fontWeight = '700';
+                    fb.style.marginTop = '4px';
+                    nascInput.parentNode.appendChild(fb);
                 }
+                fb.style.display = 'block';
+
+                if (idade === null || isNaN(idade) || idade < 0) {
+                    fb.style.color = 'var(--c-marrom-verm)';
+                    fb.textContent = 'Data de nascimento inválida (ano futuro ou incorreto).';
+                    return;
+                }
+
+                if (idade < 6) {
+                    fb.style.color = 'var(--c-marrom-verm)';
+                    fb.textContent = `Idade calculada: ${idade} ano(s). A idade mínima permitida é de 6 anos completos.`;
+                    return;
+                }
+
+                fb.style.color = 'var(--c-verde-escuro)';
+                fb.textContent = `Idade calculada: ${idade} ano(s) completos.`;
+
+                if (currentStudentData) currentStudentData.idade = idade;
+                const isMenor = idade < 18;
+                const blocoResp = document.getElementById('blocoResponsavel');
+                if (blocoResp) blocoResp.style.display = isMenor ? 'block' : 'none';
+                ['mat_resp_nome', 'mat_resp_cpf', 'mat_resp_whatsapp'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.required = isMenor;
+                });
             };
+
             nascInput.addEventListener('change', handleNascChange);
             nascInput.addEventListener('input', handleNascChange);
         }

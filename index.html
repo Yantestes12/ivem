@@ -3555,6 +3555,24 @@
         }
 
         // ── CARREGAR PROJETOS REGULARES E EVENTOS DO INSTITUTO IVEM ──
+        // ── Pré-carregamento Antecipado de Projetos IVEM (0ms de espera ao entrar) ──
+        let _prefetchedProjetos = null;
+        function prefetchProjetos() {
+            if (_prefetchedProjetos) return;
+            const url = API.buscarProjetos;
+            if (!url) return;
+            fetchJsonWithTimeout(url, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            }, 6000).then(data => {
+                if (data) {
+                    const lista = Array.isArray(data) ? (data[0]?.projetos || data) : (data?.projetos || []);
+                    if (lista && lista.length > 0) _prefetchedProjetos = lista;
+                }
+            }).catch(() => {});
+        }
+        try { prefetchProjetos(); } catch(e) {}
+
         async function carregarProjetosIVEM(idade) {
             const containerProjetos = document.getElementById('projectsGridContainer');
             const containerEventos = document.getElementById('eventsGridContainer');
@@ -5361,6 +5379,8 @@
                 }
             }, 1000);
         }
+
+        const carregarProjetosParaAluno = (idade) => carregarProjetosIVEM(idade);
 
         function retornarAoPainelAlunoAposMatricula() {
             if (_timerContadorRetorno) {

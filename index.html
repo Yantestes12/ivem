@@ -1555,7 +1555,7 @@
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label class="field-label" for="mat_resp_whatsapp">WhatsApp do Responsável:</label>
+                                <label class="field-label" for="mat_resp_whatsapp">WhatsApp do Responsável: <span class="req">*</span></label>
                                 <input type="tel" id="mat_resp_whatsapp" name="resp_whatsapp" class="field-input" placeholder="(00) 00000-0000" maxlength="15">
                             </div>
                         </div>
@@ -2464,6 +2464,16 @@
                 });
             }
 
+            const inputNomeNovo = document.getElementById('inputNomeNovo');
+            if (inputNomeNovo) {
+                inputNomeNovo.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (inputNascNovo) inputNascNovo.focus();
+                    }
+                });
+            }
+
             if (inputNascNovo) {
                 inputNascNovo.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
@@ -2485,14 +2495,17 @@
                     _cpfConfirmadoPeloUsuario = raw;
                     if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
 
+                    const inputNome = document.getElementById('inputNomeNovo');
                     const inputNasc = document.getElementById('inputNascNovo');
-                    if (inputNasc && inputNasc.value.trim()) {
+                    if (inputNome && inputNome.value.trim() && inputNasc && inputNasc.value.trim()) {
                         executarConsultaCPF(raw);
                     } else {
                         if (boxDataNasc) boxDataNasc.style.display = 'block';
-                        document.getElementById('btnConsultarCPFText').textContent = 'Confirmar Data e Acessar';
-                        mostrarFeedback('success', 'CPF confirmado! Por favor, informe a Data de Nascimento para identificarmos as vagas.');
-                        if (inputNasc) inputNasc.focus();
+                        const txtEl = document.getElementById('btnConsultarCPFText');
+                        if (txtEl) txtEl.textContent = 'Confirmar Dados e Acessar';
+                        mostrarFeedback('success', 'CPF confirmado! Por favor, informe seu Nome Completo e Data de Nascimento para identificarmos as vagas.');
+                        if (inputNome && !inputNome.value.trim()) inputNome.focus();
+                        else if (inputNasc) inputNasc.focus();
                     }
                 });
             }
@@ -2504,6 +2517,12 @@
                     _lastCpfCache = null;
                     if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
                     if (boxDataNasc) boxDataNasc.style.display = 'none';
+                    const inpNome = document.getElementById('inputNomeNovo');
+                    if (inpNome) inpNome.value = '';
+                    const inpNasc = document.getElementById('inputNascNovo');
+                    if (inpNasc) inpNasc.value = '';
+                    const fbNovo = document.getElementById('feedbackIdadeNovo');
+                    if (fbNovo) fbNovo.style.display = 'none';
                     if (input) {
                         input.focus();
                         input.select();
@@ -2520,8 +2539,13 @@
                     }
                     if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
                     if (boxDataNasc) boxDataNasc.style.display = 'none';
+                    const inpNome = document.getElementById('inputNomeNovo');
+                    if (inpNome) inpNome.value = '';
                     if (inputNascNovo) inputNascNovo.value = '';
-                    document.getElementById('btnConsultarCPFText').textContent = 'Acessar Inscrições';
+                    const fbNovo = document.getElementById('feedbackIdadeNovo');
+                    if (fbNovo) fbNovo.style.display = 'none';
+                    const txtEl = document.getElementById('btnConsultarCPFText');
+                    if (txtEl) txtEl.textContent = 'Consultar CPF';
                     btnClear.style.display = 'none';
                     _cpfConfirmadoPeloUsuario = null;
                     _lastCpfConsultado = null;
@@ -2714,6 +2738,27 @@
 
             // Se o mesmo CPF já foi consultado e o aluno só está confirmando a data de nascimento:
             if (_lastCpfConsultado === cpfNum && _lastCpfCache) {
+                const { dadosAluno, matriculasEncontradas, temNomeBanco } = _lastCpfCache;
+                let nomeFinal = _lastCpfCache.nomeAluno;
+
+                const inputNomeNovo = document.getElementById('inputNomeNovo');
+                const nomeDigitado = inputNomeNovo ? inputNomeNovo.value.trim() : '';
+                if (!temNomeBanco) {
+                    if (!nomeDigitado) {
+                        mostrarFeedback('error', 'Por favor, informe seu Nome Completo.');
+                        if (inputNomeNovo) inputNomeNovo.focus();
+                        return;
+                    }
+                    const valNome = validarNome(nomeDigitado);
+                    if (!valNome.valido) {
+                        mostrarFeedback('error', valNome.erro);
+                        if (inputNomeNovo) inputNomeNovo.focus();
+                        return;
+                    }
+                    nomeFinal = valNome.nome;
+                    if (inputNomeNovo) inputNomeNovo.value = valNome.nome;
+                }
+
                 const inputNascNovo = document.getElementById('inputNascNovo');
                 const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
                 if (!dataDigitada) {
@@ -2727,20 +2772,27 @@
                     if (inputNascNovo) inputNascNovo.focus();
                     return;
                 }
+                if (idadeVal < 6) {
+                    mostrarFeedback('error', 'A idade mínima permitida para matrícula é de 6 anos completos.');
+                    if (inputNascNovo) inputNascNovo.focus();
+                    return;
+                }
 
                 // Prossegue INSTANTANEAMENTE sem refazer consultas na rede!
-                const { dadosAluno, matriculasEncontradas, nomeAluno, temNomeBanco } = _lastCpfCache;
                 currentMatriculasList = matriculasEncontradas;
                 currentStudentData = {
                     cpf: cpfNum,
-                    nome: nomeAluno,
+                    nome: nomeFinal,
                     data_nascimento: dataDigitada,
                     idade: idadeVal,
                     dados_recentes: dadosAluno?.dados_recentes || {},
-                    projetos_inscritos_ids: matriculasEncontradas.map(m => m.projeto_id).filter(Boolean)
+                    projetos_inscritos_ids: matriculasEncontradas.map(m => m.projeto_id).filter(Boolean),
+                    origem_consultada: Boolean(temNomeBanco || matriculasEncontradas.length > 0),
+                    nome_oficial: temNomeBanco ? nomeFinal : null,
+                    nasc_oficial: dataDigitada
                 };
 
-                mostrarFeedback('success', `Data confirmada (${idadeVal} anos)! Redirecionando...`);
+                mostrarFeedback('success', `Dados confirmados (${idadeVal} anos)! Redirecionando...`);
                 setTimeout(() => apresentarPainelDoAluno(), 200);
                 return;
             }
@@ -3935,12 +3987,32 @@
                     payload.resp_cpf = cleanResp;
                 }
 
+                // Saneamento e enriquecimento do WhatsApp do participante
+                if (payload.whatsapp) {
+                    const cleanWhats = payload.whatsapp.replace(/\D/g, '');
+                    payload.whatsapp = cleanWhats;
+                    payload.telefone = cleanWhats;
+                    payload.aluno_whatsapp = cleanWhats;
+                }
+
                 // Saneamento e enriquecimento do WhatsApp do responsável
                 if (payload.resp_whatsapp) {
                     const cleanRespWhats = payload.resp_whatsapp.replace(/\D/g, '');
                     payload.resp_whatsapp = cleanRespWhats;
                     payload.resp_telefone = cleanRespWhats;
                     payload.telefone_responsavel = cleanRespWhats;
+                }
+
+                // Se participante for maior de 18 anos, descarta dados residuais de responsável
+                const blocoResp = document.getElementById('blocoResponsavel');
+                if (!blocoResp || blocoResp.style.display === 'none') {
+                    delete payload.resp_nome;
+                    delete payload.resp_cpf;
+                    delete payload.resp_whatsapp;
+                    delete payload.resp_telefone;
+                    delete payload.telefone_responsavel;
+                    delete payload.resp_parentesco;
+                    delete payload.grau_parentesco;
                 }
 
                 payload.origem = 'portal_ivem_oficial';
@@ -5019,8 +5091,12 @@
             if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
             const boxDataNasc = document.getElementById('boxDataNascNovo');
             if (boxDataNasc) boxDataNasc.style.display = 'none';
+            const inputNomeNovo = document.getElementById('inputNomeNovo');
+            if (inputNomeNovo) inputNomeNovo.value = '';
             const inputNascNovo = document.getElementById('inputNascNovo');
             if (inputNascNovo) inputNascNovo.value = '';
+            const fbNovo = document.getElementById('feedbackIdadeNovo');
+            if (fbNovo) fbNovo.style.display = 'none';
             const btnTxt = document.getElementById('btnConsultarCPFText');
             if (btnTxt) btnTxt.textContent = 'Acessar Inscrições';
 

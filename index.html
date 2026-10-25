@@ -1926,9 +1926,23 @@
                     <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                     <span>Revisar ou Editar Meus Dados</span>
                 </button>
-                <button type="button" class="btn-secondary-clean" id="btnVoltarInicioSucesso">
-                    <span>Concluir e Voltar ao Início</span>
-                </button>
+                
+            <!-- AVISO DE RETORNO AUTOMÁTICO EM 6 SEGUNDOS -->
+            <div id="sucessoAutoReturnNotice" style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 16px; margin: 4px auto 14px auto; max-width: 440px; text-align: center;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #065f46; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg class="spin" style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                    <span>Retornando ao seu painel em <strong id="sucessoContadorSegundos" style="font-size: 16px; color: var(--c-verde-escuro);">6</strong> segundos...</span>
+                </div>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Sua nova ficha já estará listada abaixo e os projetos serão atualizados.</p>
+            </div>
+            <button type="button" class="btn-primary-clean" id="btnIrParaPainelSucesso" style="background: var(--c-verde-escuro); justify-content: center;">
+                <i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i>
+                <span>Ir para Meu Painel Agora</span>
+            </button>
+            <button type="button" class="btn-secondary-clean" id="btnSairInicioSucesso" style="margin-top: 4px;">
+                <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
+                <span>Sair / Trocar Aluno</span>
+            </button>
             </div>
         </section>
 
@@ -1977,7 +1991,7 @@
          ========================================================================== -->
     <script>
         // ── CONTROLE AUTOMÁTICO DE VERSÃO & LIMPEZA DE CACHE ──
-        const APP_BUILD_VERSION = '2026.10.07_ivem_v7';
+        const APP_BUILD_VERSION = '2026.10.25_ivem_telemetria_v1';
         try {
             const lastVer = localStorage.getItem('ivem_app_version');
             if (lastVer !== APP_BUILD_VERSION) {
@@ -1997,10 +2011,250 @@
             buscarLocaisEvento: 'https://w.ibrase.com.br/webhook/locais-evento-get?instituto=IVEM&t=' + Date.now(),
             buscarMatriculaId: 'https://w.ibrase.com.br/webhook/buscarmatricula',
             enviarMatricula: 'https://w.ibrase.com.br/webhook/matricula-v2',
+            enviarTelemetria: 'https://w.ibrase.com.br/webhook/matricula-telemetria',
             atualizarMatricula: 'https://w.ibrase.com.br/webhook/matriculaatualizar',
             enviarMatriculaEvento: 'https://w.ibrase.com.br/webhook/matriculas-eventos-post'
         };
 
+        
+        // ==========================================================================
+        // MÓDULO FORENSE DE TELEMETRIA SILENCIOSA E AUDITORIA ANTI-FRAUDE
+        // (Captura: Toques, IP, ISP, ASN, Hardware, Bateria, Device Fingerprint)
+        // Envio 100% isolado e disparado EXCLUSIVAMENTE após a matrícula ser concluída.
+        // ==========================================================================
+        const TelemetriaTracker = (() => {
+            const _t0 = Date.now();
+            let _t0Formulario = null;
+            const _sessionId = 'SESS-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+            const _toques = [];
+            let _ipGeo = null;
+            let _bateriaInfo = null;
+
+            function gerarDeviceFingerprint() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 200;
+                    canvas.height = 40;
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.textBaseline = 'top';
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#f60';
+                        ctx.fillRect(10, 1, 62, 20);
+                        ctx.fillStyle = '#069';
+                        ctx.fillText('telemetry-security-2026', 2, 15);
+                        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                        ctx.fillText('integra-fingerprint', 4, 17);
+                    }
+                    const str = canvas.toDataURL() + '|' + (screen.width + 'x' + screen.height) + '|' + (navigator.hardwareConcurrency || 0) + '|' + (navigator.deviceMemory || 0);
+                    let hash = 0;
+                    for (let i = 0; i < str.length; i++) {
+                        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                        hash |= 0;
+                    }
+                    return 'FP-' + Math.abs(hash).toString(16).toUpperCase() + '-' + (screen.width * screen.height);
+                } catch(e) {
+                    return 'FP-FALLBACK-' + (screen.width * screen.height);
+                }
+            }
+
+            const _fingerprint = gerarDeviceFingerprint();
+
+            function extrairModeloEDispositivo() {
+                const ua = navigator.userAgent || '';
+                let modelo = 'Genérico';
+                let so = 'Desconhecido';
+
+                if (/Android/i.test(ua)) {
+                    so = 'Android';
+                    const matchM = ua.match(/Android\s+([\d\.]+);\s*([^;\)]+)/i);
+                    if (matchM) {
+                        so = 'Android ' + matchM[1];
+                        modelo = matchM[2].trim();
+                    }
+                } else if (/iPhone/i.test(ua)) {
+                    so = 'iOS (iPhone)';
+                    const matchI = ua.match(/OS\s+([\d_]+)/i);
+                    if (matchI) so = 'iOS ' + matchI[1].replace(/_/g, '.');
+                    modelo = 'Apple iPhone';
+                } else if (/iPad/i.test(ua)) {
+                    so = 'iPadOS';
+                    modelo = 'Apple iPad';
+                } else if (/Windows/i.test(ua)) {
+                    so = 'Windows';
+                    if (/Windows NT 10.0/i.test(ua)) so = 'Windows 10 / 11';
+                    modelo = 'Computador (PC)';
+                } else if (/Macintosh|Mac OS X/i.test(ua)) {
+                    so = 'macOS';
+                    modelo = 'Apple Mac';
+                } else if (/Linux/i.test(ua)) {
+                    so = 'Linux';
+                    modelo = 'Dispositivo Linux';
+                }
+
+                let navegador = 'Outro';
+                if (/Chrome/i.test(ua) && !/Edge|OPR/i.test(ua)) navegador = 'Google Chrome';
+                else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) navegador = 'Apple Safari';
+                else if (/Firefox/i.test(ua)) navegador = 'Mozilla Firefox';
+                else if (/Edg/i.test(ua)) navegador = 'Microsoft Edge';
+
+                return {
+                    modelo: modelo,
+                    sistema_operacional: so,
+                    navegador: navegador,
+                    user_agent: ua,
+                    plataforma: navigator.platform || 'desconhecido',
+                    tipo: (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || /Android|iPhone|iPad/i.test(ua)) ? 'mobile' : 'desktop',
+                    tela: screen.width + 'x' + screen.height + ' (DPR: ' + (window.devicePixelRatio || 1) + ')',
+                    touchscreen: (navigator.maxTouchPoints > 0),
+                    cores_cpu: navigator.hardwareConcurrency || null,
+                    ram_aproximada_gb: navigator.deviceMemory || null,
+                    idioma: navigator.language || 'pt-BR',
+                    fuso_horario: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo'
+                };
+            }
+
+            const _dispositivoInfo = extrairModeloEDispositivo();
+
+            if (navigator.getBattery) {
+                navigator.getBattery().then(b => {
+                    _bateriaInfo = {
+                        nivel_porcentagem: Math.round(b.level * 100),
+                        carregando: b.charging
+                    };
+                }).catch(() => {});
+            }
+
+            try {
+                const ctrlGeo = new AbortController();
+                setTimeout(() => ctrlGeo.abort(), 3500);
+                fetch('https://ipwho.is/?lang=pt-BR', { signal: ctrlGeo.signal })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.success !== false) {
+                            _ipGeo = {
+                                ip: data.ip,
+                                cidade: data.city,
+                                estado: data.region,
+                                estado_sigla: data.region_code,
+                                pais: data.country,
+                                latitude: data.latitude,
+                                longitude: data.longitude,
+                                provedor_isp: data.connection?.isp || null,
+                                asn: data.connection?.asn || null,
+                                tipo_rede_ip: data.connection?.org || null
+                            };
+                        }
+                    })
+                    .catch(() => {});
+            } catch(e) {}
+
+            document.addEventListener('pointerdown', (e) => {
+                if (_toques.length >= 80) return;
+                const el = e.target ? e.target.closest('button, .project-tile, .modalidade-sport-card, .nucleo-box-item, input, select') : null;
+                if (!el) return;
+                
+                const tag = el.tagName.toLowerCase();
+                const cls = (el.className || '').toString().slice(0, 40);
+                const txt = (el.textContent || el.value || '').trim().slice(0, 35);
+                
+                _toques.push({
+                    t: new Date().toISOString().replace('T', ' ').slice(0, 19),
+                    dt_s: Math.round((Date.now() - _t0) / 1000),
+                    ponteiro: e.pointerType || 'touch',
+                    x: Math.round(e.clientX),
+                    y: Math.round(e.clientY),
+                    elem: tag + (cls ? '.' + cls.split(' ')[0] : ''),
+                    txt: txt
+                });
+            }, { passive: true });
+
+            return {
+                registrarInicioFormulario: () => {
+                    if (!_t0Formulario) _t0Formulario = Date.now();
+                },
+                registrarAcao: (tipo, nome, extra = {}) => {
+                    _toques.push({
+                        t: new Date().toISOString().replace('T', ' ').slice(0, 19),
+                        dt_s: Math.round((Date.now() - _t0) / 1000),
+                        acao: tipo,
+                        item: nome,
+                        ...extra
+                    });
+                },
+                enviarTelemetriaPosMatricula: (matriculaId, payload) => {
+                    try {
+                        const tempoTotalSessao = Math.round((Date.now() - _t0) / 1000);
+                        const tempoPreenchimento = _t0Formulario ? Math.round((Date.now() - _t0Formulario) / 1000) : tempoTotalSessao;
+
+                        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+                        const redeConexao = {
+                            tipo_efetivo: conn.effectiveType || 'desconhecido',
+                            downlink_mbps: conn.downlink || null,
+                            rtt_ms: conn.rtt || null
+                        };
+
+                        const dadosForenses = {
+                            device_fingerprint: _fingerprint,
+                            session_id: _sessionId,
+                            ip_e_localizacao_geo: _ipGeo || { nota: 'IP capturado via cabeçalhos do servidor' },
+                            provedor_e_rede: {
+                                isp: _ipGeo?.provedor_isp || 'Identificação no servidor',
+                                asn: _ipGeo?.asn || null,
+                                conexao_browser: redeConexao
+                            },
+                            aparelho: _dispositivoInfo,
+                            bateria_momento_envio: _bateriaInfo || 'Não suportado pelo navegador',
+                            metricas_tempo: {
+                                tempo_total_sessao_segundos: tempoTotalSessao,
+                                tempo_preenchimento_segundos: tempoPreenchimento
+                            },
+                            origem_acesso: {
+                                referrer: document.referrer || 'Acesso Direto',
+                                url_completa: window.location.href,
+                                search_params: window.location.search || ''
+                            },
+                            trilha_de_toques: _toques
+                        };
+
+                        const pacoteFinal = {
+                            instituto: 'IVEM',
+                            matricula_id: String(matriculaId || payload?.id || ''),
+                            aluno_cpf: (payload?.cpf || payload?.aluno_cpf || '').toString().replace(/\D/g, ''),
+                            aluno_nome: payload?.nome || payload?.aluno_nome || 'Não informado',
+                            projeto_id: payload?.projeto_id ? Number(payload.projeto_id) : null,
+                            projeto_nome: payload?.projeto_nome || null,
+                            nucleo_id: payload?.nucleo_id ? Number(payload.nucleo_id) : null,
+                            nucleo_nome: payload?.nucleo_nome || null,
+                            modalidade_id: payload?.modalidade_id ? Number(payload.modalidade_id) : null,
+                            modalidade_nome: payload?.modalidade_nome || null,
+                            dados: dadosForenses
+                        };
+
+                        const endpoint = 'https://w.ibrase.com.br/webhook/matricula-telemetria';
+                        const payloadJson = JSON.stringify(pacoteFinal);
+                        let enviado = false;
+                        if (navigator.sendBeacon) {
+                            try {
+                                enviado = navigator.sendBeacon(endpoint, new Blob([payloadJson], { type: 'application/json' }));
+                            } catch(e) { enviado = false; }
+                        }
+                        if (!enviado) {
+                            fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: payloadJson,
+                                keepalive: true
+                            }).catch(() => {});
+                        }
+                        console.log('[Telemetria] Pacote forense despachado com sucesso para a matrícula #' + matriculaId);
+                    } catch(errTelemetria) {
+                        console.warn('[Telemetria] Falha silenciosa no envio:', errTelemetria);
+                    }
+                }
+            };
+        })();
+    
         // ── CATÁLOGO OFICIAL DO INSTITUTO VIVER EM MOVIMENTO (IVEM - RJ) ──
         const NUCLEOS_CATALOGO_IVEM = [
             { id: 1, projeto_id: 3, modalidade_id: 5, nome: "Núcleo Central", cidade: "Campos dos Goytacazes", bairro: "Centro", espaco_id: 1, ativo: true }
@@ -4135,6 +4389,12 @@
 
                     document.getElementById('sucessoNumeroMatricula').textContent = `Matrícula Oficial: #${numMatricula}`;
 
+                    // Dispara telemetria forense pós-conclusão da matrícula
+                    TelemetriaTracker.enviarTelemetriaPosMatricula(numMatricula, payload);
+
+                    // Inicia contagem regressiva de 6 segundos para retornar ao painel do aluno
+                    iniciarContadorRetornoPainel();
+
                     // Guarda último payload globalmente para edição imediata
                     window._ultimoPayloadMatricula = { ...payload };
 
@@ -5081,6 +5341,60 @@
             document.getElementById('cpfFeedbackBox').style.display = 'none';
         }
 
+        
+        // ── Retorno Inteligente ao Painel do Aluno pós-matrícula (Mantém CPF logado) ──
+        let _timerContadorRetorno = null;
+
+        function iniciarContadorRetornoPainel() {
+            if (_timerContadorRetorno) clearInterval(_timerContadorRetorno);
+            let seg = 6;
+            const elCont = document.getElementById('sucessoContadorSegundos');
+            if (elCont) elCont.textContent = '6';
+
+            _timerContadorRetorno = setInterval(() => {
+                seg--;
+                if (elCont) elCont.textContent = String(seg);
+                if (seg <= 0) {
+                    clearInterval(_timerContadorRetorno);
+                    _timerContadorRetorno = null;
+                    retornarAoPainelAlunoAposMatricula();
+                }
+            }, 1000);
+        }
+
+        function retornarAoPainelAlunoAposMatricula() {
+            if (_timerContadorRetorno) {
+                clearInterval(_timerContadorRetorno);
+                _timerContadorRetorno = null;
+            }
+
+            document.getElementById('paneSucessoFinal').style.display = 'none';
+            document.getElementById('formEnrollmentWrapper').style.display = 'none';
+            const hub = document.getElementById('participantHub');
+            if (hub) hub.style.display = 'flex';
+
+            // Registra o ID do projeto recém-inscrito para desabilitar o botão imediatamente
+            if (window._ultimoPayloadMatricula && window._ultimoPayloadMatricula.projeto_id) {
+                const pId = Number(window._ultimoPayloadMatricula.projeto_id);
+                if (currentStudentData) {
+                    if (!currentStudentData.projetos_inscritos_ids) currentStudentData.projetos_inscritos_ids = [];
+                    if (!currentStudentData.projetos_inscritos_ids.includes(pId)) {
+                        currentStudentData.projetos_inscritos_ids.push(pId);
+                    }
+                }
+            }
+
+            // Re-renderiza o histórico (onde a ficha recém-gerada aparece bonitinho)
+            renderizarMatriculasExistentes();
+
+            // Re-renderiza projetos (o projeto agora estará desabilitado com o badge "Já Inscrito")
+            if (currentStudentData) {
+                carregarProjetosParaAluno(currentStudentData.idade);
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    
         function resetarParaConsulta() {
             document.getElementById('participantHub').style.display = 'none';
             document.getElementById('formEnrollmentWrapper').style.display = 'none';

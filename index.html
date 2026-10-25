@@ -1301,7 +1301,7 @@
                                 id="inputNascNovo" 
                                 class="cpf-field-native" 
                                 style="padding: 0 14px; font-size: 14.5px; height: 42px;"
-                            >
+                             max="2026-12-31" min="1910-01-01">
                             <span id="feedbackIdadeNovo" style="display: none; font-size: 12px; font-weight: 700; margin-top: 4px;"></span>
                         </div>
                     </div>
@@ -1428,7 +1428,7 @@
                     <div class="fields-grid-3">
                         <div class="form-group">
                             <label class="field-label" for="mat_nasc">Data de Nascimento: <span class="req">*</span></label>
-                            <input type="date" id="mat_nasc" name="data_nascimento" class="field-input" required>
+                            <input type="date" id="mat_nasc" name="data_nascimento" class="field-input" required max="2026-12-31" min="1910-01-01">
                         </div>
                         <div class="form-group">
                             <label class="field-label" for="mat_sexo">Gênero / Sexo: <span class="req">*</span></label>
@@ -1557,9 +1557,28 @@
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="field-label" for="mat_resp_whatsapp">WhatsApp do Responsável: <span class="req">*</span></label>
                                 <input type="tel" id="mat_resp_whatsapp" name="resp_whatsapp" class="field-input" placeholder="(00) 00000-0000" maxlength="15">
+                                <label style="display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); cursor: pointer; user-select: none; margin-top: 4px;">
+                                    <input type="checkbox" id="chk_mesmo_whatsapp_resp" style="accent-color: var(--c-verde); width: 14px; height: 14px; cursor: pointer;">
+                                    <span>Usar o mesmo telefone informado acima</span>
+                                </label>
                             </div>
                         </div>
+                    
+                    <!-- Aviso e Contato Adicional para Maiores de 18 Anos -->
+                    <div id="blocoAdultoInfo" style="display: none; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: var(--radius-input); padding: 14px 16px; margin-top: 14px; margin-bottom: 14px;">
+                        <span style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">
+                            Participante Maior de Idade (18+ Anos)
+                        </span>
+                        <p style="font-size: 12.5px; color: #475569; margin: 0 0 10px 0;">
+                            Preenchimento de responsável legal dispensado por maioridade oficial.
+                        </p>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="field-label" for="mat_contato_emergencia">Telefone de Emergência / Familiar <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span>:</label>
+                            <input type="tel" id="mat_contato_emergencia" name="contato_emergencia" class="field-input" placeholder="(00) 00000-0000" maxlength="15">
+                        </div>
                     </div>
+
+</div>
 
                     <!-- Endereço Residencial -->
                     <div class="fields-grid-3" style="margin-top: 10px;">
@@ -5082,7 +5101,22 @@
 
         // calcularIdade oficial unificado no topo do script
 
+        
+        function setupChkMesmoWhatsapp() {
+            const chk = document.getElementById('chk_mesmo_whatsapp_resp');
+            if (!chk) return;
+            chk.addEventListener('change', (e) => {
+                const respWhats = document.getElementById('mat_resp_whatsapp');
+                const alunoWhats = document.getElementById('mat_whatsapp');
+                if (e.target.checked && respWhats && alunoWhats) {
+                    respWhats.value = alunoWhats.value;
+                    respWhats.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+
         function setupPhoneMask() {
+            setupChkMesmoWhatsapp();
             const phoneInputs = document.querySelectorAll('#mat_whatsapp, #mat_resp_whatsapp, #solicitacao_whatsapp');
             phoneInputs.forEach(input => {
                 input.setAttribute('maxlength', '15');
@@ -5101,38 +5135,85 @@
             });
         }
 
+        
+        // ── Higienização Estrita de Data de Nascimento (Impede Anos Futuros) ──
+        function sanitizarDataNascimento(input) {
+            if (!input || !input.value) return true;
+            const v = input.value;
+            const partes = v.split('-');
+            const ano = parseInt(partes[0], 10);
+            const hoje = new Date();
+            const anoAtual = hoje.getFullYear();
+            const mStr = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dStr = String(hoje.getDate()).padStart(2, '0');
+            const hojeStr = `${anoAtual}-${mStr}-${dStr}`;
+
+            if (isNaN(ano) || ano > anoAtual || v > hojeStr) {
+                input.value = '';
+                alert(`Data de nascimento inválida! O ano informado (${ano}) não pode ser posterior ao ano atual (${anoAtual}). Selecione uma data válida.`);
+                setTimeout(() => input.focus(), 50);
+                return false;
+            }
+            if (ano < 1910) {
+                input.value = '';
+                alert('Data de nascimento inválida! O ano informado não pode ser anterior a 1910.');
+                setTimeout(() => input.focus(), 50);
+                return false;
+            }
+            return true;
+        }
+
         function setupNascimentoListener() {
             const nascInput = document.getElementById('mat_nasc');
             if (!nascInput) return;
 
-            // Limites de calendário: Mínimo 6 anos e Máximo 115 anos
+            // Limites de calendário: Data máxima = HOJE (ano atual) e Mínimo 115 anos
             const hoje = new Date();
-            const maxAno = hoje.getFullYear() - 6;
-            const minAno = hoje.getFullYear() - 115;
+            const anoAtual = hoje.getFullYear();
             const mStr = String(hoje.getMonth() + 1).padStart(2, '0');
             const dStr = String(hoje.getDate()).padStart(2, '0');
-            nascInput.max = `${maxAno}-${mStr}-${dStr}`;
-            nascInput.min = `${minAno}-01-01`;
+            const hojeStr = `${anoAtual}-${mStr}-${dStr}`;
+            const minAnoStr = `${anoAtual - 115}-01-01`;
+
+            nascInput.max = hojeStr;
+            nascInput.min = minAnoStr;
+
+            nascInput.addEventListener('change', () => sanitizarDataNascimento(nascInput));
+            nascInput.addEventListener('blur', () => sanitizarDataNascimento(nascInput));
 
             const inputNascNovo = document.getElementById('inputNascNovo');
             if (inputNascNovo) {
-                inputNascNovo.max = `${maxAno}-${mStr}-${dStr}`;
-                inputNascNovo.min = `${minAno}-01-01`;
+                inputNascNovo.max = hojeStr;
+                inputNascNovo.min = minAnoStr;
+
+                inputNascNovo.addEventListener('change', () => sanitizarDataNascimento(inputNascNovo));
+                inputNascNovo.addEventListener('blur', () => sanitizarDataNascimento(inputNascNovo));
+
                 inputNascNovo.addEventListener('input', () => {
                     const fb = document.getElementById('feedbackIdadeNovo');
                     if (!fb) return;
                     if (!inputNascNovo.value) { fb.style.display = 'none'; return; }
+                    
+                    const partes = inputNascNovo.value.split('-');
+                    if (parseInt(partes[0], 10) > anoAtual) {
+                        sanitizarDataNascimento(inputNascNovo);
+                        return;
+                    }
+
                     const id = calcularIdade(inputNascNovo.value);
                     fb.style.display = 'block';
                     if (id === null || id < 0) {
                         fb.style.color = 'var(--c-marrom-verm)';
-                        fb.textContent = 'Data de nascimento inválida.';
+                        fb.textContent = 'Data de nascimento inválida (ano futuro).';
                     } else if (id < 6) {
                         fb.style.color = 'var(--c-marrom-verm)';
                         fb.textContent = `Idade: ${id} ano(s). Idade mínima permitida: 6 anos.`;
+                    } else if (id < 18) {
+                        fb.style.color = 'var(--c-verde-escuro)';
+                        fb.textContent = `Idade: ${id} anos (Menor de idade — Requer dados do Responsável Legal).`;
                     } else {
                         fb.style.color = 'var(--c-verde-escuro)';
-                        fb.textContent = `Idade calculada: ${id} anos completos.`;
+                        fb.textContent = `Idade: ${id} anos (Maior de idade).`;
                     }
                 });
             }
@@ -5180,6 +5261,8 @@
                 const isMenor = idade < 18;
                 const blocoResp = document.getElementById('blocoResponsavel');
                 if (blocoResp) blocoResp.style.display = isMenor ? 'block' : 'none';
+                const blocoAdulto = document.getElementById('blocoAdultoInfo');
+                if (blocoAdulto) blocoAdulto.style.display = isMenor ? 'none' : 'block';
                 ['mat_resp_nome', 'mat_resp_cpf', 'mat_resp_whatsapp'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.required = isMenor;

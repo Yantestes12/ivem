@@ -1278,35 +1278,20 @@
                     </div>
                 </div>
 
-                <!-- CAMPO CONDICIONAL DE DADOS DO NOVO PARTICIPANTE -->
+                <!-- CAMPO CONDICIONAL DE DATA DE NASCIMENTO (QUANDO NÃO LOCALIZADO) -->
                 <div id="boxDataNascNovo" style="display: none; margin-bottom: 14px; animation: fadeIn 0.25s ease;">
-                    <div style="background: var(--bg-body); border: 1.5px dashed var(--border-pencil-dark); border-radius: var(--radius-input); padding: 14px; margin-bottom: 10px;">
-                        <span style="font-size: 11px; font-weight: 800; color: var(--c-carmim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">
-                            Novo Participante — Identificação Inicial
-                        </span>
-                        <div style="margin-bottom: 10px;">
-                            <label class="field-label" for="inputNomeNovo" style="margin-bottom: 4px; font-size: 13px;">Nome Completo: <span class="req" style="color:var(--c-carmim);">*</span></label>
-                            <input 
-                                type="text" 
-                                id="inputNomeNovo" 
-                                class="cpf-field-native" 
-                                placeholder="Digite seu nome completo oficial"
-                                style="padding: 0 14px; font-size: 14.5px; height: 42px;"
-                            >
-                        </div>
-                        <div>
-                            <label class="field-label" for="inputNascNovo" style="margin-bottom: 4px; font-size: 13px;">Data de Nascimento: <span class="req" style="color:var(--c-carmim);">*</span></label>
-                            <input 
-                                type="date" 
-                                id="inputNascNovo" 
-                                class="cpf-field-native" 
-                                style="padding: 0 14px; font-size: 14.5px; height: 42px;"
-                             max="2026-12-31" min="1910-01-01">
-                            <span id="feedbackIdadeNovo" style="display: none; font-size: 12px; font-weight: 700; margin-top: 4px;"></span>
-                        </div>
-                    </div>
+                    <label class="field-label" for="inputNascNovo">Data de Nascimento do Participante: <span class="req">*</span></label>
+                    <input 
+                        type="date" 
+                        id="inputNascNovo" 
+                        class="cpf-field-native" 
+                        style="padding: 0 16px; font-size: 15px;"
+                        max="2026-12-31" 
+                        min="1910-01-01"
+                    >
+                    <div id="feedbackIdadeNovo" style="display: none; font-size: 12px; font-weight: 700; margin-top: 4px;"></div>
                     <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                        Informe seus dados para identificarmos as vagas e projetos compatíveis. A idade mínima é de 6 anos completos.
+                        Informe a data de nascimento para filtrar as turmas disponíveis para a sua idade. A idade mínima é de 6 anos completos.
                     </p>
                 </div>
 
@@ -2493,12 +2478,7 @@
             }
         }
 
-        // ── Validação de Padrões Falsos e Sequências de CPF ──
-        // ═══════════════════════════════════════════════════════════════════════
-        // NÚCLEO DE VALIDAÇÕES BLINDADAS E PADRONIZAÇÃO (PADRÃO OFICIAL)
-        // ═══════════════════════════════════════════════════════════════════════
-
-        // 1. Validador Oficial de CPF (Algoritmo Módulo 11 da Receita Federal)
+        // ── Validação de Padrões Falsos e Sequências de CPF (libera confirmação visual para não localizados) ──
         function validarCPF(cpf) {
             if (!cpf) return false;
             const clean = String(cpf).replace(/\D/g, '');
@@ -2507,31 +2487,13 @@
             // Rejeita sequências de 11 dígitos repetidos (00000000000, 11111111111, ..., 99999999999)
             if (/^(\d)\1{10}$/.test(clean)) return false;
 
-            // Rejeita sequências conhecidas inválidas
+            // Rejeita sequências óbvias conhecidas
             const sequenciasFalsas = [
                 '12345678901', '12345678909', '12345678910', '12345678900',
                 '01234567890', '01234567891', '98765432100', '98765432109',
                 '00000000191'
             ];
             if (sequenciasFalsas.includes(clean)) return false;
-
-            // Cálculo do 1º Dígito Verificador (pesos de 10 a 2)
-            let soma = 0;
-            for (let i = 0; i < 9; i++) {
-                soma += parseInt(clean.charAt(i), 10) * (10 - i);
-            }
-            let resto = (soma * 10) % 11;
-            if (resto === 10 || resto === 11) resto = 0;
-            if (resto !== parseInt(clean.charAt(9), 10)) return false;
-
-            // Cálculo do 2º Dígito Verificador (pesos de 11 a 2)
-            soma = 0;
-            for (let i = 0; i < 10; i++) {
-                soma += parseInt(clean.charAt(i), 10) * (11 - i);
-            }
-            resto = (soma * 10) % 11;
-            if (resto === 10 || resto === 11) resto = 0;
-            if (resto !== parseInt(clean.charAt(10), 10)) return false;
 
             return true;
         }
@@ -2677,6 +2639,7 @@
             const boxConfirmaCPF = document.getElementById('boxConfirmaCPF');
             const boxDataNasc = document.getElementById('boxDataNascNovo');
             const inputNascNovo = document.getElementById('inputNascNovo');
+            const respCpf = document.getElementById('mat_resp_cpf');
             const btnConfirmarSim = document.getElementById('btnConfirmarCPFSim');
             const btnCorrigirNao = document.getElementById('btnCorrigirCPFNao');
 
@@ -2696,7 +2659,10 @@
                         if (boxDataNasc && boxDataNasc.style.display !== 'none') {
                             boxDataNasc.style.display = 'none';
                             if (inputNascNovo) inputNascNovo.value = '';
-                            document.getElementById('btnConsultarCPFText').textContent = 'Acessar Inscrições';
+                            const fbNovo = document.getElementById('feedbackIdadeNovo');
+                            if (fbNovo) fbNovo.style.display = 'none';
+                            const txtEl = document.getElementById('btnConsultarCPFText');
+                            if (txtEl) txtEl.textContent = 'Consultar CPF';
                         }
                         if (v.length === 0) esconderFeedback();
                     }
@@ -2737,16 +2703,6 @@
                 });
             }
 
-            const inputNomeNovo = document.getElementById('inputNomeNovo');
-            if (inputNomeNovo) {
-                inputNomeNovo.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (inputNascNovo) inputNascNovo.focus();
-                    }
-                });
-            }
-
             if (inputNascNovo) {
                 inputNascNovo.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
@@ -2767,19 +2723,11 @@
                     }
                     _cpfConfirmadoPeloUsuario = raw;
                     if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
-
-                    const inputNome = document.getElementById('inputNomeNovo');
-                    const inputNasc = document.getElementById('inputNascNovo');
-                    if (inputNome && inputNome.value.trim() && inputNasc && inputNasc.value.trim()) {
-                        executarConsultaCPF(raw);
-                    } else {
-                        if (boxDataNasc) boxDataNasc.style.display = 'block';
-                        const txtEl = document.getElementById('btnConsultarCPFText');
-                        if (txtEl) txtEl.textContent = 'Confirmar Dados e Acessar';
-                        mostrarFeedback('success', 'CPF confirmado! Por favor, informe seu Nome Completo e Data de Nascimento para identificarmos as vagas.');
-                        if (inputNome && !inputNome.value.trim()) inputNome.focus();
-                        else if (inputNasc) inputNasc.focus();
-                    }
+                    if (boxDataNasc) boxDataNasc.style.display = 'block';
+                    const txtEl = document.getElementById('btnConsultarCPFText');
+                    if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
+                    mostrarFeedback('success', 'CPF confirmado! Por favor, informe a Data de Nascimento para identificarmos as vagas.');
+                    if (inputNascNovo) inputNascNovo.focus();
                 });
             }
 
@@ -2790,12 +2738,11 @@
                     _lastCpfCache = null;
                     if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
                     if (boxDataNasc) boxDataNasc.style.display = 'none';
-                    const inpNome = document.getElementById('inputNomeNovo');
-                    if (inpNome) inpNome.value = '';
-                    const inpNasc = document.getElementById('inputNascNovo');
-                    if (inpNasc) inpNasc.value = '';
+                    if (inputNascNovo) inputNascNovo.value = '';
                     const fbNovo = document.getElementById('feedbackIdadeNovo');
                     if (fbNovo) fbNovo.style.display = 'none';
+                    const txtEl = document.getElementById('btnConsultarCPFText');
+                    if (txtEl) txtEl.textContent = 'Consultar CPF';
                     if (input) {
                         input.focus();
                         input.select();
@@ -2804,49 +2751,6 @@
                 });
             }
 
-            if (btnClear) {
-                btnClear.addEventListener('click', () => {
-                    if (input) {
-                        input.value = '';
-                        input.focus();
-                    }
-                    if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
-                    if (boxDataNasc) boxDataNasc.style.display = 'none';
-                    const inpNome = document.getElementById('inputNomeNovo');
-                    if (inpNome) inpNome.value = '';
-                    if (inputNascNovo) inputNascNovo.value = '';
-                    const fbNovo = document.getElementById('feedbackIdadeNovo');
-                    if (fbNovo) fbNovo.style.display = 'none';
-                    const txtEl = document.getElementById('btnConsultarCPFText');
-                    if (txtEl) txtEl.textContent = 'Consultar CPF';
-                    btnClear.style.display = 'none';
-                    _cpfConfirmadoPeloUsuario = null;
-                    _lastCpfConsultado = null;
-                    _lastCpfCache = null;
-                    esconderFeedback();
-                });
-            }
-
-            if (btnConsultar) {
-                btnConsultar.addEventListener('click', () => {
-                    if (!input) return;
-                    const raw = input.value.replace(/\D/g, '');
-                    if (raw.length !== 11) {
-                        mostrarFeedback('error', 'Digite um CPF completo com 11 dígitos.');
-                        input.focus();
-                        return;
-                    }
-                    if (!validarCPF(raw)) {
-                        mostrarFeedback('error', 'Este CPF não é válido ou não existe. Verifique os números digitados.');
-                        input.focus();
-                        return;
-                    }
-                    executarConsultaCPF(raw);
-                });
-            }
-
-            // Configuração do CPF do Responsável Legal (Auto-máscara e Consulta no Hub)
-            const respCpf = document.getElementById('mat_resp_cpf');
             if (respCpf) {
                 respCpf.setAttribute('maxlength', '14');
                 respCpf.addEventListener('input', (e) => {
@@ -2868,53 +2772,55 @@
                             return;
                         }
                         clearTimeout(respCpf._timer);
-                        respCpf._timer = setTimeout(() => consultarCPFResponsavel(raw), 250);
+                        respCpf._timer = setTimeout(() => consultarCPFResponsavel(raw), 300);
                     } else if (statusEl) {
                         statusEl.style.display = 'none';
                         statusEl.textContent = '';
                     }
                 });
+            }
 
-                respCpf.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const raw = respCpf.value.replace(/\D/g, '');
-                        if (raw.length === 11 && validarCPF(raw)) consultarCPFResponsavel(raw);
+            if (btnClear) {
+                btnClear.addEventListener('click', () => {
+                    if (input) {
+                        input.value = '';
+                        input.focus();
                     }
-                });
-
-                respCpf.addEventListener('blur', () => {
-                    const raw = respCpf.value.replace(/\D/g, '');
-                    if (raw.length === 11 && validarCPF(raw)) consultarCPFResponsavel(raw);
+                    if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
+                    if (boxDataNasc) boxDataNasc.style.display = 'none';
+                    if (inputNascNovo) inputNascNovo.value = '';
+                    const fbNovo = document.getElementById('feedbackIdadeNovo');
+                    if (fbNovo) fbNovo.style.display = 'none';
+                    const txtEl = document.getElementById('btnConsultarCPFText');
+                    if (txtEl) txtEl.textContent = 'Consultar CPF';
+                    btnClear.style.display = 'none';
+                    esconderFeedback();
                 });
             }
 
-            document.getElementById('btnTrocarCPF')?.addEventListener('click', resetarParaConsulta);
-            document.getElementById('btnVoltarInicioSucesso')?.addEventListener('click', () => {
-                document.getElementById('paneSucessoFinal').style.display = 'none';
-                if (currentStudentData && currentStudentData.cpf) {
-                    apresentarPainelDoAluno();
-                } else {
-                    resetarParaConsulta();
-                }
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            if (btnConsultar) {
+                btnConsultar.addEventListener('click', () => {
+                    if (!input) return;
+                    const raw = input.value.replace(/\D/g, '');
+                    if (raw.length !== 11) {
+                        mostrarFeedback('error', 'Digite um CPF válido com 11 dígitos.');
+                        input.focus();
+                        return;
+                    }
+                    if (!validarCPF(raw)) {
+                        mostrarFeedback('error', 'Este CPF não é válido ou não existe. Verifique os números digitados.');
+                        return;
+                    }
+                    executarConsultaCPF(raw);
+                });
+            }
 
-            document.getElementById('btnCancelarInscricao')?.addEventListener('click', () => {
-                document.getElementById('formEnrollmentWrapper').style.display = 'none';
-                document.getElementById('bannerModoEdicao').style.display = 'none';
-                document.getElementById('hidden_modo_edicao').value = 'false';
-
-                if (currentStudentData && currentStudentData.cpf) {
-                    apresentarPainelDoAluno();
-                } else {
-                    resetarParaConsulta();
-                }
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            const btnTrocar = document.getElementById('btnTrocarCPF');
+            if (btnTrocar) btnTrocar.addEventListener('click', resetarParaConsulta);
+            const btnVoltar = document.getElementById('btnVoltarInicioSucesso');
+            if (btnVoltar) btnVoltar.addEventListener('click', resetarParaConsulta);
         }
 
-        // ── Consulta Automática do CPF do Responsável Legal (Hub / Receita Federal) ──
         async function consultarCPFResponsavel(cpfNum) {
             const statusEl = document.getElementById('respCpfStatus');
             const nomeInput = document.getElementById('mat_resp_nome');
@@ -3001,7 +2907,7 @@
         async function executarConsultaCPF(cpfNum) {
             if (_isConsultandoCPF) return;
 
-            // Validação estrita matemática: bloqueia imediatamente CPFs falsos / sequências repetidas
+            // Validação de padrões falsos e sequências repetidas
             if (!validarCPF(cpfNum)) {
                 mostrarFeedback('error', 'Este CPF não é válido ou não existe. Verifique os números digitados.');
                 const input = document.getElementById('inputCPF');
@@ -3011,27 +2917,6 @@
 
             // Se o mesmo CPF já foi consultado e o aluno só está confirmando a data de nascimento:
             if (_lastCpfConsultado === cpfNum && _lastCpfCache) {
-                const { dadosAluno, matriculasEncontradas, temNomeBanco } = _lastCpfCache;
-                let nomeFinal = _lastCpfCache.nomeAluno;
-
-                const inputNomeNovo = document.getElementById('inputNomeNovo');
-                const nomeDigitado = inputNomeNovo ? inputNomeNovo.value.trim() : '';
-                if (!temNomeBanco) {
-                    if (!nomeDigitado) {
-                        mostrarFeedback('error', 'Por favor, informe seu Nome Completo.');
-                        if (inputNomeNovo) inputNomeNovo.focus();
-                        return;
-                    }
-                    const valNome = validarNome(nomeDigitado);
-                    if (!valNome.valido) {
-                        mostrarFeedback('error', valNome.erro);
-                        if (inputNomeNovo) inputNomeNovo.focus();
-                        return;
-                    }
-                    nomeFinal = valNome.nome;
-                    if (inputNomeNovo) inputNomeNovo.value = valNome.nome;
-                }
-
                 const inputNascNovo = document.getElementById('inputNascNovo');
                 const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
                 if (!dataDigitada) {
@@ -3052,84 +2937,90 @@
                 }
 
                 // Prossegue INSTANTANEAMENTE sem refazer consultas na rede!
+                const { dadosAluno, matriculasEncontradas, nomeAluno, temNomeBanco } = _lastCpfCache;
                 currentMatriculasList = matriculasEncontradas;
                 currentStudentData = {
                     cpf: cpfNum,
-                    nome: nomeFinal,
+                    nome: nomeAluno,
                     data_nascimento: dataDigitada,
                     idade: idadeVal,
                     dados_recentes: dadosAluno?.dados_recentes || {},
-                    projetos_inscritos_ids: matriculasEncontradas.map(m => m.projeto_id).filter(Boolean),
+                    projetos_inscritos_ids: dadosAluno?.projetos_inscritos_ids || matriculasEncontradas.map(m => m.projeto_id).filter(Boolean),
                     origem_consultada: Boolean(temNomeBanco || matriculasEncontradas.length > 0),
-                    nome_oficial: temNomeBanco ? nomeFinal : null,
+                    nome_oficial: temNomeBanco ? nomeAluno : null,
                     nasc_oficial: dataDigitada
                 };
 
-                mostrarFeedback('success', `Dados confirmados (${idadeVal} anos)! Redirecionando...`);
+                mostrarFeedback('success', `Data confirmada (${idadeVal} anos)! Redirecionando...`);
                 setTimeout(() => apresentarPainelDoAluno(), 200);
                 return;
             }
 
             _isConsultandoCPF = true;
-            mostrarFeedback('loading', 'Consultando CPF e inscrições oficiais na IVEM...');
+            mostrarFeedback('loading', 'Consultando CPF e matrículas ativas...');
             const btnConsultar = document.getElementById('btnConsultarCPF');
             if (btnConsultar) btnConsultar.disabled = true;
 
             try {
                 const urlCPF = `${API.consultarCPF}?cpf=${encodeURIComponent(cpfNum)}&instituicao=IVEM&instituto=IVEM`;
-                const urlReg = `${API.buscarMatriculas}&cpf=${encodeURIComponent(cpfNum)}`;
-                const urlEv = `${API.buscarMatriculasEventos}&cpf=${encodeURIComponent(cpfNum)}`;
+                const urlMat = `${API.buscarMatriculas}&cpf=${encodeURIComponent(cpfNum)}`;
 
-                // Consultas paralelas blindadas contra travamento (timeout defensivo de 5s)
-                const [resCPF, resReg, resEv] = await Promise.allSettled([
-                    fetchJsonWithTimeout(urlCPF, {}, 5000),
-                    fetchJsonWithTimeout(urlReg, {}, 5000),
-                    fetchJsonWithTimeout(urlEv, {}, 5000)
-                ]);
+                // Busca de matrículas ativas em paralelo (sem travar a liberação do aluno)
+                const promMat = fetchJsonWithTimeout(urlMat, {}, 4000);
+
+                // Consulta oficial na Receita Federal
+                const resCPF = await fetchJsonWithTimeout(urlCPF, {}, 4000);
+
+                // Se as matrículas já chegaram, aproveita imediatamente; senão atualiza em segundo plano
+                let resMat = null;
+                try {
+                    resMat = await Promise.race([
+                        promMat,
+                        new Promise(resolve => setTimeout(() => resolve(null), 800))
+                    ]);
+                } catch(e) {}
+
+                // Continua ouvindo as matrículas em background se demorarem mais que 800ms
+                if (!resMat) {
+                    promMat.then(dataM => {
+                        if (dataM) {
+                            const lista = Array.isArray(dataM) ? dataM : (dataM?.data || dataM?.value || []);
+                            const filtradas = lista.filter(m => {
+                                const mCpf = String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '');
+                                return mCpf === cpfNum;
+                            });
+                            if (filtradas.length > 0) {
+                                currentMatriculasList = filtradas;
+                                if (currentStudentData) {
+                                    currentStudentData.projetos_inscritos_ids = filtradas.map(m => m.projeto_id).filter(Boolean);
+                                }
+                                renderizarMatriculasExistentes();
+                                if (typeof carregarProjetosParaAluno === 'function' && currentStudentData) {
+                                    carregarProjetosParaAluno(currentStudentData.idade);
+                                }
+                            }
+                        }
+                    }).catch(() => {});
+                }
 
                 let dadosAluno = null;
-                if (resCPF.status === 'fulfilled' && resCPF.value) {
-                    const json = resCPF.value;
+                if (resCPF) {
+                    const json = resCPF;
                     const item = Array.isArray(json) ? json[0] : json;
                     dadosAluno = item?.result || item?.dados || item;
+                    if (item?.projetos_inscritos_ids) dadosAluno.projetos_inscritos_ids = item.projetos_inscritos_ids;
+                    if (item?.dados_recentes) dadosAluno.dados_recentes = item.dados_recentes;
                 }
 
                 let matriculasEncontradas = [];
-                const dataReg = (resReg.status === 'fulfilled' && resReg.value) ? resReg.value : [];
-                const dataEv = (resEv.status === 'fulfilled' && resEv.value) ? resEv.value : [];
-                const listaReg = Array.isArray(dataReg) ? dataReg : (dataReg?.data || dataReg?.value || []);
-                const listaEv = Array.isArray(dataEv) ? dataEv : (dataEv?.data || dataEv?.value || []);
-
-                const matsReg = listaReg.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
-                const matsEv = listaEv.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfNum);
-
-                matriculasEncontradas = [...matsReg, ...matsEv].map(m => {
-                    const isEv = Boolean(m.is_evento || Number(m.projeto_id) === 1 || String(m.projeto_nome || '').toLowerCase().includes('movimenta') || String(m.aplicabilidade || '').toLowerCase().includes('evento'));
-                    if (isEv) {
-                        const loc = _cacheLocaisEventoIVEM.find(l => Number(l.id) === Number(m.nucleo_id)) || LOCAIS_EVENTO_CATALOGO_IVEM.find(l => Number(l.id) === Number(m.nucleo_id));
-                        return {
-                            ...m,
-                            is_evento: true,
-                            projeto_id: m.projeto_id || 1,
-                            projeto_nome: m.projeto_nome || 'MOVIMENTA RIO',
-                            modalidade_id: m.modalidade_id || 16,
-                            modalidade_nome: m.modalidade_nome || 'Treinamento Funcional',
-                            nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (loc ? `${loc.nome} (${loc.cidade})` : 'Curicica (Rio de Janeiro)')
-                        };
-                    } else {
-                        const nId = Number(m.nucleo_id);
-                        const nuc = _cacheNucleos.find(c => Number(c.id) === nId) || NUCLEOS_CATALOGO_IVEM.find(c => Number(c.id) === nId);
-                        return {
-                            ...m,
-                            is_evento: false,
-                            projeto_id: m.projeto_id || 3,
-                            projeto_nome: m.projeto_nome || 'ESPORTE SEM PARAR',
-                            modalidade_id: m.modalidade_id || nuc?.modalidade_id || 5,
-                            modalidade_nome: m.modalidade_nome || (nuc?.modalidade_nome) || obterNomeModalidade(m.modalidade_id || nuc?.modalidade_id),
-                            nucleo_nome: (m.nucleo_nome && m.nucleo_nome !== m.bairro) ? m.nucleo_nome : (nuc ? `${nuc.nome || nuc.bairro} (${nuc.cidade})` : (m.bairro || 'Núcleo Central (Campos dos Goytacazes)'))
-                        };
-                    }
-                });
+                if (resMat) {
+                    const dataM = resMat;
+                    const lista = Array.isArray(dataM) ? dataM : (dataM?.data || dataM?.value || []);
+                    matriculasEncontradas = lista.filter(m => {
+                        const mCpf = String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '');
+                        return mCpf === cpfNum;
+                    });
+                }
 
                 currentMatriculasList = matriculasEncontradas;
 
@@ -3166,13 +3057,11 @@
 
                 if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
 
-                // Se não há data de nascimento ou nome no cadastro (novo participante), solicita antes de entrar no portal
-                if (!nascAluno || !temNomeBanco) {
+                // Se não há data de nascimento no cadastro (novo participante), solicita antes de entrar no portal
+                if (!nascAluno) {
                     const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
-                    const inputNomeNovo = document.getElementById('inputNomeNovo');
-                    const nomeDigitado = inputNomeNovo ? inputNomeNovo.value.trim() : '';
 
-                    if (!dataDigitada || (!temNomeBanco && !nomeDigitado)) {
+                    if (!dataDigitada) {
                         _lastCpfConsultado = cpfNum;
                         _lastCpfCache = {
                             dadosAluno,
@@ -3183,23 +3072,11 @@
 
                         if (boxDataNasc) boxDataNasc.style.display = 'block';
                         const txtEl = document.getElementById('btnConsultarCPFText');
-                        if (txtEl) txtEl.textContent = 'Confirmar Dados e Acessar';
-                        mostrarFeedback('info', 'Participante não localizado no histórico. Por favor, informe seu Nome Completo e Data de Nascimento para identificarmos as vagas compatíveis.');
-                        if (!nomeDigitado && inputNomeNovo) inputNomeNovo.focus();
-                        else if (inputNascNovo) inputNascNovo.focus();
-                        return; // Interrompe aguardando dados
+                        if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
+                        mostrarFeedback('info', 'Participante não localizado no histórico. Por favor, informe a Data de Nascimento para identificarmos as vagas compatíveis.');
+                        if (inputNascNovo) inputNascNovo.focus();
+                        return; // Interrompe aguardando data
                     } else {
-                        if (!temNomeBanco) {
-                            const valNome = validarNome(nomeDigitado);
-                            if (!valNome.valido) {
-                                mostrarFeedback('error', valNome.erro);
-                                if (inputNomeNovo) inputNomeNovo.focus();
-                                return;
-                            }
-                            nomeAluno = valNome.nome;
-                            if (inputNomeNovo) inputNomeNovo.value = valNome.nome;
-                        }
-
                         const idadeVal = calcularIdade(dataDigitada);
                         if (idadeVal === null || isNaN(idadeVal) || idadeVal < 0 || idadeVal > 120) {
                             mostrarFeedback('error', 'Por favor, informe uma data de nascimento válida.');
@@ -3224,11 +3101,14 @@
                     data_nascimento: nascAluno,
                     idade: idadeAluno,
                     dados_recentes: dadosAluno?.dados_recentes || {},
-                    projetos_inscritos_ids: matriculasEncontradas.map(m => m.projeto_id).filter(Boolean)
+                    projetos_inscritos_ids: dadosAluno?.projetos_inscritos_ids || matriculasEncontradas.map(m => m.projeto_id).filter(Boolean),
+                    origem_consultada: foiLocalizado,
+                    nome_oficial: temNomeBanco ? nomeAluno : null,
+                    nasc_oficial: nascAluno || null
                 };
 
                 mostrarFeedback('success', temNomeBanco ? `Identificado: ${nomeAluno}` : `Data confirmada (${idadeAluno} anos)! Redirecionando...`);
-                setTimeout(() => apresentarPainelDoAluno(), 250);
+                setTimeout(() => apresentarPainelDoAluno(), 200);
 
             } catch(err) {
                 console.error('Erro na consulta:', err);
@@ -5508,8 +5388,7 @@
             if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
             const boxDataNasc = document.getElementById('boxDataNascNovo');
             if (boxDataNasc) boxDataNasc.style.display = 'none';
-            const inputNomeNovo = document.getElementById('inputNomeNovo');
-            if (inputNomeNovo) inputNomeNovo.value = '';
+            
             const inputNascNovo = document.getElementById('inputNascNovo');
             if (inputNascNovo) inputNascNovo.value = '';
             const fbNovo = document.getElementById('feedbackIdadeNovo');

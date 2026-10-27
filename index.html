@@ -1280,7 +1280,10 @@
 
                 <!-- CAMPO CONDICIONAL DE DATA DE NASCIMENTO (QUANDO NÃO LOCALIZADO) -->
                 <div id="boxDataNascNovo" style="display: none; margin-bottom: 14px; animation: fadeIn 0.25s ease;">
-                    <label class="field-label" for="inputNascNovo">Data de Nascimento do Participante: <span class="req">*</span></label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label class="field-label" for="inputNascNovo" style="margin-bottom: 0;">Data de Nascimento do Participante: <span class="req">*</span></label>
+                        <button type="button" id="btnCorrigirCPFLink" onclick="document.getElementById('btnClearCPF')?.click()" style="background: none; border: none; color: var(--c-verde-escuro, #24640a); font-size: 12px; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0;">Corrigir CPF</button>
+                    </div>
                     <input 
                         type="date" 
                         id="inputNascNovo" 
@@ -2487,13 +2490,48 @@
             // Rejeita sequências de 11 dígitos repetidos (00000000000, 11111111111, ..., 99999999999)
             if (/^(\d)\1{10}$/.test(clean)) return false;
 
-            // Rejeita sequências óbvias conhecidas
+            // Rejeita sequências óbvias conhecidas e geradores de teste
             const sequenciasFalsas = [
                 '12345678901', '12345678909', '12345678910', '12345678900',
-                '01234567890', '01234567891', '98765432100', '98765432109',
+                '01234567890', '01234567891',
+                '98765432100', '98765432109', '98765432110',
                 '00000000191'
             ];
             if (sequenciasFalsas.includes(clean)) return false;
+
+            // Rejeita progressões sequenciais contínuas nos 9 primeiros dígitos (ex: 123456789, 987654321)
+            let isCrescente = true;
+            let isDecrescente = true;
+            for (let i = 0; i < 8; i++) {
+                const d1 = parseInt(clean.charAt(i), 10);
+                const d2 = parseInt(clean.charAt(i + 1), 10);
+                if (d2 !== (d1 + 1) % 10) isCrescente = false;
+                if (d2 !== (d1 - 1 + 10) % 10) isDecrescente = false;
+            }
+            if (isCrescente || isDecrescente) return false;
+
+            // Rejeita repetições cíclicas fakes (ex: 12121212121, 12312312312)
+            if (/^(\d{2})\1{4}\d?$/.test(clean) || /^(\d{3})\1{2}\d{2}$/.test(clean)) {
+                return false;
+            }
+
+            // Cálculo do 1º Dígito Verificador (pesos de 10 a 2)
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(clean.charAt(i), 10) * (10 - i);
+            }
+            let resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(clean.charAt(9), 10)) return false;
+
+            // Cálculo do 2º Dígito Verificador (pesos de 11 a 2)
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(clean.charAt(i), 10) * (11 - i);
+            }
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(clean.charAt(10), 10)) return false;
 
             return true;
         }
@@ -3034,48 +3072,30 @@
                 const boxDataNasc = document.getElementById('boxDataNascNovo');
                 const inputNascNovo = document.getElementById('inputNascNovo');
 
-                // Se NÃO foi localizado na base/Receita e o participante ainda não confirmou o documento:
-                if (!foiLocalizado && _cpfConfirmadoPeloUsuario !== cpfNum) {
-                    _lastCpfConsultado = cpfNum;
-                    _lastCpfCache = {
-                        dadosAluno,
-                        matriculasEncontradas,
-                        nomeAluno,
-                        temNomeBanco
-                    };
+                _lastCpfConsultado = cpfNum;
+                _lastCpfCache = {
+                    dadosAluno,
+                    matriculasEncontradas,
+                    nomeAluno,
+                    temNomeBanco
+                };
 
-                    if (boxDataNasc) boxDataNasc.style.display = 'none';
-                    if (boxConfirmaCPF) {
-                        const txtNum = document.getElementById('txtConfirmaCPFNum');
-                        if (txtNum) txtNum.textContent = formatarCPF(cpfNum);
-                        boxConfirmaCPF.style.display = 'block';
-                        if (window.lucide) lucide.createIcons();
-                    }
-                    mostrarFeedback('info', 'Não localizamos um cadastro prévio com este documento. Por favor, confira o seu CPF acima.');
-                    return; // Interrompe aguardando confirmação do participante
-                }
-
-                if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
-
-                // Se não há data de nascimento no cadastro (novo participante), solicita antes de entrar no portal
+                // Se não há data de nascimento no cadastro (novo participante ou não retornado pela Receita):
                 if (!nascAluno) {
+                    if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
+                    if (boxDataNasc) boxDataNasc.style.display = 'block';
+
+                    const txtEl = document.getElementById('btnConsultarCPFText');
+                    if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
+
                     const dataDigitada = inputNascNovo ? inputNascNovo.value.trim() : '';
 
                     if (!dataDigitada) {
-                        _lastCpfConsultado = cpfNum;
-                        _lastCpfCache = {
-                            dadosAluno,
-                            matriculasEncontradas,
-                            nomeAluno,
-                            temNomeBanco
-                        };
-
-                        if (boxDataNasc) boxDataNasc.style.display = 'block';
-                        const txtEl = document.getElementById('btnConsultarCPFText');
-                        if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
-                        mostrarFeedback('info', 'Participante não localizado no histórico. Por favor, informe a Data de Nascimento para identificarmos as vagas compatíveis.');
+                        mostrarFeedback('info', foiLocalizado
+                            ? 'Participante identificado! Informe a Data de Nascimento para localizar as vagas compatíveis.'
+                            : 'Não encontramos cadastro anterior para o CPF ' + formatarCPF(cpfNum) + '. Se este documento está correto, informe sua Data de Nascimento para continuar:');
                         if (inputNascNovo) inputNascNovo.focus();
-                        return; // Interrompe aguardando data
+                        return; // Interrompe aguardando o participante informar a data
                     } else {
                         const idadeVal = calcularIdade(dataDigitada);
                         if (idadeVal === null || isNaN(idadeVal) || idadeVal < 0 || idadeVal > 120) {
@@ -3091,6 +3111,9 @@
                         nascAluno = dataDigitada;
                     }
                 }
+
+                if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
+                if (boxDataNasc) boxDataNasc.style.display = 'none';
 
                 const idadeCalculada = nascAluno ? calcularIdade(nascAluno) : null;
                 const idadeAluno = (idadeCalculada !== null && idadeCalculada >= 0 && idadeCalculada <= 120) ? idadeCalculada : null;
@@ -3111,8 +3134,27 @@
                 setTimeout(() => apresentarPainelDoAluno(), 200);
 
             } catch(err) {
-                console.error('Erro na consulta:', err);
-                mostrarFeedback('error', 'Falha ao consultar CPF. Tente novamente.');
+                console.warn('Consulta do aluno via webhook demorou ou falhou, prosseguindo com fluxo seguro:', err);
+                // NUNCA TRAVAR O ALUNO! O CPF é matematicamente autêntico.
+                _lastCpfConsultado = cpfNum;
+                _lastCpfCache = {
+                    dadosAluno: null,
+                    matriculasEncontradas: [],
+                    nomeAluno: 'Novo Participante',
+                    temNomeBanco: false
+                };
+
+                const boxConfirmaCPF = document.getElementById('boxConfirmaCPF');
+                if (boxConfirmaCPF) boxConfirmaCPF.style.display = 'none';
+                const boxDataNasc = document.getElementById('boxDataNascNovo');
+                if (boxDataNasc) boxDataNasc.style.display = 'block';
+
+                const txtEl = document.getElementById('btnConsultarCPFText');
+                if (txtEl) txtEl.textContent = 'Confirmar Data e Acessar';
+
+                mostrarFeedback('info', 'Consulta automática indisponível no momento. Se o CPF ' + formatarCPF(cpfNum) + ' estiver correto, informe sua Data de Nascimento para continuar:');
+                const inputNascNovo = document.getElementById('inputNascNovo');
+                if (inputNascNovo) inputNascNovo.focus();
             } finally {
                 _isConsultandoCPF = false;
                 const btnConsultar = document.getElementById('btnConsultarCPF');

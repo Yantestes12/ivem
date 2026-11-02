@@ -1917,7 +1917,7 @@
             <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 12px 16px; max-width: 440px; margin: 0 auto 24px auto; text-align: left;">
                 <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #065f46;">
                     <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
-                    <span>Janela de Edição Gratuita: 6 Horas</span>
+                    <span>Janela de Edição: 6 Horas</span>
                 </div>
                 <div style="font-size: 12px; color: #047857; margin-top: 2px;">
                     Caso tenha cometido algum engano, você pode editar todos os seus dados diretamente no portal pelas próximas 6 horas.
@@ -2481,41 +2481,38 @@
             }
         }
 
-        // ── Validação de Padrões Falsos e Sequências de CPF (libera confirmação visual para não localizados) ──
+        // 1. Validador Oficial de CPF (Algoritmo Módulo 11 da Receita Federal + Filtro Anti-Padrões Fakes)
         function validarCPF(cpf) {
             if (!cpf) return false;
             const clean = String(cpf).replace(/\D/g, '');
             if (clean.length !== 11) return false;
 
-            // Rejeita sequências de 11 dígitos repetidos (00000000000, 11111111111, ..., 99999999999)
+            // 1. Rejeita 11 dígitos repetidos (00000000000, 11111111111, ..., 99999999999)
             if (/^(\d)\1{10}$/.test(clean)) return false;
 
-            // Rejeita sequências óbvias conhecidas e geradores de teste
+            // 2. Rejeita 6 ou mais dígitos iguais consecutivos no início (ex: 111111..., 000000..., 999999...)
+            if (/^(\d)\1{5,}/.test(clean)) return false;
+
+            // 3. Rejeita 7 ou mais dígitos idênticos consecutivos em qualquer posição
+            if (/(\d)\1{6,}/.test(clean)) return false;
+
+            // 4. Rejeita padrões onde 8 dos 9 primeiros dígitos são o mesmo (ex: 111111110, 111111119, 111011111, 000000001, 999999990)
+            const d9 = clean.slice(0, 9);
+            for (let i = 0; i < 9; i++) {
+                const char = d9.charAt(i);
+                if (d9.split(char).length - 1 >= 8) return false;
+            }
+
+            // 5. Rejeita sequências óbvias conhecidas e geradores de teste
             const sequenciasFalsas = [
-                '12345678901', '12345678909', '12345678910', '12345678900',
+                '12345678901', '12345678910', '12345678900',
                 '01234567890', '01234567891',
                 '98765432100', '98765432109', '98765432110',
                 '00000000191'
             ];
             if (sequenciasFalsas.includes(clean)) return false;
 
-            // Rejeita progressões sequenciais contínuas nos 9 primeiros dígitos (ex: 123456789, 987654321)
-            let isCrescente = true;
-            let isDecrescente = true;
-            for (let i = 0; i < 8; i++) {
-                const d1 = parseInt(clean.charAt(i), 10);
-                const d2 = parseInt(clean.charAt(i + 1), 10);
-                if (d2 !== (d1 + 1) % 10) isCrescente = false;
-                if (d2 !== (d1 - 1 + 10) % 10) isDecrescente = false;
-            }
-            if (isCrescente || isDecrescente) return false;
-
-            // Rejeita repetições cíclicas fakes (ex: 12121212121, 12312312312)
-            if (/^(\d{2})\1{4}\d?$/.test(clean) || /^(\d{3})\1{2}\d{2}$/.test(clean)) {
-                return false;
-            }
-
-            // Cálculo do 1º Dígito Verificador (pesos de 10 a 2)
+            // 6. Cálculo do 1º Dígito Verificador (pesos de 10 a 2)
             let soma = 0;
             for (let i = 0; i < 9; i++) {
                 soma += parseInt(clean.charAt(i), 10) * (10 - i);
@@ -2524,7 +2521,7 @@
             if (resto === 10 || resto === 11) resto = 0;
             if (resto !== parseInt(clean.charAt(9), 10)) return false;
 
-            // Cálculo do 2º Dígito Verificador (pesos de 11 a 2)
+            // 7. Cálculo do 2º Dígito Verificador (pesos de 11 a 2)
             soma = 0;
             for (let i = 0; i < 10; i++) {
                 soma += parseInt(clean.charAt(i), 10) * (11 - i);

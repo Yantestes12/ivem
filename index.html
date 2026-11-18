@@ -21,6 +21,7 @@
     
     <!-- Ícones Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 
     <style>
         /* ==========================================================================
@@ -1200,6 +1201,79 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        /* ── DESIGN ENGINEERING & SKELETONS (EMIL KOWALSKI / UI-UX PRO MAX) ── */
+        :root {
+            --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        h1, h2, h3, .title-hero, .pane-title {
+            letter-spacing: -0.02em;
+        }
+        .desc-clean, .pane-subtitle {
+            max-width: 65ch;
+        }
+        .cpf-field-native, #studentDisplayCPF, #sucessoNumeroMatricula, .tile-vagas-badge, .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+        .btn-primary-clean, .btn-secondary-clean, .btn-choose-project, .btn-pdf-print-clean,
+        .btn-edit-action, .btn-request-action, .pill-btn-yn, .btn-switch-cpf {
+            transition: transform 150ms var(--ease-out-expo), background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease !important;
+        }
+        .btn-primary-clean:active:not(:disabled), .btn-secondary-clean:active:not(:disabled),
+        .btn-choose-project:active:not(:disabled), .btn-pdf-print-clean:active:not(:disabled),
+        .btn-edit-action:active:not(:disabled), .btn-request-action:active:not(:disabled),
+        .pill-btn-yn:active:not(:disabled), .project-tile:active:not(.disabled),
+        .nucleo-square-tile:active:not(.esgotado), .modalidade-sport-card:active {
+            transform: scale(0.97);
+        }
+        @keyframes portalSkeletonShimmer {
+            0% { transform: translate3d(-75%, 0, 0); }
+            100% { transform: translate3d(75%, 0, 0); }
+        }
+        @keyframes portalSkeletonBreathe {
+            0%, 100% { opacity: 0.95; }
+            50% { opacity: 0.65; }
+        }
+        .portal-skeleton {
+            position: relative;
+            overflow: hidden;
+            background: #e2e8f0;
+            border-radius: 8px;
+            animation: portalSkeletonBreathe 1.6s ease-in-out infinite;
+        }
+        .portal-skeleton::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            left: -50%;
+            width: 200%;
+            background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.4) 35%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.4) 65%, transparent 100%);
+            animation: portalSkeletonShimmer 1.35s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+        }
+        .portal-skeleton-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-pencil);
+            border-radius: var(--radius-input);
+            padding: 18px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .portal-skeleton-scanline {
+            position: relative;
+            height: 2px;
+            width: 100%;
+            overflow: hidden;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 999px;
+            margin-top: 8px;
+        }
+        .portal-skeleton-scanline::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
+            animation: portalSkeletonShimmer 1.2s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -1329,7 +1403,26 @@
                 <h4 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: var(--c-vermelho); margin-bottom: 10px;">
                     Projetos de Aula:
                 </h4>
-                <div class="projects-grid" id="projectsGridContainer"></div>
+                <div class="projects-grid" id="projectsGridContainer">
+                    <div class="portal-skeleton-card" aria-busy="true" aria-label="Carregando projetos">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:72%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:90%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>
+                    <div class="portal-skeleton-card" aria-busy="true">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:65%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:85%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- EVENTOS (CASO EXISTAM) -->
@@ -1337,7 +1430,26 @@
                 <h4 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: var(--c-vermelho); margin-bottom: 10px;">
                     Eventos:
                 </h4>
-                <div class="projects-grid" id="eventsGridContainer"></div>
+                <div class="projects-grid" id="eventsGridContainer">
+                    <div class="portal-skeleton-card" aria-busy="true" aria-label="Carregando projetos">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:72%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:90%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>
+                    <div class="portal-skeleton-card" aria-busy="true">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:65%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:85%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- INSCRIÇÕES ATIVAS DO PARTICIPANTE (ABAIXO DE INICIATIVAS) -->
@@ -1570,10 +1682,12 @@
                                 <label class="field-label" for="mat_resp_situacao_profissional">Situação Profissional do Resp.: <span class="req">*</span></label>
                                 <select id="mat_resp_situacao_profissional" name="resp_situacao_profissional" class="field-select">
                                     <option value="">Selecione…</option>
-                                    <option value="Estudante">Estudante</option>
-                                    <option value="Empregado">Empregado</option>
-                                    <option value="Autônomo">Autônomo</option>
                                     <option value="Desempregado">Desempregado</option>
+                                    <option value="Estudante">Estudante</option>
+                                    <option value="Autônomo">Autônomo</option>
+                                    <option value="CLT">CLT</option>
+                                    <option value="MEI">MEI</option>
+                                    <option value="Concursado">Concursado</option>
                                     <option value="Aposentado">Aposentado</option>
                                 </select>
                             </div>
@@ -1692,10 +1806,12 @@
                             <label class="field-label" for="mat_situacao_profissional">Situação Profissional: <span class="req">*</span></label>
                             <select id="mat_situacao_profissional" name="situacao_profissional" class="field-select" required>
                                 <option value="">Selecione…</option>
-                                <option value="Estudante">Estudante</option>
-                                <option value="Empregado">Empregado</option>
-                                <option value="Autônomo">Autônomo</option>
                                 <option value="Desempregado">Desempregado</option>
+                                <option value="Estudante">Estudante</option>
+                                <option value="Autônomo">Autônomo</option>
+                                <option value="CLT">CLT</option>
+                                <option value="MEI">MEI</option>
+                                <option value="Concursado">Concursado</option>
                                 <option value="Aposentado">Aposentado</option>
                             </select>
                         </div>
@@ -1841,7 +1957,7 @@
                             <input type="file" id="doc_file_input" accept="image/*,.pdf" multiple style="display:none;">
                             
                             <div id="doc-dropzone" style="border: 2px dashed var(--c-vermelho); background: #f0faff; border-radius: 10px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
-                                <div style="font-size: 26px; margin-bottom: 4px;">📄 🩺</div>
+                                <i data-lucide="file-up" style="width: 24px; height: 24px; color: var(--text-muted); margin: 0 auto 6px; display: block;"></i>
                                 <div style="font-weight: 700; color: var(--c-vermelho); font-size: 13.5px;">Clique aqui para selecionar foto ou PDF do laudo</div>
                                 <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Fotos (JPG, PNG) ou PDF — até 6 arquivos</div>
                             </div>
@@ -3615,10 +3731,44 @@
             const secEventos = document.getElementById('sectionEventos');
 
             if (containerProjetos) {
-                containerProjetos.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);"><i data-lucide="loader-2" class="spin" style="width: 20px; height: 20px; margin: 0 auto 6px; color: var(--primary);"></i><p style="font-size: 13px;">Buscando iniciativas oficiais...</p></div>';
+                containerProjetos.innerHTML = `                    <div class="portal-skeleton-card" aria-busy="true" aria-label="Carregando projetos">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:72%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:90%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>
+                    <div class="portal-skeleton-card" aria-busy="true">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:65%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:85%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>`;
             }
             if (containerEventos) {
-                containerEventos.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);"><i data-lucide="loader-2" class="spin" style="width: 20px; height: 20px; margin: 0 auto 6px; color: var(--c-azure);"></i><p style="font-size: 13px;">Buscando eventos oficiais...</p></div>';
+                containerEventos.innerHTML = `                    <div class="portal-skeleton-card" aria-busy="true" aria-label="Carregando projetos">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:72%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:90%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>
+                    <div class="portal-skeleton-card" aria-busy="true">
+                        <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <div class="portal-skeleton" style="height:20px;width:92px;border-radius:999px;"></div>
+                            <div class="portal-skeleton" style="height:20px;width:72px;border-radius:999px;"></div>
+                        </div>
+                        <div class="portal-skeleton" style="height:22px;width:65%;"></div>
+                        <div class="portal-skeleton" style="height:14px;width:85%;"></div>
+                        <div class="portal-skeleton" style="height:40px;width:100%;margin-top:6px;"></div>
+                    </div>`;
             }
             if (window.lucide) lucide.createIcons();
 
@@ -4354,9 +4504,19 @@
                     delete payload.telefone_responsavel;
                     delete payload.resp_parentesco;
                     delete payload.grau_parentesco;
+                    delete payload.resp_nome_social;
+                    delete payload.resp_data_nasc;
+                    delete payload.resp_sexo;
+                    delete payload.resp_raca;
+                    delete payload.resp_situacao_profissional;
                 }
 
                 payload.origem = 'portal_ivem_oficial';
+                payload.aceite_eletronico = true;
+                payload.aceite_eletronico_em = new Date().toISOString();
+                if (payload.laudo_medico_url) {
+                    payload.documentos_urls = JSON.stringify([payload.laudo_medico_url]);
+                }
                 payload.cidade_treino = document.getElementById('select_cidade_filtro')?.value || '';
                 delete payload.email_confirm;
                 if (payload.resp_cpf) payload.resp_cpf = payload.resp_cpf.replace(/\D/g, '');
@@ -4949,7 +5109,80 @@
                             }
                             .no-print { display: none !important; }
                         }
-                    </style>
+                        /* ── DESIGN ENGINEERING & SKELETONS (EMIL KOWALSKI / UI-UX PRO MAX) ── */
+        :root {
+            --ease-out-expo: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        h1, h2, h3, .title-hero, .pane-title {
+            letter-spacing: -0.02em;
+        }
+        .desc-clean, .pane-subtitle {
+            max-width: 65ch;
+        }
+        .cpf-field-native, #studentDisplayCPF, #sucessoNumeroMatricula, .tile-vagas-badge, .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+        .btn-primary-clean, .btn-secondary-clean, .btn-choose-project, .btn-pdf-print-clean,
+        .btn-edit-action, .btn-request-action, .pill-btn-yn, .btn-switch-cpf {
+            transition: transform 150ms var(--ease-out-expo), background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease !important;
+        }
+        .btn-primary-clean:active:not(:disabled), .btn-secondary-clean:active:not(:disabled),
+        .btn-choose-project:active:not(:disabled), .btn-pdf-print-clean:active:not(:disabled),
+        .btn-edit-action:active:not(:disabled), .btn-request-action:active:not(:disabled),
+        .pill-btn-yn:active:not(:disabled), .project-tile:active:not(.disabled),
+        .nucleo-square-tile:active:not(.esgotado), .modalidade-sport-card:active {
+            transform: scale(0.97);
+        }
+        @keyframes portalSkeletonShimmer {
+            0% { transform: translate3d(-75%, 0, 0); }
+            100% { transform: translate3d(75%, 0, 0); }
+        }
+        @keyframes portalSkeletonBreathe {
+            0%, 100% { opacity: 0.95; }
+            50% { opacity: 0.65; }
+        }
+        .portal-skeleton {
+            position: relative;
+            overflow: hidden;
+            background: #e2e8f0;
+            border-radius: 8px;
+            animation: portalSkeletonBreathe 1.6s ease-in-out infinite;
+        }
+        .portal-skeleton::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            left: -50%;
+            width: 200%;
+            background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.4) 35%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.4) 65%, transparent 100%);
+            animation: portalSkeletonShimmer 1.35s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+        }
+        .portal-skeleton-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-pencil);
+            border-radius: var(--radius-input);
+            padding: 18px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .portal-skeleton-scanline {
+            position: relative;
+            height: 2px;
+            width: 100%;
+            overflow: hidden;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 999px;
+            margin-top: 8px;
+        }
+        .portal-skeleton-scanline::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
+            animation: portalSkeletonShimmer 1.2s ease-in-out infinite;
+        }
+    </style>
                 </head>
                 <body>
                     <div class="header">
@@ -5640,14 +5873,16 @@
                 preencher('mat_nome_social', mat.nome_social || ex.nome_social || '');
                 preencher('mat_altura', mat.altura || ex.altura || '');
                 preencher('mat_peso', mat.peso || ex.peso || '');
-                preencherSelect('mat_situacao_profissional', mat.situacao_profissional || mat.profissao || ex.situacao_profissional || '');
+                const normSit = v => String(v || '').trim().toLowerCase() === 'empregado' ? 'CLT' : v;
+                preencherSelect('mat_situacao_profissional', normSit(mat.situacao_profissional || mat.profissao || ex.situacao_profissional || ''));
                 preencherSelect('mat_renda_familiar', mat.renda_familiar || mat.faixa_salarial || ex.renda_familiar || '');
                 preencher('mat_resp_nome_social', mat.resp_nome_social || ex.resp_nome_social || '');
                 preencher('mat_resp_data_nasc', formatarDataInput(mat.resp_data_nasc || ex.resp_data_nasc || ''));
                 preencherSelect('mat_resp_sexo', mat.resp_sexo || ex.resp_sexo || '');
                 preencherSelect('mat_resp_raca', mat.resp_raca || ex.resp_raca || '');
-                preencherSelect('mat_resp_situacao_profissional', mat.resp_situacao_profissional || mat.resp_profissao || ex.resp_situacao_profissional || '');
-                preencher('laudo_medico_url', mat.laudo_medico_url || ex.laudo_medico_url || '');
+                preencherSelect('mat_resp_situacao_profissional', normSit(mat.resp_situacao_profissional || mat.resp_profissao || ex.resp_situacao_profissional || ''));
+                const docsArr = Array.isArray(mat.documentos_urls) ? mat.documentos_urls : (() => { try { return typeof mat.documentos_urls === 'string' && mat.documentos_urls.trim().startsWith('[') ? JSON.parse(mat.documentos_urls) : []; } catch(e) { return []; } })();
+                preencher('laudo_medico_url', mat.laudo_medico_url || docsArr[0] || ex.laudo_medico_url || '');
 
                 [
                     ['cirurgia', mat.cirurgia_recente ?? ex.cirurgia_recente, 'cirurgia_detalhes', mat.cirurgia_detalhes ?? ex.cirurgia_detalhes],
@@ -5762,192 +5997,404 @@
                 });
             }
 
-            gerarFichaPDFIVEM = function(d, winTarget) {
-                const win = winTarget || window.open('', '_blank');
-                if (!win) { alert('Permita pop-ups para emitir a Ficha Oficial de Matrícula.'); return; }
+            function buildOfficialFichaHtml(d, meta, forceEvento) {
                 let ex = {};
                 if (d?.respostas_extras) {
                     try { ex = typeof d.respostas_extras === 'string' ? JSON.parse(d.respostas_extras) : d.respostas_extras; } catch(e) {}
                 }
-                const isEventoDoc = Boolean(d?.is_evento || Number(d?.projeto_id) === 1 || String(d?.projeto_nome || '').toLowerCase().includes('movimenta'));
-                const numMat = String(d?.id || d?.matricula || '000000');
-                const projNome = d?.projeto_nome || (isEventoDoc ? 'MOVIMENTA RIO' : 'ESPORTE SEM PARAR');
-                const nucNome = d?.nucleo_nome || d?.bairro_escolhido || d?.bairro || '—';
-                const modNome = d?.modalidade_nome || '—';
-                const cidTreino = d?.cidade_treino || d?.cidade || 'RJ';
-                const turno = d?.turno || 'Manhã';
+                const esc = typeof escapeHTML === 'function'
+                    ? escapeHTML
+                    : (s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'));
+                const clean = (v) => {
+                    if (v === undefined || v === null) return '';
+                    const s = String(v).trim();
+                    if (!s || s === '—' || s === '-' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return '';
+                    return s;
+                };
+                const resolvido = typeof resolverDadosMatricula === 'function' ? resolverDadosMatricula(d) : {};
+                const isEventoDoc = Boolean(forceEvento);
+                const numMat = clean(d?.id || d?.matricula) || '000000';
+                const projNome = clean(resolvido.projNome || d?.projeto_nome || (typeof currentSelectedProject !== 'undefined' && currentSelectedProject?.nome)) || meta.defaultProjeto || meta.sigla;
+                const nucNome = clean(resolvido.nucNome || d?.nucleo_nome || d?.bairro_escolhido || d?.bairro);
+                const modNome = clean(resolvido.modNome || d?.modalidade_nome || d?.modalidade_percurso);
+                const catNome = clean(d?.categoria || d?.distancia_km || '');
+                const cidTreino = clean(d?.cidade_treino || d?.cidade || meta.defaultCidade);
+                const turno = clean(d?.turno) || 'Manhã';
 
-                const nAluno = d?.aluno_nome || d?.nome || currentStudentData?.nome || '—';
-                const nSocial = d?.nome_social || ex.nome_social || '—';
-                const cAluno = formatarCPF(d?.aluno_cpf || d?.cpf || currentStudentData?.cpf || '');
-                const rawNasc = d?.data_nascimento || currentStudentData?.data_nascimento || '';
-                const dNasc = /^\d{4}-\d{2}-\d{2}/.test(rawNasc) ? rawNasc.slice(0,10).split('-').reverse().join('/') : (rawNasc || '—');
-                const idCalc = d?.idade || calcularIdade(rawNasc) || '—';
-                const sexoStr = String(d?.sexo || '').toUpperCase();
+                const nAluno = clean(d?.aluno_nome || d?.nome || (typeof currentStudentData !== 'undefined' && currentStudentData?.nome));
+                const nSocial = clean(d?.nome_social || ex.nome_social);
+                const cAluno = clean(typeof formatarCPF === 'function' ? formatarCPF(d?.aluno_cpf || d?.cpf || (typeof currentStudentData !== 'undefined' && currentStudentData?.cpf) || '') : (d?.aluno_cpf || d?.cpf || ''));
+                const rawNasc = clean(d?.data_nascimento || (typeof currentStudentData !== 'undefined' && currentStudentData?.data_nascimento));
+                let dd = '', mm = '', yyyy = '';
+                if (/^\d{4}-\d{2}-\d{2}/.test(rawNasc)) {
+                    const p = rawNasc.slice(0,10).split('-');
+                    yyyy = p[0]; mm = p[1]; dd = p[2];
+                } else if (/^\d{2}\/\d{2}\/\d{4}/.test(rawNasc)) {
+                    const p = rawNasc.slice(0,10).split('/');
+                    dd = p[0]; mm = p[1]; yyyy = p[2];
+                }
+                const calcIdadeFn = typeof calcularIdade === 'function' ? calcularIdade : (() => null);
+                const idCalc = clean(d?.idade) || clean(calcIdadeFn(rawNasc));
+                const idadeNum = idCalc ? Number(idCalc) : null;
+                const isMenor = idadeNum !== null && !isNaN(idadeNum) ? idadeNum < 18 : Boolean(clean(d?.resp_nome) || clean(d?.resp_cpf));
+
+                const sexoStr = clean(d?.sexo).toUpperCase();
                 const mMark = sexoStr.startsWith('M') ? 'X' : '&nbsp;';
                 const fMark = sexoStr.startsWith('F') ? 'X' : '&nbsp;';
-                const raca = d?.raca || ex.raca || '—';
-                const altura = d?.altura || ex.altura || '—';
-                const peso = d?.peso || ex.peso || '—';
-                const tel = formatarTelefoneValor(d?.whatsapp || d?.telefone || '');
-                const nat = d?.naturalidade || ex.naturalidade || '—';
-                const rua = d?.endereco || d?.rua || '—';
-                const numEnd = d?.numero || 'S/N';
-                const bairro = d?.bairro || '—';
-                const cidade = d?.cidade || '—';
-                const uf = d?.uf || 'RJ';
-                const cep = d?.cep || '—';
-                const sitProf = d?.situacao_profissional || d?.profissao || ex.situacao_profissional || '—';
-                const rendaFam = d?.renda_familiar || d?.faixa_salarial || ex.renda_familiar || '—';
-                const camisa = d?.tamanho_camisa || '—';
-                const bermuda = d?.tamanho_calca || '—';
-                const calcado = d?.tamanho_calcado || '—';
+                const raca = clean(d?.raca || ex.raca);
+                const altura = clean(d?.altura || ex.altura);
+                const peso = clean(d?.peso || ex.peso);
 
-                const nResp = d?.resp_nome || '';
-                const cResp = formatarCPF(d?.resp_cpf || '');
-                const dResp = d?.resp_data_nasc ? (/^\d{4}-\d{2}-\d{2}/.test(d.resp_data_nasc) ? d.resp_data_nasc.slice(0,10).split('-').reverse().join('/') : d.resp_data_nasc) : '—';
-                const idResp = d?.resp_data_nasc ? (calcularIdade(d.resp_data_nasc) || '—') : '—';
-                const parResp = d?.resp_parentesco || d?.grau_parentesco || 'Responsável Legal';
-                const sitResp = d?.resp_situacao_profissional || d?.resp_profissao || '—';
-                const zapResp = formatarTelefoneValor(d?.resp_whatsapp || '');
+                const telRaw = clean(d?.whatsapp || d?.telefone || d?.telefone_conta).replace(/\D/g, '');
+                let telDDD = '', telNum = clean(d?.whatsapp || d?.telefone || d?.telefone_conta);
+                if (telRaw.length === 11) { telDDD = telRaw.slice(0,2); telNum = telRaw.slice(2,7) + '-' + telRaw.slice(7); }
+                else if (telRaw.length === 10) { telDDD = telRaw.slice(0,2); telNum = telRaw.slice(2,6) + '-' + telRaw.slice(6); }
 
-                const ynLine = (v, det, hasQual = true) => {
-                    const isSim = String(v || '').trim().toLowerCase() === 'sim';
-                    if (!hasQual) return isSim ? '( &nbsp; ) NÃO &nbsp;&nbsp; ( <strong>X</strong> ) SIM' : '( <strong>X</strong> ) NÃO &nbsp;&nbsp; ( &nbsp; ) SIM';
-                    return isSim
-                        ? `( &nbsp; ) NÃO &nbsp;&nbsp; ( <strong>X</strong> ) SIM &nbsp; Qual(is)? <u>${esc(det || 'Informado')}</u>`
-                        : `( <strong>X</strong> ) NÃO &nbsp;&nbsp; ( &nbsp; ) SIM &nbsp; Qual(is)? _______________________`;
+                const nat = clean(d?.naturalidade || ex.naturalidade);
+                const ruaBase = clean(d?.endereco || d?.rua);
+                const bairro = clean(d?.bairro);
+                const ruaFull = ruaBase && bairro && !ruaBase.toLowerCase().includes(bairro.toLowerCase()) ? `${ruaBase} - ${bairro}` : ruaBase;
+                const numEnd = clean(d?.numero);
+                const uf = clean(d?.uf) || meta.defaultUf || 'RJ';
+                const cep = clean(d?.cep);
+
+                const fmtSitProf = (val) => {
+                    const s = clean(val).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const normKey = s.includes('desempreg') ? 'desempregado' : s.includes('estud') ? 'estudante' : s.includes('auton') ? 'autonomo' : (s.includes('clt') || s.includes('empreg')) ? 'clt' : s.includes('mei') ? 'mei' : s.includes('concurs') ? 'concursado' : s.includes('aposent') ? 'aposentado' : s;
+                    return ['Desempregado','Estudante','Autônomo','CLT','MEI','Concursado','Aposentado'].map(o => {
+                        const ok = o.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === normKey;
+                        return `<span class="opt-item">( <strong>${ok ? 'X' : '&nbsp;'}</strong> ) ${o}</span>`;
+                    }).join('');
+                };
+                const fmtRenda = (val) => {
+                    const s = clean(val).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const isMais3 = s.includes('mais') || s.includes('acima');
+                    const is1 = !isMais3 && (s.includes('ate 1') || s.includes('menos de 1') || s === '1');
+                    const is3 = !isMais3 && !is1 && (s.includes('ate 3') || s.includes('1 a 2') || s.includes('2 a 3') || s.includes('1 a 3') || s === '2' || s === '3');
+                    return `<span class="opt-item">( <strong>${is1 ? 'X' : '&nbsp;'}</strong> ) Até 1 salário mínimo</span>` +
+                           `<span class="opt-item">( <strong>${is3 ? 'X' : '&nbsp;'}</strong> ) Até 3 salário mínimos</span>` +
+                           `<span class="opt-item">( <strong>${isMais3 ? 'X' : '&nbsp;'}</strong> ) Mais 3 salário mínimos</span>`;
+                };
+                const fmtCamisa = (val) => {
+                    const raw = clean(val);
+                    const norm = raw.toUpperCase();
+                    const opts = [
+                        { key: '10', label: '10 (Infantil)' },
+                        { key: '14', label: '14 (Infantil)' },
+                        { key: 'M', label: 'M (Adulto)' },
+                        { key: 'GG', label: 'GG (Adulto)' },
+                        { key: 'G2', label: 'G2 (Adulto)' }
+                    ];
+                    const matched = opts.some(o => norm && (norm === o.key || norm === o.label.toUpperCase() || (norm.includes(o.key) && (o.key==='10'||o.key==='14'||o.key==='GG'||o.key==='G2'))));
+                    let html = opts.map(o => {
+                        const ck = norm && (norm === o.key || norm === o.label.toUpperCase() || (o.key==='10' && norm.startsWith('10')) || (o.key==='14' && norm.startsWith('14')));
+                        return `<span class="opt-item">( <strong>${ck ? 'X' : '&nbsp;'}</strong> ) ${o.label}</span>`;
+                    }).join('');
+                    if (raw && !matched) html += `<span class="opt-item">( <strong>X</strong> ) ${esc(raw)}</span>`;
+                    return html;
+                };
+                const fmtShort = (val) => {
+                    const raw = clean(val);
+                    const norm = raw.toUpperCase();
+                    const opts = ['36','38','40','42','44','46','48'];
+                    let html = opts.map(o => `<span class="opt-item-sm">(<strong>${norm === o ? 'X' : '&nbsp;'}</strong>)${o}</span>`).join('');
+                    if (raw && !opts.includes(norm)) html += `<span class="opt-item-sm">(<strong>X</strong>)${esc(raw)}</span>`;
+                    return html;
                 };
 
-                const qrUrl = `${INST_META.host}/autenticador.html?id=${encodeURIComponent(numMat)}&inst=ivem${isEventoDoc ? '&tipo=evento' : ''}`;
-                const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrUrl)}`;
-                const stamp = new Date().toLocaleString('pt-BR');
-                const createdStr = d?.created_at ? new Date(d.created_at).toLocaleString('pt-BR') : stamp;
-                const protocolo = `INT-IVEM-${numMat.padStart(6, '0')}`;
-                const tituloDoc = construirNomeArquivoMatricula(d);
+                const sitProf = clean(d?.situacao_profissional || d?.profissao || ex.situacao_profissional);
+                const rendaFam = clean(d?.renda_familiar || d?.faixa_salarial || ex.renda_familiar);
+                const camisa = clean(d?.tamanho_camisa);
+                const bermuda = clean(d?.tamanho_calca || d?.tamanho_short);
+                const calcado = clean(d?.tamanho_calcado);
 
-                win.document.open();
-                win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(tituloDoc)}</title>
+                const hasResp = isMenor || Boolean(clean(d?.resp_nome) || clean(d?.resp_cpf));
+                const cResp = hasResp ? clean(typeof formatarCPF === 'function' ? formatarCPF(d?.resp_cpf || '') : (d?.resp_cpf || '')) : '';
+                const nResp = hasResp ? clean(d?.resp_nome) : '';
+                const nSocialResp = hasResp ? clean(d?.resp_nome_social || ex.resp_nome_social) : '';
+                const rawNascResp = hasResp ? clean(d?.resp_data_nasc || ex.resp_data_nasc) : '';
+                let rDD = '', rMM = '', rYY = '';
+                if (/^\d{4}-\d{2}-\d{2}/.test(rawNascResp)) {
+                    const p = rawNascResp.slice(0,10).split('-');
+                    rYY = p[0]; rMM = p[1]; rDD = p[2];
+                } else if (/^\d{2}\/\d{2}\/\d{4}/.test(rawNascResp)) {
+                    const p = rawNascResp.slice(0,10).split('/');
+                    rDD = p[0]; rMM = p[1]; rYY = p[2];
+                }
+                const idResp = hasResp ? (clean(d?.resp_idade) || clean(calcIdadeFn(rawNascResp))) : '';
+                const rSexStr = hasResp ? clean(d?.resp_sexo || ex.resp_sexo).toUpperCase() : '';
+                const rmMark = rSexStr.startsWith('M') ? 'X' : '&nbsp;';
+                const rfMark = rSexStr.startsWith('F') ? 'X' : '&nbsp;';
+                const rRaca = hasResp ? clean(d?.resp_raca || ex.resp_raca) : '';
+                const sitResp = hasResp ? clean(d?.resp_situacao_profissional || d?.resp_profissao || ex.resp_situacao_profissional) : '';
+
+                const ynRow = (label, v, det, hasQual = true) => {
+                    const rawV = clean(v).toLowerCase();
+                    const isSim = v === true || rawV === 'sim' || rawV === 's';
+                    const detTxt = isSim ? clean(det) : '';
+                    const ynHtml = isSim
+                        ? '( &nbsp; )NÃO &nbsp;&nbsp; (<strong>X</strong>)SIM'
+                        : '(<strong>X</strong>)NÃO &nbsp;&nbsp; ( &nbsp; )SIM';
+                    return `<li class="q-li"><span class="q-text">${label}</span> &nbsp; <span class="q-yn">${ynHtml}</span>${
+                        hasQual ? ` &nbsp; Qual(is)? <span class="line-val" style="min-width:110px;flex:1;">${esc(detTxt)}</span>` : ''
+                    }</li>`;
+                };
+
+                const qrUrl = `${meta.host}/autenticador.html?id=${encodeURIComponent(numMat)}&inst=${meta.sigla.toLowerCase()}${isEventoDoc ? '&tipo=evento' : ''}`;
+                let qrRenderHtml = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(qrUrl)}" alt="QR Code" style="width:74px;height:74px;border:1px solid #000;padding:2px;background:#fff;">`;
+                try {
+                    if (typeof window.qrcode === 'function') {
+                        const qr = window.qrcode(0, 'M');
+                        qr.addData(qrUrl);
+                        qr.make();
+                        qrRenderHtml = qr.createSvgTag(2.6, 4);
+                    }
+                } catch(e) {}
+
+                const stamp = new Date().toLocaleString('pt-BR');
+                const createdStr = d?.aceite_eletronico_em || d?.created_at ? new Date(d.aceite_eletronico_em || d.created_at).toLocaleString('pt-BR') : stamp;
+                const protocolo = d?.validation_token || `INT-${meta.sigla}-${numMat.padStart(6, '0')}`;
+                const tituloDoc = typeof construirNomeArquivoMatricula === 'function' ? construirNomeArquivoMatricula(d) : `Ficha_${meta.sigla}_${numMat}`;
+
+                const page2Projetos = `
+                    <p class="decl-p">A presente Declaração estabelece os direitos e deveres aplicáveis à participação nas atividades gratuitas promovidas pela Instituição <strong>${esc(meta.nomeCompleto)}</strong>, aplicando-se aos beneficiários maiores de idade e, quando menores, aos respectivos responsáveis legais, que assumem as obrigações previstas neste documento durante todo o período de participação nas atividades institucionais.</p>
+                    <div class="decl-h">1. AUTORIZAÇÃO PARA PARTICIPAÇÃO</div>
+                    <p class="decl-p">Fica autorizada a participação do(a) beneficiário(a) nas atividades promovidas pela Instituição, de natureza esportiva, educacional, cultural, científica, social, tecnológica e demais ações correlatas aos objetivos institucionais.</p>
+                    <p class="decl-p">1º Fica autorizada a participação do(a) beneficiário(a) em atividades, eventos, apresentações, competições, visitas técnicas e demais ações vinculadas aos objetivos institucionais.</p>
+                    <p class="decl-p">2º As atividades realizadas fora da sede serão previamente comunicadas, sendo facultada ao beneficiário ou ao seu responsável legal a opção pela não participação.</p>
+                    <p class="decl-p">3º Salvo disposição expressa em contrário, as despesas relativas a transporte, alimentação e hospedagem serão de responsabilidade do aluno ou de seu responsável legal.</p>
+                    <p class="decl-p">4º Em situações de emergência, fica autorizada a equipe de profissionais a prestar os primeiros socorros e, quando necessário, providenciar o encaminhamento do(a) aluno(a) ao serviço de saúde mais próximo, com comunicação imediata ao responsável legal, quando aplicável.</p>
+                    <div class="decl-h">2. APTIDÃO FÍSICA, RISCOS E ATENDIMENTO EMERGENCIAL</div>
+                    <p class="decl-p">Declara-se que o(a) beneficiário(a) se encontra apto(a) à participação nas atividades desenvolvidas pela Instituição, comprometendo-se o beneficiário ou seu responsável legal a informar qualquer alteração no estado de saúde, restrição médica, deficiência, alergia ou necessidade especial que possa interferir na participação nas atividades.</p>
+                    <p class="decl-p">1º Sempre que solicitado, deverão ser apresentados laudos, atestados ou demais documentos necessários ao adequado acompanhamento do(a) aluno(a).</p>
+                    <p class="decl-p">2º Declara-se ciência de que as atividades desenvolvidas pela Instituição envolvem riscos inerentes à sua natureza, incluindo, entre outros, contusões, escoriações, torções, fraturas, lesões musculares, quedas e demais intercorrências compatíveis com a prática das atividades.</p>
+                    <p class="decl-p">3º O Instituto não responderá por ocorrências decorrentes exclusivamente da omissão de informações relevantes sobre o estado de saúde do(a) aluno(a), do descumprimento das orientações da equipe técnica ou dos riscos inerentes às atividades regularmente desenvolvidas.</p>
+                    <div class="decl-h">3. DIREITO DE USO DE IMAGEM E VOZ</div>
+                    <p class="decl-p">Fica autorizada, de forma gratuita e por prazo indeterminado, a utilização da imagem, da voz e dos demais registros audiovisuais do(a) aluno(a), produzidos durante sua participação nas atividades promovidas pelo Instituto, para fins institucionais, prestação de contas e divulgação das ações desenvolvidas, sem que disso decorra qualquer direito à remuneração, indenização ou compensação financeira.</p>
+                    <p class="decl-p">Parágrafo único. A autorização poderá ser revogada pelo titular ou, quando aplicável, por seu responsável legal, mediante solicitação expressa e presencial na sede da Instituição, devidamente registrada em protocolo de atendimento, produzindo efeitos sobre as utilizações futuras.</p>
+                    <div class="decl-h">4. TRATAMENTO DE DADOS PESSOAIS</div>
+                    <p class="decl-p">Declara-se ciência de que os dados pessoais fornecidos no ato da inscrição serão tratados pela Instituição para finalidades relacionadas à organização, execução, segurança, comunicação e avaliação das atividades, elaboração de pesquisas de caráter social, estatístico e institucional, bem como para o cumprimento de obrigações legais, em conformidade com a Lei nº 13.709/2018 – Lei Geral de Proteção de Dados Pessoais (LGPD).</p>
+                    <p class="decl-p">1º Os dados pessoais poderão ser armazenados pelo prazo mínimo de 10 (dez) anos ou pelo período exigido pela legislação, convênios, instrumentos de parceria ou obrigações de prestação de contas aplicáveis ou exercício regular de direitos, observados os prazos aplicáveis e a LGPD.</p>
+                    <p class="decl-p">2º Os dados relativos à saúde eventualmente informados serão tratados de forma restrita e utilizados para proteção e segurança do(a) beneficiário(a), inclusive para que, em situação de emergência, as informações necessárias possam ser transmitidas aos profissionais responsáveis pelos primeiros socorros ou atendimento de saúde. Fica vedada sua divulgação ou compartilhamento para finalidades estranhas ao atendimento, à proteção do(a) beneficiário(a) ou às demais hipóteses legalmente autorizadas. A Instituição e sua equipe não administrarão medicamentos aos beneficiários.</p>
+                    <p class="decl-p">3º Os demais dados poderão ser compartilhados com órgãos públicos, instituições parceiras ou demais entidades quando necessário à fiscalização, prestação de contas, cumprimento de obrigação legal ou outra hipótese legalmente autorizada.</p>
+                    <p class="decl-p">4º A Instituição poderá divulgar, em seu site ou perfil oficial no Instagram, listagens destinadas ao acompanhamento de inscrições, classificações, rankings, resultados, premiações ou outras situações relacionadas ao evento, contendo o nome do(a) beneficiário(a) e somente as demais informações necessárias à respectiva finalidade, ficando vedada a divulgação pública de CPF, telefone e endereço residencial.</p>
+                    <div class="decl-h">5. COMPROMISSO ESCOLAR</div>
+                    <p class="decl-p">Sendo o(a) beneficiário(a) menor de idade, deverá ser declarada a regularidade da matrícula e da frequência em instituição de ensino, mantendo-se a regularidade escolar durante todo o período de participação nas atividades.</p>
+                    <p class="decl-p">1º Compete ao responsável legal assegurar a matrícula do(a) beneficiário(a) em turma compatível com o contraturno escolar, de modo que a participação nas atividades da Instituição não prejudique a frequência ao ensino regular.</p>
+                    <p class="decl-p">2º Sempre que solicitado, deverão ser apresentados comprovante de matrícula, declaração de frequência escolar ou documento equivalente.</p>
+                    <p class="decl-p">3º O(a) beneficiário(a) deverá manter frequência mínima de 75% (setenta e cinco por cento) nas atividades, salvo mediante justificativa aceita pela Coordenação.</p>
+                    <p class="decl-p">4º Será de responsabilidade do(a) beneficiário(a) ou, quando aplicável, de seu responsável legal acompanhar os comunicados, orientações e eventuais alterações referentes ao projeto por meio do canal oficial de comunicação da Instituição no Instagram: <strong>${esc(meta.handle)}</strong>.</p>
+                    <div class="decl-h">6. NORMAS INTERNAS</div>
+                    <p class="decl-p">O(a) beneficiário(a) deverá cumprir as normas internas do Instituto, observando as orientações da Coordenação, Supervisão, Instrutores e demais colaboradores.</p>
+                    <p class="decl-p">Parágrafo único. O descumprimento das normas institucionais ou a prática de condutas incompatíveis com os objetivos da Instituição poderá resultar em advertência, suspensão ou desligamento do(a) beneficiário(a), conforme avaliação da Coordenação e observadas as normas institucionais aplicáveis.</p>
+                    <div class="decl-h">7. DISPOSIÇÕES FINAIS</div>
+                    <p class="decl-p">Declara-se que todas as informações fornecidas no cadastro são verdadeiras e que deverão ser mantidas atualizadas durante todo o período de participação nas atividades da Instituição <strong>${esc(meta.sigla)}</strong>. O(a) beneficiário(a) deverá permanecer devidamente uniformizado(a), quando exigido, zelar pela guarda, conservação e correta utilização do kit de materiais disponibilizado sob sua responsabilidade, manter a higiene pessoal e contribuir para a manutenção da higiene dos espaços coletivos.</p>
+                    <p class="decl-p"><strong>A conclusão e o aceite eletrônico deste documento representam a confirmação de que o conteúdo foi LIDO, COMPREENDIDO E ACEITO, em todos os seus termos.</strong></p>
+                `;
+
+                const page2Eventos = `
+                    <p class="decl-p">A presente Declaração estabelece os direitos, deveres e responsabilidades aplicáveis à participação no evento promovido pela INSTITUIÇÃO <strong>${esc(meta.nomeCompleto)}</strong>, abrangendo os beneficiários maiores de idade e, quando menores, seus respectivos responsáveis legais.</p>
+                    <div class="decl-h">1. PARTICIPAÇÃO NO EVENTO</div>
+                    <p class="decl-p">Fica autorizada a participação do(a) beneficiário(a) no evento e nas atividades da Instituição que integrem oficialmente sua programação, ficando sua permanência condicionada ao cumprimento das normas de organização, segurança, convivência e preservação do bem-estar coletivo.</p>
+                    <p class="decl-p">1º Quando o(a) beneficiário(a) for menor de idade, sua participação ficará condicionada à autorização de seu responsável legal.</p>
+                    <p class="decl-p">2º O(A) beneficiário(a) que perturbar a ordem ou o bem-estar coletivo, colocar em risco a própria integridade ou a de terceiros, prejudicar o regular desenvolvimento das atividades, desrespeitar as orientações da organização ou causar dano ao patrimônio poderá ser retirado(a) imediatamente do evento, inclusive com auxílio da equipe responsável pela segurança, quando necessário, sem prejuízo das medidas legalmente cabíveis, inclusive o acionamento das autoridades competentes, quando a situação assim exigir.</p>
+                    <p class="decl-p">3º O(A) beneficiário(a) deverá observar as normas de acesso, segurança, permanência e utilização estabelecidas para o local de realização do evento.</p>
+                    <p class="decl-p">4º Salvo quando expressamente informado de forma diversa pela organização, despesas pessoais com transporte, alimentação, hospedagem ou outros gastos necessários à participação serão de responsabilidade do(a) beneficiário(a) ou, quando aplicável, de seu responsável legal.</p>
+                    <p class="decl-p">5º Em caso de emergência, fica autorizada a equipe responsável pelo evento a prestar os primeiros socorros e, quando necessário, providenciar o encaminhamento do(a) beneficiário(a) ao serviço de saúde adequado ou mais próximo, comunicando o responsável legal, quando aplicável.</p>
+                    <div class="decl-h">2. APTIDÃO E RISCOS</div>
+                    <p class="decl-p">Fica declarado que o(a) beneficiário(a) se encontra em condições adequadas para participar das atividades previstas, sendo de sua responsabilidade ou, quando aplicável, de seu responsável legal informar qualquer condição de saúde, restrição médica, deficiência, alergia ou necessidade específica relevante para sua segurança.</p>
+                    <p class="decl-p">1º Quando necessário à participação segura, poderão ser solicitados atestados, laudos, autorizações ou outros documentos pertinentes.</p>
+                    <p class="decl-p">2º Fica reconhecido que determinadas atividades poderão envolver riscos inerentes à sua natureza, incluindo quedas, escoriações, contusões, torções, lesões musculares e outras intercorrências compatíveis com sua realização. O Instituto não responderá por ocorrências decorrentes exclusivamente da omissão de informações relevantes, do descumprimento das orientações de segurança ou de condutas contrárias às regras do evento, sem prejuízo das responsabilidades que legalmente lhe sejam atribuídas.</p>
+                    <div class="decl-h">3. ALTERAÇÕES, CASO FORTUITO E FORÇA MAIOR</div>
+                    <p class="decl-p">Fica reconhecido que o evento poderá ser afetado por condições climáticas adversas, desastres naturais, acidentes, interdições, determinações de autoridades públicas, problemas estruturais ou operacionais no local de realização ou outras situações de caso fortuito ou força maior que comprometam sua segurança ou viabilidade.</p>
+                    <p class="decl-p">1º Nessas situações, a Instituição poderá alterar a data, o horário, a programação ou o local, adiar a realização do evento ou adotar outras providências necessárias, observada a legislação aplicável.</p>
+                    <p class="decl-p">2º Será de responsabilidade do(a) beneficiário(a) ou, quando aplicável, de seu responsável legal acompanhar os comunicados, orientações e eventuais alterações referentes ao evento por meio do canal oficial de comunicação da Instituição no Instagram: <strong>${esc(meta.handle)}</strong>.</p>
+                    <div class="decl-h">4. PERTENCES PESSOAIS E SEGURANÇA</div>
+                    <p class="decl-p">A Instituição adotará as medidas cabíveis de organização e segurança compatíveis com a natureza, o porte e as características do evento, observadas as exigências legais, regulamentares e locais aplicáveis à sua realização.</p>
+                    <p class="decl-p">Parágrafo único. A guarda e a conservação dos pertences pessoais são de responsabilidade do(a) beneficiário(a) ou, quando aplicável, de seu responsável legal. A Instituição não se responsabilizará diretamente por objetos esquecidos, extraviados, perdidos, danificados, furtados ou subtraídos, especialmente quando deixados sem supervisão ou fora dos locais indicados para sua guarda, sem prejuízo das responsabilidades que legalmente lhe sejam atribuídas.</p>
+                    <div class="decl-h">5. USO DE IMAGEM E VOZ</div>
+                    <p class="decl-p">Fica autorizada, de forma gratuita e por prazo indeterminado, a captação e utilização da imagem, voz e demais registros audiovisuais do(a) beneficiário(a), produzidos durante o evento, exclusivamente para fins de divulgação institucional da Instituição, em seus meios oficiais de comunicação, materiais institucionais e canais de divulgação, sem direito à remuneração ou compensação financeira e vedada sua utilização para finalidade diversa da autorizada.</p>
+                    <p class="decl-p">Parágrafo único. A autorização poderá ser revogada pelo titular ou, quando aplicável, por seu responsável legal, mediante solicitação expressa e presencial na sede da Instituição, devidamente registrada em protocolo de atendimento, produzindo efeitos sobre as utilizações futuras.</p>
+                    <div class="decl-h">6. TRATAMENTO E ARMAZENAMENTO DE DADOS PESSOAIS</div>
+                    <p class="decl-p">Os dados pessoais fornecidos na inscrição serão tratados pela Instituição em conformidade com a Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais – LGPD), para fins de inscrição, identificação, organização, execução e avaliação do evento, comunicação, segurança, elaboração de relatórios, prestação de contas, cumprimento de obrigações legais e realização ou fundamentação de pesquisas institucionais, sociais e estatísticas.</p>
+                    <p class="decl-p">1º Os documentos e registros relacionados à inscrição e à participação serão mantidos pela Instituição, inclusive fisicamente quando aplicável, pelo prazo de 10 (dez) anos quando necessário ao cumprimento de obrigações legais, contratuais, de convênios, prestação de contas ou exercício regular de direitos, observados os prazos aplicáveis e a LGPD.</p>
+                    <p class="decl-p">2º Os dados relativos à saúde eventualmente informados serão tratados de forma restrita e utilizados para proteção e segurança do(a) beneficiário(a), inclusive para que, em situação de emergência, as informações necessárias possam ser transmitidas aos profissionais responsáveis pelos primeiros socorros ou atendimento de saúde. Fica vedada sua divulgação ou compartilhamento para finalidades estranhas ao atendimento, à proteção do(a) beneficiário(a) ou às demais hipóteses legalmente autorizadas. A Instituição e sua equipe não administrarão medicamentos aos beneficiários.</p>
+                    <p class="decl-p">3º Os demais dados poderão ser compartilhados com órgãos públicos, instituições parceiras ou demais entidades quando necessário à fiscalização, prestação de contas, cumprimento de obrigação legal ou outra hipótese legalmente autorizada.</p>
+                    <p class="decl-p">4º A Instituição poderá divulgar, em seu site ou perfil oficial no Instagram, listagens destinadas ao acompanhamento de inscrições, classificações, rankings, resultados, premiações ou outras situações relacionadas ao evento, contendo o nome do(a) beneficiário(a) e somente as demais informações necessárias à respectiva finalidade, ficando vedada a divulgação pública de CPF, telefone e endereço residencial.</p>
+                    <div class="decl-h">7. DISPOSIÇÕES FINAIS</div>
+                    <p class="decl-p">Fica reconhecida a responsabilidade do(a) beneficiário(a) ou, quando aplicável, de seu responsável legal pela veracidade das informações fornecidas no ato da inscrição no Instituto <strong>${esc(meta.sigla)}</strong>, observado, quando cabível, o art. 299 do Código Penal, bem como pela guarda, conservação e correta utilização de eventual kit, uniforme ou material recebido e pela manutenção da higiene pessoal e coletiva nos ambientes utilizados.</p>
+                    <p class="decl-p"><strong>A conclusão e o aceite eletrônico deste documento representam a confirmação de que o conteúdo foi LIDO, COMPREENDIDO E ACEITO, em todos os seus termos.</strong></p>
+                `;
+
+                return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(tituloDoc)}</title>
                 <style>
-                    @page { size: A4; margin: 8mm 10mm; }
+                    @page { size: A4; margin: 10mm 13mm; }
                     * { box-sizing: border-box; margin: 0; padding: 0; }
-                    body { font-family: Arial, Helvetica, sans-serif; font-size: 8.5pt; color: #0f172a; line-height: 1.32; background: #fff; padding: 6px; }
-                    .hdr { display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #0f172a; padding-bottom:6px; margin-bottom:8px; }
-                    .sec { border:1px solid #cbd5e1; border-radius:4px; margin-bottom:7px; padding:6px 9px; }
-                    .sec-t { font-size:8.5pt; font-weight:800; background:#f1f5f9; padding:3px 6px; margin:-6px -9px 6px -9px; border-bottom:1px solid #cbd5e1; text-transform:uppercase; }
-                    .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px 10px; }
-                    .lbl { font-weight:700; color:#334155; }
-                    .q-row { display:flex; justify-content:space-between; gap:8px; padding:2.5px 0; border-bottom:1px dotted #e2e8f0; font-size:8pt; }
-                    .qr-box { display:flex; align-items:center; gap:12px; border:1px solid #94a3b8; background:#f8fafc; padding:6px 10px; border-radius:4px; margin-top:6px; }
-                    .qr-box img { width:58px; height:58px; }
-                    .page-break { page-break-before: always; }
-                    @media print { .no-print { display:none !important; } * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; } }
+                    body { font-family: Arial, Helvetica, sans-serif; font-size: 8.6pt; color: #000; background: #fff; line-height: 1.38; max-width: 184mm; margin: 0 auto; padding: 4px; }
+                    .doc-title { text-align: center; font-size: 10.5pt; font-weight: 700; margin-bottom: 10px; position: relative; }
+                    .doc-ref { position: absolute; right: 0; top: 1px; font-size: 7.2pt; font-weight: 400; color: #4b5563; }
+                    .sec-head { font-size: 8.8pt; font-weight: 700; margin: 9px 0 5px 0; }
+                    .sec-head span.sub-it { font-style: italic; font-weight: 700; font-size: 8.3pt; }
+                    .row-line { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5.5px; flex-wrap: nowrap; }
+                    .line-wrap { display: inline-flex; align-items: baseline; gap: 4px; min-width: 0; }
+                    .line-lbl { white-space: nowrap; }
+                    .line-val { flex: 1; border-bottom: 1px solid #000; padding: 0 4px 1px 4px; font-weight: 700; min-height: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                    .date-seg { display: inline-block; width: 22px; text-align: center; border-bottom: 1px solid #000; font-weight: 700; padding-bottom: 1px; }
+                    .date-seg-y { display: inline-block; width: 34px; text-align: center; border-bottom: 1px solid #000; font-weight: 700; padding-bottom: 1px; }
+                    .note-italic { font-style: italic; font-weight: 700; font-size: 8pt; white-space: nowrap; }
+                    .opt-item { display: inline-block; margin-right: 11px; white-space: nowrap; }
+                    .opt-item-sm { display: inline-block; margin-right: 7px; white-space: nowrap; }
+                    .q-list { list-style: disc; padding-left: 16px; margin-top: 4px; }
+                    .q-li { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px; margin-bottom: 4.5px; font-size: 8.2pt; }
+                    .q-li::before { content: "•"; font-weight: 700; margin-left: -13px; margin-right: 7px; }
+                    .qr-footer { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding-top: 7px; border-top: 1px dashed #9ca3af; }
+                    .qr-footer svg { width: 72px; height: 72px; border: 1px solid #000; flex-shrink: 0; }
+                    .page-break { page-break-before: always; padding-top: 2px; }
+                    .decl-h { font-size: 7.3pt; font-weight: 700; margin: 5px 0 1.5px 0; }
+                    .decl-p { font-size: 6.95pt; line-height: 1.28; text-align: justify; margin-bottom: 2px; }
+                    .aceite-box { margin-top: 7px; border: 1px solid #000; background: #f8fafc; padding: 6px 9px; font-size: 7.5pt; line-height: 1.42; }
+                    @media print { .no-print { display: none !important; } body { padding: 0; max-width: none; } }
                 </style></head><body>
-                <div class="hdr">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <img src="${INST_META.logo}" alt="IVEM" style="max-height:36px;">
-                        <div>
-                            <div style="font-size:11.5pt;font-weight:900;">${isEventoDoc ? 'FICHA DE MATRÍCULA (PARA EVENTOS)' : 'FICHA DE MATRÍCULA (PARA PROJETOS)'}</div>
-                            <div style="font-size:8pt;color:#475569;">${INST_META.nomeCompleto} • Emitido em ${stamp}</div>
-                        </div>
+                <div class="doc-title">
+                    ${isEventoDoc ? 'FICHA DE MATRÍCULA (PARA EVENTOS)' : 'FICHA DE MATRÍCULA (PARA PROJETOS)'}
+                    <span class="doc-ref">${esc(meta.sigla)} • #${esc(numMat)}</span>
+                </div>
+
+                <div class="sec-head">1. &nbsp;&nbsp; DADOS CADASTRAIS:</div>
+                ${isEventoDoc ? `
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1.2;"><span class="line-lbl">Projeto:</span><span class="line-val">${esc(projNome)}</span></span>
+                    <span class="line-wrap" style="flex:1.1;"><span class="line-lbl">Cidade:</span><span class="line-val">${esc(cidTreino)}</span></span>
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Núcleo:</span><span class="line-val">${esc(nucNome)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1.1;"><span class="line-lbl">Modalidade:</span><span class="line-val">${esc(modNome)}</span></span>
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Categoria:</span><span class="line-val">${esc(catNome)}</span></span>
+                    <span class="line-wrap" style="flex:0.75;"><span class="line-lbl">Turno:</span><span class="line-val">${esc(turno)}</span></span>
+                </div>` : `
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Projeto:</span><span class="line-val">${esc(projNome)}</span></span>
+                    <span class="line-wrap" style="flex:1.25;"><span class="line-lbl">Cidade:</span><span class="line-val">${esc(cidTreino)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1.2;"><span class="line-lbl">Núcleo:</span><span class="line-val">${esc(nucNome)}</span></span>
+                    <span class="line-wrap" style="flex:1.1;"><span class="line-lbl">Modalidade:</span><span class="line-val">${esc(modNome)}</span></span>
+                    <span class="line-wrap" style="flex:0.75;"><span class="line-lbl">Turno:</span><span class="line-val">${esc(turno)}</span></span>
+                </div>`}
+
+                <div class="sec-head">2. &nbsp;&nbsp; DADOS DO BENEFICIÁRIO:</div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">CPF:</span><span class="line-val">${esc(cAluno)}</span></span>
+                    <span class="note-italic">(sem esse documento a inscrição será recusada)</span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Nome completo:</span><span class="line-val">${esc(nAluno)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Nome social (Transexuais):</span><span class="line-val">${esc(nSocial)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span style="white-space:nowrap;">Data de nascimento: <span class="date-seg">${esc(dd)}</span>/<span class="date-seg">${esc(mm)}</span>/<span class="date-seg-y">${esc(yyyy)}</span></span>
+                    <span class="line-wrap" style="width:92px;"><span class="line-lbl">Idade:</span><span class="line-val">${esc(idCalc ? idCalc + ' anos' : '')}</span></span>
+                    <span style="white-space:nowrap;">Sexo: (<strong>${mMark}</strong>) M &nbsp; (<strong>${fMark}</strong>) F</span>
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Raça:</span><span class="line-val">${esc(raca)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="width:92px;"><span class="line-lbl">Altura:</span><span class="line-val">${esc(altura)}</span></span>
+                    <span class="line-wrap" style="width:82px;"><span class="line-lbl">Peso:</span><span class="line-val">${esc(peso)}</span></span>
+                    <span style="display:inline-flex;align-items:baseline;gap:3px;flex:1;">Telefone: (<span class="date-seg" style="width:22px;">${esc(telDDD)}</span>)<span class="line-val">${esc(telNum)}</span></span>
+                    <span class="line-wrap" style="flex:1.1;"><span class="line-lbl">Naturalidade:</span><span class="line-val">${esc(nat)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:2.2;"><span class="line-lbl">Rua (logradouro):</span><span class="line-val">${esc(ruaFull)}</span></span>
+                    <span class="line-wrap" style="width:68px;"><span class="line-lbl">N°:</span><span class="line-val">${esc(numEnd)}</span></span>
+                    <span class="line-wrap" style="width:52px;"><span class="line-lbl">UF:</span><span class="line-val">${esc(uf)}</span></span>
+                    <span class="line-wrap" style="width:105px;"><span class="line-lbl">CEP:</span><span class="line-val">${esc(cep)}</span></span>
+                </div>
+                <div class="row-line" style="flex-wrap:wrap;font-size:8pt;">
+                    <span>Sit. profissional: &nbsp; ${fmtSitProf(sitProf)}</span>
+                </div>
+                <div class="row-line" style="flex-wrap:wrap;font-size:8.2pt;">
+                    <span>Renda Familiar Mensal: &nbsp; ${fmtRenda(rendaFam)}</span>
+                </div>
+                <div style="margin-bottom:5px;font-size:8.2pt;">
+                    <div>Tamanho da camiseta:</div>
+                    <div style="font-weight:700;margin-top:2px;">${fmtCamisa(camisa)}</div>
+                </div>
+                <div class="row-line" style="font-size:8.1pt;">
+                    <span style="white-space:nowrap;">Tamanho do short: &nbsp; ${fmtShort(bermuda)}</span>
+                    <span class="line-wrap" style="flex:1;margin-left:8px;"><span class="line-lbl">Tamanho do sapato:</span><span class="line-val">${esc(calcado)}</span></span>
+                </div>
+
+                <div class="sec-head">3. &nbsp;&nbsp; DADOS DO RESPONSÁVEL LEGAL <span class="sub-it">(SE O BENEFICIÁRIO FOR MENOR DE 18 ANOS):</span></div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">CPF:</span><span class="line-val">${esc(cResp)}</span></span>
+                    <span class="note-italic">(sem esse documento a matrícula será interrompida)</span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Nome completo:</span><span class="line-val">${esc(nResp)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Nome social (Transexuais):</span><span class="line-val">${esc(nSocialResp)}</span></span>
+                </div>
+                <div class="row-line">
+                    <span style="white-space:nowrap;">Data de nascimento: <span class="date-seg">${esc(rDD)}</span>/<span class="date-seg">${esc(rMM)}</span>/<span class="date-seg-y">${esc(rYY)}</span></span>
+                    <span class="line-wrap" style="width:92px;"><span class="line-lbl">Idade:</span><span class="line-val">${esc(idResp ? idResp + ' anos' : '')}</span></span>
+                    <span style="white-space:nowrap;">Sexo: (<strong>${rmMark}</strong>) M &nbsp; (<strong>${rfMark}</strong>) F</span>
+                    <span class="line-wrap" style="flex:1;"><span class="line-lbl">Raça:</span><span class="line-val">${esc(rRaca)}</span></span>
+                </div>
+                <div class="row-line" style="flex-wrap:wrap;font-size:8pt;">
+                    <span>Sit. profissional: &nbsp; ${fmtSitProf(sitResp)}</span>
+                </div>
+
+                <div class="sec-head">4. &nbsp;&nbsp; INFORMAÇÕES PARTICULARES DO BENEFICIÁRIO:</div>
+                <div class="q-list" style="list-style:none;padding-left:14px;">
+                    ${ynRow('Fez alguma cirurgia nos últimos 6 (seis) meses?', d?.cirurgia_recente ?? ex.cirurgia_recente, d?.cirurgia_detalhes ?? ex.cirurgia_detalhes, true)}
+                    ${ynRow('Possui necessidade especial?', d?.necessidade_especial ?? ex.necessidade_especial, d?.necessidade_especial_detalhes ?? ex.necessidade_especial_detalhes, true)}
+                    ${ynRow('Já recebeu/recebe acompanhamento psicológico/psiquiátrico?', d?.acomp_psicologico ?? d?.acompan_medico ?? ex.acomp_psicologico, d?.acomp_psicologico_detalhes ?? d?.acompan_medico_detalhes ?? ex.acomp_psicologico_detalhes, true)}
+                    ${ynRow('Faz uso contínuo de medicação?', d?.uso_medicacao ?? ex.uso_medicacao, d?.uso_medicacao_detalhes ?? ex.uso_medicacao_detalhes, true)}
+                    ${ynRow('O beneficiário possui alergias?', d?.possui_alergias ?? ex.possui_alergias, d?.possui_alergias_detalhes ?? ex.possui_alergias_detalhes, true)}
+                    ${ynRow('É assistido por algum programa de auxílio governamental?', d?.auxilio_governamental ?? ex.auxilio_governamental, d?.auxilio_governamental_detalhes ?? ex.auxilio_governamental_detalhes, true)}
+                    ${ynRow('É morador de zona rural?', d?.zona_rural ?? ex.zona_rural, null, false)}
+                    ${ynRow('Possui internet em casa para receber futuros avisos e demais notificações?', d?.possui_internet ?? ex.possui_internet, null, false)}
+                </div>
+
+                <div class="qr-footer">
+                    ${qrRenderHtml}
+                    <div style="font-size:7.6pt;line-height:1.45;">
+                        <div style="font-weight:700;font-size:8.2pt;">AUTENTICAÇÃO DIGITAL OFICIAL — QR CODE ESCANEÁVEL</div>
+                        <div>Protocolo: <strong>${esc(protocolo)}</strong> &nbsp;•&nbsp; Emitido em: ${stamp}</div>
+                        <div style="font-family:monospace;font-size:7pt;color:#374151;word-break:break-all;">${esc(qrUrl)}</div>
                     </div>
-                    <div style="text-align:right;font-size:8.5pt;">
-                        <div><strong>Matrícula #${esc(numMat)}</strong></div>
-                        <div style="font-size:7.5pt;color:#475569;">${protocolo}</div>
+                </div>
+
+                <div class="page-break">
+                    <div class="doc-title" style="margin-bottom:6px;">DECLARAÇÃO DE RESPONSABILIDADE</div>
+                    ${isEventoDoc ? page2Eventos : page2Projetos}
+                    <div class="aceite-box">
+                        <div style="font-weight:700;margin-bottom:2px;">ACEITE ELETRÔNICO DO BENEFICIÁRIO / RESPONSÁVEL LEGAL</div>
+                        <div>Declarante: <strong>${hasResp && nResp ? esc(nResp) + ' (CPF ' + esc(cResp) + ')' : esc(nAluno || 'Beneficiário') + ' (CPF ' + esc(cAluno) + ')'}</strong></div>
+                        <div>Data e Hora do Aceite Eletrônico: ${createdStr} &nbsp;•&nbsp; Protocolo: ${esc(protocolo)} &nbsp;•&nbsp; Status: <strong>ACEITE ELETRÔNICO CONFIRMADO</strong></div>
                     </div>
                 </div>
-                <div class="sec"><div class="sec-t">1. DADOS CADASTRAIS</div><div class="g3">
-                    <div><span class="lbl">${isEventoDoc ? 'Evento' : 'Projeto'}:</span> ${esc(projNome)}</div>
-                    <div><span class="lbl">Cidade:</span> ${esc(cidTreino)}</div>
-                    <div><span class="lbl">${isEventoDoc ? 'Local' : 'Núcleo'}:</span> ${esc(nucNome)}</div>
-                    <div><span class="lbl">Modalidade:</span> ${esc(modNome)}</div>
-                    <div><span class="lbl">Turno:</span> ${esc(turno)}</div>
-                    <div><span class="lbl">Emissão:</span> ${new Date().toLocaleDateString('pt-BR')}</div>
-                </div></div>
-                <div class="sec"><div class="sec-t">2. DADOS DO BENEFICIÁRIO</div><div class="g3">
-                    <div><span class="lbl">CPF:</span> ${esc(cAluno)}</div>
-                    <div style="grid-column:span 2;"><span class="lbl">Nome completo:</span> ${esc(nAluno)}</div>
-                    <div><span class="lbl">Nome social:</span> ${esc(nSocial)}</div>
-                    <div><span class="lbl">Data de nascimento:</span> ${esc(dNasc)}</div>
-                    <div><span class="lbl">Idade:</span> ${esc(String(idCalc))} anos</div>
-                    <div><span class="lbl">Sexo:</span> (${mMark}) M &nbsp; (${fMark}) F</div>
-                    <div><span class="lbl">Raça/Cor:</span> ${esc(raca)}</div>
-                    <div><span class="lbl">Altura / Peso:</span> ${esc(String(altura))} / ${esc(String(peso))}</div>
-                    <div><span class="lbl">Telefone/WhatsApp:</span> ${esc(tel)}</div>
-                    <div style="grid-column:span 2;"><span class="lbl">Naturalidade:</span> ${esc(nat)}</div>
-                    <div style="grid-column:span 2;"><span class="lbl">Endereço:</span> ${esc(rua)}, Nº ${esc(numEnd)} - ${esc(bairro)}</div>
-                    <div><span class="lbl">Cidade/UF/CEP:</span> ${esc(cidade)}/${esc(uf)} (${esc(cep)})</div>
-                    <div><span class="lbl">Situação profissional:</span> ${esc(sitProf)}</div>
-                    <div style="grid-column:span 2;"><span class="lbl">Renda Familiar Mensal:</span> ${esc(rendaFam)}</div>
-                    <div><span class="lbl">Camisa:</span> <strong>${esc(camisa)}</strong></div>
-                    <div><span class="lbl">Bermuda/Short:</span> <strong>${esc(bermuda)}</strong></div>
-                    <div><span class="lbl">Calçado/Sapato:</span> <strong>${esc(calcado)}</strong></div>
-                </div></div>
-                <div class="sec"><div class="sec-t">3. DADOS DO RESPONSÁVEL LEGAL (SE MENOR DE 18 ANOS)</div>
-                    ${nResp ? `<div class="g3">
-                        <div><span class="lbl">CPF:</span> ${esc(cResp)}</div>
-                        <div style="grid-column:span 2;"><span class="lbl">Nome completo:</span> ${esc(nResp)}</div>
-                        <div><span class="lbl">Nascimento / Idade:</span> ${esc(dResp)} (${esc(String(idResp))})</div>
-                        <div><span class="lbl">Parentesco:</span> ${esc(parResp)}</div>
-                        <div><span class="lbl">WhatsApp / Situação:</span> ${esc(zapResp)} • ${esc(sitResp)}</div>
-                    </div>` : `<div style="font-style:italic;color:#64748b;">Dispensado — Beneficiário maior de 18 anos.</div>`}
+
+                <div class="no-print" style="text-align:center;margin:20px 0 12px 0;">
+                    <button onclick="window.print()" style="background:#111827;color:#fff;border:none;padding:11px 28px;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer;">Imprimir / Salvar Ficha Oficial em PDF</button>
                 </div>
-                <div class="sec"><div class="sec-t">4. INFORMAÇÕES PARTICULARES DO BENEFICIÁRIO</div>
-                    <div class="q-row"><span>1. Fez alguma cirurgia nos últimos 6 (seis) meses?</span><span>${ynLine(d?.cirurgia_recente ?? ex.cirurgia_recente, d?.cirurgia_detalhes ?? ex.cirurgia_detalhes)}</span></div>
-                    <div class="q-row"><span>2. Possui alguma necessidade especial (PCD)?</span><span>${ynLine(d?.necessidade_especial ?? ex.necessidade_especial, d?.necessidade_especial_detalhes ?? ex.necessidade_especial_detalhes)}</span></div>
-                    <div class="q-row"><span>3. Já recebeu ou recebe acompanhamento psicológico/psiquiátrico?</span><span>${ynLine(d?.acomp_psicologico ?? d?.acompan_medico ?? ex.acomp_psicologico, d?.acomp_psicologico_detalhes ?? d?.acompan_medico_detalhes ?? ex.acomp_psicologico_detalhes)}</span></div>
-                    <div class="q-row"><span>4. Faz uso contínuo de medicação?</span><span>${ynLine(d?.uso_medicacao ?? ex.uso_medicacao, d?.uso_medicacao_detalhes ?? ex.uso_medicacao_detalhes)}</span></div>
-                    <div class="q-row"><span>5. O beneficiário possui alergias?</span><span>${ynLine(d?.possui_alergias ?? ex.possui_alergias, d?.possui_alergias_detalhes ?? ex.possui_alergias_detalhes)}</span></div>
-                    <div class="q-row"><span>6. É assistido por algum programa de auxílio governamental?</span><span>${ynLine(d?.auxilio_governamental ?? ex.auxilio_governamental, d?.auxilio_governamental_detalhes ?? ex.auxilio_governamental_detalhes)}</span></div>
-                    <div class="q-row"><span>7. É morador de zona rural?</span><span>${ynLine(d?.zona_rural ?? ex.zona_rural, null, false)}</span></div>
-                    <div class="q-row" style="border-bottom:none;"><span>8. Possui internet em casa para receber avisos e notificações?</span><span>${ynLine(d?.possui_internet ?? ex.possui_internet ?? 'Sim', null, false)}</span></div>
-                </div>
-                <div class="qr-box"><img src="${qrImg}" alt="QR Code"><div>
-                    <div style="font-weight:800;font-size:8.5pt;">AUTENTICAÇÃO DIGITAL OFICIAL — QR CODE ESCANEÁVEL</div>
-                    <div style="font-size:7.5pt;color:#475569;">Aponte a câmera para validar a autenticidade desta Ficha Oficial no sistema central.</div>
-                    <div style="font-size:7.5pt;font-family:monospace;margin-top:2px;">${qrUrl}</div>
-                </div></div>
-                <div class="page-break"></div>
-                <div class="hdr">
-                    <div>
-                        <div style="font-size:11pt;font-weight:900;">DECLARAÇÃO DE RESPONSABILIDADE E AUTORIZAÇÃO DE PARTICIPAÇÃO</div>
-                        <div style="font-size:8pt;color:#475569;">${INST_META.nomeCompleto} (${INST_META.handle})</div>
-                    </div>
-                    <div style="font-size:8pt;font-weight:700;">Matrícula #${esc(numMat)}</div>
-                </div>
-                <div class="sec" style="font-size:8pt;line-height:1.42;text-align:justify;padding:10px 12px;">
-                    <p style="margin-bottom:7px;"><strong>Art. 1º — Autorização de Participação:</strong> Autorizo a participação nas atividades esportivas, pedagógicas, recreativas, educativas e socioeducativas promovidas por <strong>${INST_META.nomeCompleto}</strong>, comprometendo-me a respeitar os horários, normas disciplinares e orientações da equipe técnica.</p>
-                    <p style="margin-bottom:7px;"><strong>Art. 2º — Aptidão Física e Condições de Saúde:</strong> Declaro que todas as informações particulares e de saúde registradas na Página 1 são verídicas e completas, estando o(a) beneficiário(a) apto(a) à prática de atividades físicas, comprometendo-me a comunicar imediatamente qualquer alteração clínica superveniente.</p>
-                    <p style="margin-bottom:7px;"><strong>Art. 3º — Atendimento de Emergência:</strong> Em caso de intercorrência ou urgência médica durante as atividades, autorizo a equipe institucional a prestar os primeiros socorros e acionar a rede pública de atendimento médico de urgência, comunicando imediatamente o contato responsável.</p>
-                    <p style="margin-bottom:7px;"><strong>Art. 4º — Autorização de Uso Institucional de Imagem e Voz:</strong> Autorizo, a título gratuito e sem fins comerciais, o registro e uso de imagem e voz captados durante as aulas e ações do projeto exclusivamente para relatórios de prestação de contas, transparência pública e divulgação institucional nas redes oficiais (<strong>${INST_META.handle}</strong>).</p>
-                    <p style="margin-bottom:7px;"><strong>Art. 5º — Proteção de Dados Pessoais (LGPD — Lei nº 13.709/2018):</strong> Autorizo o tratamento e armazenamento seguro dos dados pessoais e sensíveis informados nesta ficha exclusivamente para gestão pedagógica, controle de frequência, auditoria e cumprimento de obrigações legais junto aos órgãos concedentes.</p>
-                    <p style="margin-bottom:7px;"><strong>Art. 6º — Zelo pelos Materiais e Uniformes:</strong> Comprometo-me a zelar pelos materiais esportivos de uso coletivo do núcleo e pelo uniforme gratuito recebido, utilizando-o adequadamente nas atividades regulares do projeto.</p>
-                    <p style="margin-bottom:2px;"><strong>Art. 7º — Validade do Aceite Eletrônico:</strong> Declaro que li integralmente este instrumento e manifesto meu aceite eletrônico, reconhecendo sua plena validade jurídica e comprobatória vinculada ao protocolo digital e QR Code desta ficha.</p>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
-                    <div style="border:1.5px solid #0f172a;background:#f8fafc;padding:9px;border-radius:4px;">
-                        <div style="font-weight:800;font-size:8.5pt;margin-bottom:4px;">✓ ACEITE ELETRÔNICO DO BENEFICIÁRIO / RESPONSÁVEL</div>
-                        <div style="font-size:7.6pt;line-height:1.45;">
-                            • Declarante: ${nResp ? esc(nResp) + ' (CPF ' + esc(cResp) + ')' : esc(nAluno) + ' (CPF ' + esc(cAluno) + ')'}<br>
-                            • Data e Hora do Aceite: ${createdStr}<br>
-                            • Protocolo de Autenticação: ${protocolo}<br>
-                            • Status: <strong>ACEITE ELETRÔNICO CONFIRMADO</strong>
-                        </div>
-                    </div>
-                    <div style="border:1.5px solid #334155;background:#f8fafc;padding:9px;border-radius:4px;">
-                        <div style="font-weight:800;font-size:8.5pt;margin-bottom:4px;">✓ REGISTRO E VALIDAÇÃO INSTITUCIONAL (IVEM)</div>
-                        <div style="font-size:7.6pt;line-height:1.45;">
-                            • Projeto / Núcleo: ${esc(projNome)} — ${esc(nucNome)}<br>
-                            • Modalidade / Turno: ${esc(modNome)} (${esc(turno)})<br>
-                            • Verificação Pública: ${qrUrl}<br>
-                            • Plataforma Oficial Integra
-                        </div>
-                    </div>
-                </div>
-                <div class="no-print" style="text-align:center;margin-top:22px;">
-                    <button onclick="window.print()" style="background:#0f172a;color:#fff;border:none;padding:11px 28px;border-radius:6px;font-weight:800;font-size:13px;cursor:pointer;">🖨️ Imprimir / Salvar Ficha Oficial em PDF</button>
-                </div>
-                </body></html>`);
+                </body></html>`;
+            }
+            gerarFichaPDFIVEM = function(d, winTarget) {
+                const win = winTarget || window.open('', '_blank');
+                if (!win) { alert('Permita pop-ups para emitir a Ficha Oficial de Matrícula.'); return; }
+                const isEv = Boolean(d?.is_evento || Number(d?.projeto_id) === 1 || String(d?.projeto_nome || '').toLowerCase().includes('movimenta'));
+                const html = buildOfficialFichaHtml(d || {}, {
+                    ...INST_META,
+                    defaultProjeto: 'ESPORTE SEM PARAR',
+                    defaultCidade: 'Rio de Janeiro',
+                    defaultUf: 'RJ'
+                }, isEv);
+                win.document.open();
+                win.document.write(html);
                 win.document.close();
             };
         })();

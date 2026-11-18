@@ -1402,10 +1402,14 @@
                     <h3 class="pane-title">1. Dados do Participante & Endereço</h3>
                     <p class="pane-subtitle">Preencha com atenção os dados cadastrais oficiais.</p>
 
-                    <div class="fields-grid-2">
+                    <div class="fields-grid-3">
                         <div class="form-group">
                             <label class="field-label" for="mat_nome">Nome Completo: <span class="req">*</span></label>
                             <input type="text" id="mat_nome" name="nome" class="field-input" placeholder="Nome completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="mat_nome_social">Nome Social <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span>:</label>
+                            <input type="text" id="mat_nome_social" name="nome_social" class="field-input" placeholder="Caso utilize">
                         </div>
                         <div class="form-group">
                             <label class="field-label" for="mat_cpf">CPF do Aluno: <span class="req">*</span></label>
@@ -1468,7 +1472,7 @@
                                 <option value="PR">Paraná (PR)</option>
                                 <option value="PE">Pernambuco (PE)</option>
                                 <option value="PI">Piauí (PI)</option>
-                                <option value="RJ" selected>Rio de Janeiro (RJ)</option>
+                                <option value="RJ">Rio de Janeiro (RJ)</option>
                                 <option value="RN">Rio Grande do Norte (RN)</option>
                                 <option value="RS">Rio Grande do Sul (RS)</option>
                                 <option value="RO">Rondônia (RO)</option>
@@ -1529,6 +1533,49 @@
                             <div class="form-group">
                                 <label class="field-label" for="mat_resp_nome">Nome do Responsável: <span class="req">*</span></label>
                                 <input type="text" id="mat_resp_nome" name="resp_nome" class="field-input" placeholder="Nome completo do responsável">
+                            </div>
+                        </div>
+                        <div class="fields-grid-3">
+                            <div class="form-group">
+                                <label class="field-label" for="mat_resp_nome_social">Nome Social do Resp. <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span>:</label>
+                                <input type="text" id="mat_resp_nome_social" name="resp_nome_social" class="field-input" placeholder="Opcional">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label" for="mat_resp_data_nasc">Data Nasc. do Resp.: <span class="req">*</span></label>
+                                <input type="date" id="mat_resp_data_nasc" name="resp_data_nasc" class="field-input" max="2026-12-31" min="1910-01-01">
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label" for="mat_resp_sexo">Sexo do Resp.: <span class="req">*</span></label>
+                                <select id="mat_resp_sexo" name="resp_sexo" class="field-select">
+                                    <option value="">Selecione…</option>
+                                    <option value="Feminino">Feminino</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="fields-grid-2">
+                            <div class="form-group">
+                                <label class="field-label" for="mat_resp_raca">Raça / Cor do Resp.: <span class="req">*</span></label>
+                                <select id="mat_resp_raca" name="resp_raca" class="field-select">
+                                    <option value="">Selecione…</option>
+                                    <option value="Branca">Branca</option>
+                                    <option value="Preta">Preta</option>
+                                    <option value="Parda">Parda</option>
+                                    <option value="Amarela">Amarela</option>
+                                    <option value="Indígena">Indígena</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="field-label" for="mat_resp_situacao_profissional">Situação Profissional do Resp.: <span class="req">*</span></label>
+                                <select id="mat_resp_situacao_profissional" name="resp_situacao_profissional" class="field-select">
+                                    <option value="">Selecione…</option>
+                                    <option value="Estudante">Estudante</option>
+                                    <option value="Empregado">Empregado</option>
+                                    <option value="Autônomo">Autônomo</option>
+                                    <option value="Desempregado">Desempregado</option>
+                                    <option value="Aposentado">Aposentado</option>
+                                </select>
                             </div>
                         </div>
                         <div class="fields-grid-2" style="margin-bottom: 0;">
@@ -1615,120 +1662,170 @@
 
                 <!-- ETAPA 2: Socioeconômico e Saúde -->
                 <div class="form-pane" data-step="2">
-                    <h3 class="pane-title">2. Escolaridade & Histórico de Saúde</h3>
-                    <p class="pane-subtitle">Informações para acompanhamento pedagógico e segurança esportiva.</p>
+                    <h3 class="pane-title">2. Escolaridade, Socioeconômico & Informações Particulares</h3>
+                    <p class="pane-subtitle">Todas as perguntas abaixo são obrigatórias para emissão da Ficha Oficial de Matrícula.</p>
 
-                    <div class="form-group">
-                        <label class="field-label" for="mat_escolaridade">Escolaridade do Participante: <span class="req">*</span></label>
-                        <select id="mat_escolaridade" name="escolaridade" class="field-select" required>
-                            <option value="">Selecione…</option>
-                            <option value="Ensino Fundamental Incompleto">Ensino Fundamental Incompleto</option>
-                            <option value="Ensino Fundamental Completo">Ensino Fundamental Completo</option>
-                            <option value="Ensino Médio Incompleto">Ensino Médio Incompleto</option>
-                            <option value="Ensino Médio Completo">Ensino Médio Completo</option>
-                            <option value="Ensino Superior">Ensino Superior</option>
-                        </select>
+                    <div class="fields-grid-3">
+                        <div class="form-group">
+                            <label class="field-label" for="mat_escolaridade">Escolaridade do Participante: <span class="req">*</span></label>
+                            <select id="mat_escolaridade" name="escolaridade" class="field-select" required>
+                                <option value="">Selecione…</option>
+                                <option value="Ensino Fundamental Incompleto">Ensino Fundamental Incompleto</option>
+                                <option value="Ensino Fundamental Completo">Ensino Fundamental Completo</option>
+                                <option value="Ensino Médio Incompleto">Ensino Médio Incompleto</option>
+                                <option value="Ensino Médio Completo">Ensino Médio Completo</option>
+                                <option value="Ensino Superior">Ensino Superior</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="mat_altura">Altura: <span class="req">*</span></label>
+                            <input type="text" id="mat_altura" name="altura" class="field-input" placeholder="Ex: 1,65m" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="mat_peso">Peso: <span class="req">*</span></label>
+                            <input type="text" id="mat_peso" name="peso" class="field-input" placeholder="Ex: 60kg" required>
+                        </div>
+                    </div>
+
+                    <div class="fields-grid-2">
+                        <div class="form-group">
+                            <label class="field-label" for="mat_situacao_profissional">Situação Profissional: <span class="req">*</span></label>
+                            <select id="mat_situacao_profissional" name="situacao_profissional" class="field-select" required>
+                                <option value="">Selecione…</option>
+                                <option value="Estudante">Estudante</option>
+                                <option value="Empregado">Empregado</option>
+                                <option value="Autônomo">Autônomo</option>
+                                <option value="Desempregado">Desempregado</option>
+                                <option value="Aposentado">Aposentado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label" for="mat_renda_familiar">Renda Familiar Mensal: <span class="req">*</span></label>
+                            <select id="mat_renda_familiar" name="renda_familiar" class="field-select" required>
+                                <option value="">Selecione…</option>
+                                <option value="Até 1 salário mínimo">Até 1 salário mínimo</option>
+                                <option value="De 1 a 2 salários mínimos">De 1 a 2 salários mínimos</option>
+                                <option value="De 2 a 3 salários mínimos">De 2 a 3 salários mínimos</option>
+                                <option value="Acima de 3 salários mínimos">Acima de 3 salários mínimos</option>
+                            </select>
+                        </div>
                     </div>
 
                     <h4 style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: var(--c-vermelho); margin: 20px 0 10px 0;">
-                        Questionário de Aptidão e Saúde
+                        Informações Particulares do Beneficiário <span class="req">*</span>
                     </h4>
 
-                    <!-- 1. Uso contínuo de medicação -->
-                    <div class="health-question-box" data-q="med">
+                    <div class="health-question-box" data-q="cirurgia" data-official-q="1">
                         <div class="health-q-header">
-                            <span class="health-q-label">1. Faz uso contínuo de algum medicamento?</span>
+                            <span class="health-q-label">1. Fez alguma cirurgia nos últimos 6 (seis) meses? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('med', 'Não')">Não</button>
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('med', 'Sim')">Sim</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('cirurgia', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('cirurgia', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_uso_medicacao" name="uso_medicacao" value="Não">
-                        <div class="health-details-input" id="details_med">
-                            <input type="text" name="uso_medicacao_detalhes" class="field-input" placeholder="Qual medicamento?">
+                        <input type="hidden" id="health_cirurgia_recente" name="cirurgia_recente" value="">
+                        <div class="health-details-input" id="details_cirurgia">
+                            <input type="text" name="cirurgia_detalhes" class="field-input" placeholder="Qual(is) cirurgia(s)?">
                         </div>
                     </div>
 
-                    <!-- 2. Alergias -->
-                    <div class="health-question-box" data-q="alerg">
+                    <div class="health-question-box" data-q="esp" data-official-q="1">
                         <div class="health-q-header">
-                            <span class="health-q-label">2. Possui alguma alergia diagnosticada?</span>
+                            <span class="health-q-label">2. Possui alguma necessidade especial (PCD)? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('alerg', 'Não')">Não</button>
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('alerg', 'Sim')">Sim</button>
-                            </div>
-                        </div>
-                        <input type="hidden" id="health_possui_alergias" name="possui_alergias" value="Não">
-                        <div class="health-details-input" id="details_alerg">
-                            <input type="text" name="possui_alergias_detalhes" class="field-input" placeholder="Quais alergias?">
-                        </div>
-                    </div>
-
-                    <!-- 3. Plano de saúde -->
-                    <div class="health-question-box" data-q="plano">
-                        <div class="health-q-header">
-                            <span class="health-q-label">3. Possui convênio ou plano de saúde?</span>
-                            <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('plano', 'Não')">Não</button>
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('plano', 'Sim')">Sim</button>
-                            </div>
-                        </div>
-                        <input type="hidden" id="health_plano_saude" name="plano_saude" value="Não">
-                        <div class="health-details-input" id="details_plano">
-                            <input type="text" name="plano_saude_detalhes" class="field-input" placeholder="Qual o convênio?">
-                        </div>
-                    </div>
-
-                    <!-- 4. Tratamento médico -->
-                    <div class="health-question-box" data-q="trat">
-                        <div class="health-q-header">
-                            <span class="health-q-label">4. Está em acompanhamento / tratamento médico?</span>
-                            <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('trat', 'Não')">Não</button>
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('trat', 'Sim')">Sim</button>
-                            </div>
-                        </div>
-                        <input type="hidden" id="health_acompan_medico" name="acompan_medico" value="Não">
-                        <div class="health-details-input" id="details_trat">
-                            <input type="text" name="acompan_medico_detalhes" class="field-input" placeholder="Motivo do tratamento?">
-                        </div>
-                    </div>
-
-                    <!-- 5. Restrição física -->
-                    <div class="health-question-box" data-q="rest">
-                        <div class="health-q-header">
-                            <span class="health-q-label">5. Possui restrição para atividades físicas?</span>
-                            <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('rest', 'Não')">Não</button>
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('rest', 'Sim')">Sim</button>
-                            </div>
-                        </div>
-                        <input type="hidden" id="health_restricao_fisica" name="restricao_fisica" value="Não">
-                        <div class="health-details-input" id="details_rest">
-                            <input type="text" name="restricao_fisica_detalhes" class="field-input" placeholder="Qual a restrição?">
-                        </div>
-                    </div>
-
-                    <!-- 6. Necessidade especial -->
-                    <div class="health-question-box" data-q="esp">
-                        <div class="health-q-header">
-                            <span class="health-q-label">6. Possui alguma necessidade especial ou PcD?</span>
-                            <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('esp', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('esp', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('esp', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_necessidade_especial" name="necessidade_especial" value="Não">
+                        <input type="hidden" id="health_necessidade_especial" name="necessidade_especial" value="">
                         <div class="health-details-input" id="details_esp">
-                            <input type="text" name="necessidade_especial_detalhes" class="field-input" placeholder="Especifique a necessidade:">
+                            <input type="text" name="necessidade_especial_detalhes" class="field-input" placeholder="Qual(is) necessidade(s)?">
                         </div>
                     </div>
 
-                    <!-- 7. Envio Opcional de Laudo Médico -->
+                    <div class="health-question-box" data-q="psico" data-official-q="1">
+                        <div class="health-q-header">
+                            <span class="health-q-label">3. Já recebeu ou recebe acompanhamento psicológico ou psiquiátrico? <span class="req">*</span></span>
+                            <div class="pills-toggle-wrap">
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('psico', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('psico', 'Sim')">Sim</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="health_acomp_psicologico" name="acomp_psicologico" value="">
+                        <div class="health-details-input" id="details_psico">
+                            <input type="text" name="acomp_psicologico_detalhes" class="field-input" placeholder="Qual acompanhamento?">
+                        </div>
+                    </div>
+
+                    <div class="health-question-box" data-q="med" data-official-q="1">
+                        <div class="health-q-header">
+                            <span class="health-q-label">4. Faz uso contínuo de medicação? <span class="req">*</span></span>
+                            <div class="pills-toggle-wrap">
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('med', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('med', 'Sim')">Sim</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="health_uso_medicacao" name="uso_medicacao" value="">
+                        <div class="health-details-input" id="details_med">
+                            <input type="text" name="uso_medicacao_detalhes" class="field-input" placeholder="Qual(is) medicamento(s)?">
+                        </div>
+                    </div>
+
+                    <div class="health-question-box" data-q="alerg" data-official-q="1">
+                        <div class="health-q-header">
+                            <span class="health-q-label">5. O beneficiário possui alergias? <span class="req">*</span></span>
+                            <div class="pills-toggle-wrap">
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('alerg', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('alerg', 'Sim')">Sim</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="health_possui_alergias" name="possui_alergias" value="">
+                        <div class="health-details-input" id="details_alerg">
+                            <input type="text" name="possui_alergias_detalhes" class="field-input" placeholder="Qual(is) alergia(s)?">
+                        </div>
+                    </div>
+
+                    <div class="health-question-box" data-q="aux" data-official-q="1">
+                        <div class="health-q-header">
+                            <span class="health-q-label">6. É assistido por algum programa de auxílio governamental? <span class="req">*</span></span>
+                            <div class="pills-toggle-wrap">
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('aux', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('aux', 'Sim')">Sim</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="health_auxilio_governamental" name="auxilio_governamental" value="">
+                        <div class="health-details-input" id="details_aux">
+                            <input type="text" name="auxilio_governamental_detalhes" class="field-input" placeholder="Qual(is) programa(s)?">
+                        </div>
+                    </div>
+
+                    <div class="health-question-box" data-q="rural" data-official-q="1">
+                        <div class="health-q-header">
+                            <span class="health-q-label">7. É morador de zona rural? <span class="req">*</span></span>
+                            <div class="pills-toggle-wrap">
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('rural', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('rural', 'Sim')">Sim</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="health_zona_rural" name="zona_rural" value="">
+                    </div>
+
+                    <div class="health-question-box" data-q="net" data-official-q="1">
+                        <div class="health-q-header">
+                            <span class="health-q-label">8. Possui internet em casa para receber futuros avisos e notificações? <span class="req">*</span></span>
+                            <div class="pills-toggle-wrap">
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('net', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('net', 'Sim')">Sim</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="health_possui_internet" name="possui_internet" value="">
+                    </div>
+
+                    <!-- 9. Envio Opcional de Laudo Médico -->
                     <div class="health-question-box" data-q="docs">
                         <div class="health-q-header">
                             <div>
-                                <span class="health-q-label">7. Deseja anexar laudo médico agora? <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span></span>
+                                <span class="health-q-label">9. Deseja anexar laudo médico agora? <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span></span>
                                 <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Laudo PcD, atestado ou comprovante de saúde.</div>
                             </div>
                             <div class="pills-toggle-wrap">
@@ -1738,6 +1835,7 @@
                         </div>
                         <input type="hidden" id="health_deseja_documentos" name="deseja_laudo" value="Não">
                         <input type="hidden" id="documentos_base64" name="documentos_base64" value="">
+                        <input type="hidden" id="laudo_medico_url" name="laudo_medico_url" value="">
 
                         <div class="health-details-input" id="details_docs" style="display:none; margin-top:12px;">
                             <input type="file" id="doc_file_input" accept="image/*,.pdf" multiple style="display:none;">
@@ -1789,15 +1887,14 @@
                         <div class="nucleos-tiles-grid" id="nucleosCardsContainer"></div>
                     </div>
 
-                    <!-- 4. Turno Pretendido (Opcional - apenas para projetos de aula) -->
+                    <!-- 4. Turno Pretendido (Obrigatório em projetos regulares) -->
                     <div class="form-group" id="blocoTurnoPretendido" style="margin-top: 18px;">
-                        <label class="field-label" for="mat_turno">Turno Pretendido: <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">(opcional)</span></label>
-                        <select id="mat_turno" name="turno" class="field-select">
-                            <option value="">Selecione o turno (ou deixe a definir)…</option>
+                        <label class="field-label" for="mat_turno">Turno Pretendido: <span class="req">*</span></label>
+                        <select id="mat_turno" name="turno" class="field-select" required>
+                            <option value="">Selecione o turno…</option>
                             <option value="Manhã">Manhã</option>
                             <option value="Tarde">Tarde</option>
                             <option value="Noite">Noite</option>
-                            <option value="A Definir">A Definir</option>
                         </select>
                     </div>
 
@@ -4077,6 +4174,19 @@
             if (window.lucide) lucide.createIcons();
         }
 
+        // ── REGRA OFICIAL DE VAGAS + 50% CADASTRO DE RESERVA ──
+        function calcularVagasNucleo(n) {
+            const vagasBase = Math.max(0, parseInt(n?.vagas ?? n?.capacidade ?? 100, 10) || 100);
+            const vagasReserva = Math.ceil(vagasBase * 0.50);
+            const vagasTotais = vagasBase + vagasReserva;
+            const inscritos = Math.max(0, parseInt(n?.inscritos ?? n?.matriculados ?? n?.total_inscritos ?? 0, 10) || 0);
+            const vagasRegularesRestantes = Math.max(0, vagasBase - inscritos);
+            const vagasRestantes = Math.max(0, vagasTotais - inscritos);
+            const esgotado = inscritos >= vagasTotais;
+            const emReserva = !esgotado && inscritos >= vagasBase;
+            return { vagasBase, vagasReserva, vagasTotais, inscritos, vagasRegularesRestantes, vagasRestantes, esgotado, emReserva };
+        }
+
         // ── RENDERIZAR NÚCLEOS DA MODALIDADE ──
         function renderizarNucleosDaModalidade(nucleosDaMod, modId, modNome, targetNucId = null) {
             const container = document.getElementById('nucleosCardsContainer');
@@ -4086,15 +4196,32 @@
             let cardNucParaClicar = null;
 
             nucleosDaMod.forEach((n, idx) => {
+                const infoVagas = calcularVagasNucleo(n);
+                const modoEdicaoAtivo = (document.getElementById('hidden_modo_edicao')?.value === 'true');
+                const matriculaEditandoId = document.getElementById('hidden_matricula_id')?.value;
+                const matOriginal = (currentMatriculasList || []).find(m => String(m.id) === String(matriculaEditandoId)) || window._ultimoPayloadMatricula;
+                const mesmoNucleoJaMatriculado = modoEdicaoAtivo && matOriginal && String(matOriginal.nucleo_id) === String(n.id);
+                const esgotadoParaAluno = infoVagas.esgotado && !mesmoNucleoJaMatriculado;
+
                 const card = document.createElement('div');
-                card.className = 'nucleo-square-tile';
+                card.className = 'nucleo-square-tile' + (esgotadoParaAluno ? ' esgotado' : '');
+                if (esgotadoParaAluno) card.style.opacity = '0.55';
                 card.setAttribute('data-id', n.id);
                 const bairroNome = n.nome || n.bairro || 'Núcleo Central';
                 const cidadeNome = n.cidade || 'Campos dos Goytacazes';
 
+                let badgeVagas = '';
+                if (mesmoNucleoJaMatriculado) badgeVagas = `<span style="font-size:10px;font-weight:800;color:#059669;">• Vaga atual mantida</span>`;
+                else if (infoVagas.esgotado) badgeVagas = `<span style="font-size:10px;font-weight:800;color:#dc2626;">• Vagas Esgotadas (${infoVagas.inscritos}/${infoVagas.vagasTotais})</span>`;
+                else if (infoVagas.emReserva) badgeVagas = `<span style="font-size:10px;font-weight:800;color:#d97706;">• Reserva (${infoVagas.vagasRestantes} rest.)</span>`;
+                else badgeVagas = `<span style="font-size:10px;font-weight:800;color:#059669;">• ${infoVagas.vagasRegularesRestantes} vagas</span>`;
+
                 card.innerHTML = `
-                    <div class="tile-check-pill">✓</div>
-                    <span class="tile-mod-badge">${modNome}</span>
+                    <div class="tile-check-pill">${esgotadoParaAluno ? '✕' : '✓'}</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                        <span class="tile-mod-badge">${modNome}</span>
+                        ${badgeVagas}
+                    </div>
                     <div class="tile-bairro-title">${bairroNome}</div>
                     <div class="tile-ref-info">
                         <i data-lucide="map-pin" style="width: 12px; height: 12px; color: var(--c-carmim); flex-shrink: 0;"></i>
@@ -4103,6 +4230,10 @@
                 `;
 
                 card.addEventListener('click', () => {
+                    if (esgotadoParaAluno) {
+                        alert(`O núcleo "${bairroNome}" atingiu o limite máximo de vagas (${infoVagas.inscritos}/${infoVagas.vagasTotais}, incluindo 50% de reserva). Por favor, selecione outro núcleo.`);
+                        return;
+                    }
                     document.querySelectorAll('.nucleo-square-tile').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
 
@@ -4115,7 +4246,7 @@
 
                 if (targetNucId && Number(n.id) === Number(targetNucId)) {
                     cardNucParaClicar = card;
-                } else if (!cardNucParaClicar && (nucleosDaMod.length === 1 && idx === 0)) {
+                } else if (!cardNucParaClicar && !esgotadoParaAluno && (nucleosDaMod.length === 1 && idx === 0)) {
                     cardNucParaClicar = card;
                 }
             });
@@ -5470,6 +5601,356 @@
             if (!str) return '';
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // MOTOR OFICIAL FICHA DE MATRÍCULA 2026 — IVEM
+        // ═══════════════════════════════════════════════════════════════════════════
+        (function initFichaOficial2026IVEM() {
+            const INST_META = {
+                sigla: 'IVEM',
+                nomeCompleto: 'Instituto Viver em Movimento – IVEM',
+                handle: '@institutoivem',
+                logo: 'logo_ivem.png',
+                host: 'https://ivem.plataformaintegra.com.br'
+            };
+            const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+            function resetOfficialQuestions() {
+                document.querySelectorAll('.health-question-box[data-official-q="1"]').forEach(box => {
+                    box.querySelectorAll('.pill-btn-yn').forEach(b => b.classList.remove('active-nao', 'active-sim'));
+                    const hid = box.querySelector('input[type="hidden"]');
+                    if (hid) hid.value = '';
+                    const det = box.querySelector('.health-details-input');
+                    if (det) {
+                        det.style.display = 'none';
+                        const inp = det.querySelector('input');
+                        if (inp) inp.value = '';
+                    }
+                });
+                const urlInput = document.getElementById('laudo_medico_url');
+                if (urlInput) urlInput.value = '';
+            }
+
+            function hydrateOfficialFieldsFromMat(mat) {
+                if (!mat) return;
+                let ex = {};
+                if (mat.respostas_extras) {
+                    try { ex = typeof mat.respostas_extras === 'string' ? JSON.parse(mat.respostas_extras) : mat.respostas_extras; } catch(e) {}
+                }
+                preencher('mat_nome_social', mat.nome_social || ex.nome_social || '');
+                preencher('mat_altura', mat.altura || ex.altura || '');
+                preencher('mat_peso', mat.peso || ex.peso || '');
+                preencherSelect('mat_situacao_profissional', mat.situacao_profissional || mat.profissao || ex.situacao_profissional || '');
+                preencherSelect('mat_renda_familiar', mat.renda_familiar || mat.faixa_salarial || ex.renda_familiar || '');
+                preencher('mat_resp_nome_social', mat.resp_nome_social || ex.resp_nome_social || '');
+                preencher('mat_resp_data_nasc', formatarDataInput(mat.resp_data_nasc || ex.resp_data_nasc || ''));
+                preencherSelect('mat_resp_sexo', mat.resp_sexo || ex.resp_sexo || '');
+                preencherSelect('mat_resp_raca', mat.resp_raca || ex.resp_raca || '');
+                preencherSelect('mat_resp_situacao_profissional', mat.resp_situacao_profissional || mat.resp_profissao || ex.resp_situacao_profissional || '');
+                preencher('laudo_medico_url', mat.laudo_medico_url || ex.laudo_medico_url || '');
+
+                [
+                    ['cirurgia', mat.cirurgia_recente ?? ex.cirurgia_recente, 'cirurgia_detalhes', mat.cirurgia_detalhes ?? ex.cirurgia_detalhes],
+                    ['esp', mat.necessidade_especial ?? ex.necessidade_especial, 'necessidade_especial_detalhes', mat.necessidade_especial_detalhes ?? ex.necessidade_especial_detalhes],
+                    ['psico', mat.acomp_psicologico ?? mat.acompan_medico ?? ex.acomp_psicologico, 'acomp_psicologico_detalhes', mat.acomp_psicologico_detalhes ?? mat.acompan_medico_detalhes ?? ex.acomp_psicologico_detalhes],
+                    ['med', mat.uso_medicacao ?? ex.uso_medicacao, 'uso_medicacao_detalhes', mat.uso_medicacao_detalhes ?? ex.uso_medicacao_detalhes],
+                    ['alerg', mat.possui_alergias ?? ex.possui_alergias, 'possui_alergias_detalhes', mat.possui_alergias_detalhes ?? ex.possui_alergias_detalhes],
+                    ['aux', mat.auxilio_governamental ?? ex.auxilio_governamental, 'auxilio_governamental_detalhes', mat.auxilio_governamental_detalhes ?? ex.auxilio_governamental_detalhes],
+                    ['rural', mat.zona_rural ?? ex.zona_rural, null, null],
+                    ['net', mat.possui_internet ?? ex.possui_internet ?? 'Sim', null, null]
+                ].forEach(([qKey, rawVal, detName, detVal]) => {
+                    setHealthOption(qKey, String(rawVal || 'Não').trim().toLowerCase() === 'sim' ? 'Sim' : 'Não');
+                    if (detName && detVal) {
+                        const inp = document.querySelector(`input[name="${detName}"]`);
+                        if (inp) inp.value = detVal;
+                    }
+                });
+            }
+
+            if (typeof configurarFormularioParaInscricao === 'function') {
+                const _origCfg = configurarFormularioParaInscricao;
+                configurarFormularioParaInscricao = function(item, isEvento) {
+                    const r = _origCfg.apply(this, [item, isEvento]);
+                    resetOfficialQuestions();
+                    const selTurno = document.getElementById('mat_turno');
+                    if (selTurno) selTurno.required = !isEvento;
+                    return r;
+                };
+            }
+
+            if (typeof iniciarEdicaoMatricula === 'function') {
+                const _origEd = iniciarEdicaoMatricula;
+                iniciarEdicaoMatricula = function(matId, fallbackObj = null) {
+                    const r = _origEd.apply(this, [matId, fallbackObj]);
+                    const mat = (currentMatriculasList || []).find(m => String(m.id) === String(matId) || String(m.matricula) === String(matId)) || fallbackObj || window._ultimoPayloadMatricula;
+                    hydrateOfficialFieldsFromMat(mat);
+                    return r;
+                };
+            }
+
+            const _origValidar = validarPassoAtual;
+            validarPassoAtual = function(passo) {
+                const ok = _origValidar.apply(this, [passo]);
+                if (!ok) return false;
+                if (passo === 1) {
+                    const blocoResp = document.getElementById('blocoResponsavel');
+                    if (blocoResp && blocoResp.style.display !== 'none') {
+                        for (const [id, msg] of [
+                            ['mat_resp_data_nasc', 'Por favor, informe a Data de Nascimento do Responsável Legal.'],
+                            ['mat_resp_sexo', 'Por favor, selecione o Sexo do Responsável Legal.'],
+                            ['mat_resp_raca', 'Por favor, selecione a Raça / Cor do Responsável Legal.'],
+                            ['mat_resp_situacao_profissional', 'Por favor, selecione a Situação Profissional do Responsável Legal.']
+                        ]) {
+                            const el = document.getElementById(id);
+                            if (el && !String(el.value || '').trim()) { alert(msg); el.focus(); return false; }
+                        }
+                    }
+                }
+                if (passo === 2) {
+                    const boxes = document.querySelectorAll('.health-question-box[data-official-q="1"]');
+                    for (const box of boxes) {
+                        if (box.style.display === 'none' || box.offsetParent === null) continue;
+                        const hid = box.querySelector('input[type="hidden"]');
+                        const lbl = box.querySelector('.health-q-label')?.textContent?.trim() || 'Pergunta obrigatória';
+                        if (!hid || (hid.value !== 'Sim' && hid.value !== 'Não')) {
+                            alert('Por favor, responda Sim ou Não para: "' + lbl + '"');
+                            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            return false;
+                        }
+                        if (hid.value === 'Sim') {
+                            const detInput = box.querySelector('.health-details-input input[type="text"]');
+                            if (detInput && !detInput.value.trim()) {
+                                alert('Por favor, especifique "Qual(is)?" em: "' + lbl + '"');
+                                detInput.focus();
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
+
+            const docFileInput = document.getElementById('doc_file_input');
+            if (docFileInput) {
+                docFileInput.addEventListener('change', async function() {
+                    const file = (typeof _docDropzoneFiles !== 'undefined' && _docDropzoneFiles[0]) || (this.files && this.files[0]);
+                    if (!file) return;
+                    try {
+                        const b64 = await new Promise((res, rej) => {
+                            const r = new FileReader();
+                            r.onload = () => { const s = String(r.result || ''); res(s.includes(',') ? s.split(',')[1] : s); };
+                            r.onerror = rej;
+                            r.readAsDataURL(file);
+                        });
+                        const safeName = `ivem_laudo_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                        const resp = await fetch('https://w.ibrase.com.br/webhook/upload-storage', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ bucket: 'matriculas-documentos', fileName: safeName, mimeType: file.type || 'application/pdf', base64: b64 })
+                        });
+                        if (resp.ok) {
+                            const j = await resp.json();
+                            const url = j?.url || j?.publicUrl || j?.data?.url || '';
+                            if (url) {
+                                const urlEl = document.getElementById('laudo_medico_url');
+                                if (urlEl) urlEl.value = url;
+                                const b64El = document.getElementById('documentos_base64');
+                                if (b64El) b64El.value = '';
+                            }
+                        }
+                    } catch(err) { console.warn('Upload storage fallback:', err); }
+                });
+            }
+
+            gerarFichaPDFIVEM = function(d, winTarget) {
+                const win = winTarget || window.open('', '_blank');
+                if (!win) { alert('Permita pop-ups para emitir a Ficha Oficial de Matrícula.'); return; }
+                let ex = {};
+                if (d?.respostas_extras) {
+                    try { ex = typeof d.respostas_extras === 'string' ? JSON.parse(d.respostas_extras) : d.respostas_extras; } catch(e) {}
+                }
+                const isEventoDoc = Boolean(d?.is_evento || Number(d?.projeto_id) === 1 || String(d?.projeto_nome || '').toLowerCase().includes('movimenta'));
+                const numMat = String(d?.id || d?.matricula || '000000');
+                const projNome = d?.projeto_nome || (isEventoDoc ? 'MOVIMENTA RIO' : 'ESPORTE SEM PARAR');
+                const nucNome = d?.nucleo_nome || d?.bairro_escolhido || d?.bairro || '—';
+                const modNome = d?.modalidade_nome || '—';
+                const cidTreino = d?.cidade_treino || d?.cidade || 'RJ';
+                const turno = d?.turno || 'Manhã';
+
+                const nAluno = d?.aluno_nome || d?.nome || currentStudentData?.nome || '—';
+                const nSocial = d?.nome_social || ex.nome_social || '—';
+                const cAluno = formatarCPF(d?.aluno_cpf || d?.cpf || currentStudentData?.cpf || '');
+                const rawNasc = d?.data_nascimento || currentStudentData?.data_nascimento || '';
+                const dNasc = /^\d{4}-\d{2}-\d{2}/.test(rawNasc) ? rawNasc.slice(0,10).split('-').reverse().join('/') : (rawNasc || '—');
+                const idCalc = d?.idade || calcularIdade(rawNasc) || '—';
+                const sexoStr = String(d?.sexo || '').toUpperCase();
+                const mMark = sexoStr.startsWith('M') ? 'X' : '&nbsp;';
+                const fMark = sexoStr.startsWith('F') ? 'X' : '&nbsp;';
+                const raca = d?.raca || ex.raca || '—';
+                const altura = d?.altura || ex.altura || '—';
+                const peso = d?.peso || ex.peso || '—';
+                const tel = formatarTelefoneValor(d?.whatsapp || d?.telefone || '');
+                const nat = d?.naturalidade || ex.naturalidade || '—';
+                const rua = d?.endereco || d?.rua || '—';
+                const numEnd = d?.numero || 'S/N';
+                const bairro = d?.bairro || '—';
+                const cidade = d?.cidade || '—';
+                const uf = d?.uf || 'RJ';
+                const cep = d?.cep || '—';
+                const sitProf = d?.situacao_profissional || d?.profissao || ex.situacao_profissional || '—';
+                const rendaFam = d?.renda_familiar || d?.faixa_salarial || ex.renda_familiar || '—';
+                const camisa = d?.tamanho_camisa || '—';
+                const bermuda = d?.tamanho_calca || '—';
+                const calcado = d?.tamanho_calcado || '—';
+
+                const nResp = d?.resp_nome || '';
+                const cResp = formatarCPF(d?.resp_cpf || '');
+                const dResp = d?.resp_data_nasc ? (/^\d{4}-\d{2}-\d{2}/.test(d.resp_data_nasc) ? d.resp_data_nasc.slice(0,10).split('-').reverse().join('/') : d.resp_data_nasc) : '—';
+                const idResp = d?.resp_data_nasc ? (calcularIdade(d.resp_data_nasc) || '—') : '—';
+                const parResp = d?.resp_parentesco || d?.grau_parentesco || 'Responsável Legal';
+                const sitResp = d?.resp_situacao_profissional || d?.resp_profissao || '—';
+                const zapResp = formatarTelefoneValor(d?.resp_whatsapp || '');
+
+                const ynLine = (v, det, hasQual = true) => {
+                    const isSim = String(v || '').trim().toLowerCase() === 'sim';
+                    if (!hasQual) return isSim ? '( &nbsp; ) NÃO &nbsp;&nbsp; ( <strong>X</strong> ) SIM' : '( <strong>X</strong> ) NÃO &nbsp;&nbsp; ( &nbsp; ) SIM';
+                    return isSim
+                        ? `( &nbsp; ) NÃO &nbsp;&nbsp; ( <strong>X</strong> ) SIM &nbsp; Qual(is)? <u>${esc(det || 'Informado')}</u>`
+                        : `( <strong>X</strong> ) NÃO &nbsp;&nbsp; ( &nbsp; ) SIM &nbsp; Qual(is)? _______________________`;
+                };
+
+                const qrUrl = `${INST_META.host}/autenticador.html?id=${encodeURIComponent(numMat)}&inst=ivem${isEventoDoc ? '&tipo=evento' : ''}`;
+                const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(qrUrl)}`;
+                const stamp = new Date().toLocaleString('pt-BR');
+                const createdStr = d?.created_at ? new Date(d.created_at).toLocaleString('pt-BR') : stamp;
+                const protocolo = `INT-IVEM-${numMat.padStart(6, '0')}`;
+                const tituloDoc = construirNomeArquivoMatricula(d);
+
+                win.document.open();
+                win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(tituloDoc)}</title>
+                <style>
+                    @page { size: A4; margin: 8mm 10mm; }
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
+                    body { font-family: Arial, Helvetica, sans-serif; font-size: 8.5pt; color: #0f172a; line-height: 1.32; background: #fff; padding: 6px; }
+                    .hdr { display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #0f172a; padding-bottom:6px; margin-bottom:8px; }
+                    .sec { border:1px solid #cbd5e1; border-radius:4px; margin-bottom:7px; padding:6px 9px; }
+                    .sec-t { font-size:8.5pt; font-weight:800; background:#f1f5f9; padding:3px 6px; margin:-6px -9px 6px -9px; border-bottom:1px solid #cbd5e1; text-transform:uppercase; }
+                    .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px 10px; }
+                    .lbl { font-weight:700; color:#334155; }
+                    .q-row { display:flex; justify-content:space-between; gap:8px; padding:2.5px 0; border-bottom:1px dotted #e2e8f0; font-size:8pt; }
+                    .qr-box { display:flex; align-items:center; gap:12px; border:1px solid #94a3b8; background:#f8fafc; padding:6px 10px; border-radius:4px; margin-top:6px; }
+                    .qr-box img { width:58px; height:58px; }
+                    .page-break { page-break-before: always; }
+                    @media print { .no-print { display:none !important; } * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; } }
+                </style></head><body>
+                <div class="hdr">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <img src="${INST_META.logo}" alt="IVEM" style="max-height:36px;">
+                        <div>
+                            <div style="font-size:11.5pt;font-weight:900;">${isEventoDoc ? 'FICHA DE MATRÍCULA (PARA EVENTOS)' : 'FICHA DE MATRÍCULA (PARA PROJETOS)'}</div>
+                            <div style="font-size:8pt;color:#475569;">${INST_META.nomeCompleto} • Emitido em ${stamp}</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;font-size:8.5pt;">
+                        <div><strong>Matrícula #${esc(numMat)}</strong></div>
+                        <div style="font-size:7.5pt;color:#475569;">${protocolo}</div>
+                    </div>
+                </div>
+                <div class="sec"><div class="sec-t">1. DADOS CADASTRAIS</div><div class="g3">
+                    <div><span class="lbl">${isEventoDoc ? 'Evento' : 'Projeto'}:</span> ${esc(projNome)}</div>
+                    <div><span class="lbl">Cidade:</span> ${esc(cidTreino)}</div>
+                    <div><span class="lbl">${isEventoDoc ? 'Local' : 'Núcleo'}:</span> ${esc(nucNome)}</div>
+                    <div><span class="lbl">Modalidade:</span> ${esc(modNome)}</div>
+                    <div><span class="lbl">Turno:</span> ${esc(turno)}</div>
+                    <div><span class="lbl">Emissão:</span> ${new Date().toLocaleDateString('pt-BR')}</div>
+                </div></div>
+                <div class="sec"><div class="sec-t">2. DADOS DO BENEFICIÁRIO</div><div class="g3">
+                    <div><span class="lbl">CPF:</span> ${esc(cAluno)}</div>
+                    <div style="grid-column:span 2;"><span class="lbl">Nome completo:</span> ${esc(nAluno)}</div>
+                    <div><span class="lbl">Nome social:</span> ${esc(nSocial)}</div>
+                    <div><span class="lbl">Data de nascimento:</span> ${esc(dNasc)}</div>
+                    <div><span class="lbl">Idade:</span> ${esc(String(idCalc))} anos</div>
+                    <div><span class="lbl">Sexo:</span> (${mMark}) M &nbsp; (${fMark}) F</div>
+                    <div><span class="lbl">Raça/Cor:</span> ${esc(raca)}</div>
+                    <div><span class="lbl">Altura / Peso:</span> ${esc(String(altura))} / ${esc(String(peso))}</div>
+                    <div><span class="lbl">Telefone/WhatsApp:</span> ${esc(tel)}</div>
+                    <div style="grid-column:span 2;"><span class="lbl">Naturalidade:</span> ${esc(nat)}</div>
+                    <div style="grid-column:span 2;"><span class="lbl">Endereço:</span> ${esc(rua)}, Nº ${esc(numEnd)} - ${esc(bairro)}</div>
+                    <div><span class="lbl">Cidade/UF/CEP:</span> ${esc(cidade)}/${esc(uf)} (${esc(cep)})</div>
+                    <div><span class="lbl">Situação profissional:</span> ${esc(sitProf)}</div>
+                    <div style="grid-column:span 2;"><span class="lbl">Renda Familiar Mensal:</span> ${esc(rendaFam)}</div>
+                    <div><span class="lbl">Camisa:</span> <strong>${esc(camisa)}</strong></div>
+                    <div><span class="lbl">Bermuda/Short:</span> <strong>${esc(bermuda)}</strong></div>
+                    <div><span class="lbl">Calçado/Sapato:</span> <strong>${esc(calcado)}</strong></div>
+                </div></div>
+                <div class="sec"><div class="sec-t">3. DADOS DO RESPONSÁVEL LEGAL (SE MENOR DE 18 ANOS)</div>
+                    ${nResp ? `<div class="g3">
+                        <div><span class="lbl">CPF:</span> ${esc(cResp)}</div>
+                        <div style="grid-column:span 2;"><span class="lbl">Nome completo:</span> ${esc(nResp)}</div>
+                        <div><span class="lbl">Nascimento / Idade:</span> ${esc(dResp)} (${esc(String(idResp))})</div>
+                        <div><span class="lbl">Parentesco:</span> ${esc(parResp)}</div>
+                        <div><span class="lbl">WhatsApp / Situação:</span> ${esc(zapResp)} • ${esc(sitResp)}</div>
+                    </div>` : `<div style="font-style:italic;color:#64748b;">Dispensado — Beneficiário maior de 18 anos.</div>`}
+                </div>
+                <div class="sec"><div class="sec-t">4. INFORMAÇÕES PARTICULARES DO BENEFICIÁRIO</div>
+                    <div class="q-row"><span>1. Fez alguma cirurgia nos últimos 6 (seis) meses?</span><span>${ynLine(d?.cirurgia_recente ?? ex.cirurgia_recente, d?.cirurgia_detalhes ?? ex.cirurgia_detalhes)}</span></div>
+                    <div class="q-row"><span>2. Possui alguma necessidade especial (PCD)?</span><span>${ynLine(d?.necessidade_especial ?? ex.necessidade_especial, d?.necessidade_especial_detalhes ?? ex.necessidade_especial_detalhes)}</span></div>
+                    <div class="q-row"><span>3. Já recebeu ou recebe acompanhamento psicológico/psiquiátrico?</span><span>${ynLine(d?.acomp_psicologico ?? d?.acompan_medico ?? ex.acomp_psicologico, d?.acomp_psicologico_detalhes ?? d?.acompan_medico_detalhes ?? ex.acomp_psicologico_detalhes)}</span></div>
+                    <div class="q-row"><span>4. Faz uso contínuo de medicação?</span><span>${ynLine(d?.uso_medicacao ?? ex.uso_medicacao, d?.uso_medicacao_detalhes ?? ex.uso_medicacao_detalhes)}</span></div>
+                    <div class="q-row"><span>5. O beneficiário possui alergias?</span><span>${ynLine(d?.possui_alergias ?? ex.possui_alergias, d?.possui_alergias_detalhes ?? ex.possui_alergias_detalhes)}</span></div>
+                    <div class="q-row"><span>6. É assistido por algum programa de auxílio governamental?</span><span>${ynLine(d?.auxilio_governamental ?? ex.auxilio_governamental, d?.auxilio_governamental_detalhes ?? ex.auxilio_governamental_detalhes)}</span></div>
+                    <div class="q-row"><span>7. É morador de zona rural?</span><span>${ynLine(d?.zona_rural ?? ex.zona_rural, null, false)}</span></div>
+                    <div class="q-row" style="border-bottom:none;"><span>8. Possui internet em casa para receber avisos e notificações?</span><span>${ynLine(d?.possui_internet ?? ex.possui_internet ?? 'Sim', null, false)}</span></div>
+                </div>
+                <div class="qr-box"><img src="${qrImg}" alt="QR Code"><div>
+                    <div style="font-weight:800;font-size:8.5pt;">AUTENTICAÇÃO DIGITAL OFICIAL — QR CODE ESCANEÁVEL</div>
+                    <div style="font-size:7.5pt;color:#475569;">Aponte a câmera para validar a autenticidade desta Ficha Oficial no sistema central.</div>
+                    <div style="font-size:7.5pt;font-family:monospace;margin-top:2px;">${qrUrl}</div>
+                </div></div>
+                <div class="page-break"></div>
+                <div class="hdr">
+                    <div>
+                        <div style="font-size:11pt;font-weight:900;">DECLARAÇÃO DE RESPONSABILIDADE E AUTORIZAÇÃO DE PARTICIPAÇÃO</div>
+                        <div style="font-size:8pt;color:#475569;">${INST_META.nomeCompleto} (${INST_META.handle})</div>
+                    </div>
+                    <div style="font-size:8pt;font-weight:700;">Matrícula #${esc(numMat)}</div>
+                </div>
+                <div class="sec" style="font-size:8pt;line-height:1.42;text-align:justify;padding:10px 12px;">
+                    <p style="margin-bottom:7px;"><strong>Art. 1º — Autorização de Participação:</strong> Autorizo a participação nas atividades esportivas, pedagógicas, recreativas, educativas e socioeducativas promovidas por <strong>${INST_META.nomeCompleto}</strong>, comprometendo-me a respeitar os horários, normas disciplinares e orientações da equipe técnica.</p>
+                    <p style="margin-bottom:7px;"><strong>Art. 2º — Aptidão Física e Condições de Saúde:</strong> Declaro que todas as informações particulares e de saúde registradas na Página 1 são verídicas e completas, estando o(a) beneficiário(a) apto(a) à prática de atividades físicas, comprometendo-me a comunicar imediatamente qualquer alteração clínica superveniente.</p>
+                    <p style="margin-bottom:7px;"><strong>Art. 3º — Atendimento de Emergência:</strong> Em caso de intercorrência ou urgência médica durante as atividades, autorizo a equipe institucional a prestar os primeiros socorros e acionar a rede pública de atendimento médico de urgência, comunicando imediatamente o contato responsável.</p>
+                    <p style="margin-bottom:7px;"><strong>Art. 4º — Autorização de Uso Institucional de Imagem e Voz:</strong> Autorizo, a título gratuito e sem fins comerciais, o registro e uso de imagem e voz captados durante as aulas e ações do projeto exclusivamente para relatórios de prestação de contas, transparência pública e divulgação institucional nas redes oficiais (<strong>${INST_META.handle}</strong>).</p>
+                    <p style="margin-bottom:7px;"><strong>Art. 5º — Proteção de Dados Pessoais (LGPD — Lei nº 13.709/2018):</strong> Autorizo o tratamento e armazenamento seguro dos dados pessoais e sensíveis informados nesta ficha exclusivamente para gestão pedagógica, controle de frequência, auditoria e cumprimento de obrigações legais junto aos órgãos concedentes.</p>
+                    <p style="margin-bottom:7px;"><strong>Art. 6º — Zelo pelos Materiais e Uniformes:</strong> Comprometo-me a zelar pelos materiais esportivos de uso coletivo do núcleo e pelo uniforme gratuito recebido, utilizando-o adequadamente nas atividades regulares do projeto.</p>
+                    <p style="margin-bottom:2px;"><strong>Art. 7º — Validade do Aceite Eletrônico:</strong> Declaro que li integralmente este instrumento e manifesto meu aceite eletrônico, reconhecendo sua plena validade jurídica e comprobatória vinculada ao protocolo digital e QR Code desta ficha.</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+                    <div style="border:1.5px solid #0f172a;background:#f8fafc;padding:9px;border-radius:4px;">
+                        <div style="font-weight:800;font-size:8.5pt;margin-bottom:4px;">✓ ACEITE ELETRÔNICO DO BENEFICIÁRIO / RESPONSÁVEL</div>
+                        <div style="font-size:7.6pt;line-height:1.45;">
+                            • Declarante: ${nResp ? esc(nResp) + ' (CPF ' + esc(cResp) + ')' : esc(nAluno) + ' (CPF ' + esc(cAluno) + ')'}<br>
+                            • Data e Hora do Aceite: ${createdStr}<br>
+                            • Protocolo de Autenticação: ${protocolo}<br>
+                            • Status: <strong>ACEITE ELETRÔNICO CONFIRMADO</strong>
+                        </div>
+                    </div>
+                    <div style="border:1.5px solid #334155;background:#f8fafc;padding:9px;border-radius:4px;">
+                        <div style="font-weight:800;font-size:8.5pt;margin-bottom:4px;">✓ REGISTRO E VALIDAÇÃO INSTITUCIONAL (IVEM)</div>
+                        <div style="font-size:7.6pt;line-height:1.45;">
+                            • Projeto / Núcleo: ${esc(projNome)} — ${esc(nucNome)}<br>
+                            • Modalidade / Turno: ${esc(modNome)} (${esc(turno)})<br>
+                            • Verificação Pública: ${qrUrl}<br>
+                            • Plataforma Oficial Integra
+                        </div>
+                    </div>
+                </div>
+                <div class="no-print" style="text-align:center;margin-top:22px;">
+                    <button onclick="window.print()" style="background:#0f172a;color:#fff;border:none;padding:11px 28px;border-radius:6px;font-weight:800;font-size:13px;cursor:pointer;">🖨️ Imprimir / Salvar Ficha Oficial em PDF</button>
+                </div>
+                </body></html>`);
+                win.document.close();
+            };
+        })();
     </script>
 </body>
 </html>

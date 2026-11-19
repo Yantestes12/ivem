@@ -1519,9 +1519,17 @@
                             <label class="field-label" for="mat_nome">Nome Completo: <span class="req">*</span></label>
                             <input type="text" id="mat_nome" name="nome" class="field-input" placeholder="Nome completo" required>
                         </div>
-                        <div class="form-group">
-                            <label class="field-label" for="mat_nome_social">Nome Social <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span>:</label>
-                            <input type="text" id="mat_nome_social" name="nome_social" class="field-input" placeholder="Caso utilize">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label for="chk_usar_nome_social" style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:13px; font-weight:700; color:var(--text-main); user-select:none; margin-bottom:4px;">
+                                <input type="checkbox" id="chk_usar_nome_social" onchange="window.toggleNomeSocialField && window.toggleNomeSocialField('chk_usar_nome_social', 'wrap_mat_nome_social', 'mat_nome_social')" style="width:16px; height:16px; margin-top:2px; accent-color:var(--c-verde-escuro); cursor:pointer; flex-shrink:0;">
+                                <span>Deseja utilizar Nome Social? <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span></span>
+                            </label>
+                            <div style="font-size:11.5px; line-height:1.45; color:var(--text-muted); background:rgba(15,23,42,0.03); border-left:3px solid var(--border-color); padding:6px 10px; border-radius:0 6px 6px 0; margin-bottom:4px;">
+                                O Nome Social é destinado exclusivamente a pessoas travestis ou transexuais que desejam ser reconhecidas socialmente em consonância com sua identidade de gênero (Decreto Federal nº 8.727/2016). Não deve ser preenchido com apelidos.
+                            </div>
+                            <div id="wrap_mat_nome_social" style="display:none; margin-top:6px;">
+                                <input type="text" id="mat_nome_social" name="nome_social" class="field-input" placeholder="Informe o Nome Social">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="field-label" for="mat_cpf">CPF do Aluno: <span class="req">*</span></label>
@@ -1648,9 +1656,17 @@
                             </div>
                         </div>
                         <div class="fields-grid-3">
-                            <div class="form-group">
-                                <label class="field-label" for="mat_resp_nome_social">Nome Social do Resp. <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span>:</label>
-                                <input type="text" id="mat_resp_nome_social" name="resp_nome_social" class="field-input" placeholder="Opcional">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="chk_usar_resp_nome_social" style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:13px; font-weight:700; color:var(--text-main); user-select:none; margin-bottom:4px;">
+                                    <input type="checkbox" id="chk_usar_resp_nome_social" onchange="window.toggleNomeSocialField && window.toggleNomeSocialField('chk_usar_resp_nome_social', 'wrap_mat_resp_nome_social', 'mat_resp_nome_social')" style="width:16px; height:16px; margin-top:2px; accent-color:var(--c-verde-escuro); cursor:pointer; flex-shrink:0;">
+                                    <span>Responsável utiliza Nome Social? <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(opcional)</span></span>
+                                </label>
+                                <div style="font-size:11.5px; line-height:1.45; color:var(--text-muted); background:rgba(15,23,42,0.03); border-left:3px solid var(--border-color); padding:6px 10px; border-radius:0 6px 6px 0; margin-bottom:4px;">
+                                    O Nome Social é destinado exclusivamente a pessoas travestis ou transexuais que desejam ser reconhecidas socialmente em consonância com sua identidade de gênero (Decreto Federal nº 8.727/2016). Não deve ser preenchido com apelidos.
+                                </div>
+                                <div id="wrap_mat_resp_nome_social" style="display:none; margin-top:6px;">
+                                    <input type="text" id="mat_resp_nome_social" name="resp_nome_social" class="field-input" placeholder="Informe o Nome Social do Responsável">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label class="field-label" for="mat_resp_data_nasc">Data Nasc. do Resp.: <span class="req">*</span></label>
@@ -1835,11 +1851,11 @@
                         <div class="health-q-header">
                             <span class="health-q-label">1. Fez alguma cirurgia nos últimos 6 (seis) meses? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('cirurgia', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('cirurgia', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('cirurgia', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_cirurgia_recente" name="cirurgia_recente" value="">
+                        <input type="hidden" id="health_cirurgia_recente" name="cirurgia_recente" value="Não">
                         <div class="health-details-input" id="details_cirurgia">
                             <input type="text" name="cirurgia_detalhes" class="field-input" placeholder="Qual(is) cirurgia(s)?">
                         </div>
@@ -1849,11 +1865,11 @@
                         <div class="health-q-header">
                             <span class="health-q-label">2. Possui alguma necessidade especial (PCD)? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('esp', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('esp', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('esp', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_necessidade_especial" name="necessidade_especial" value="">
+                        <input type="hidden" id="health_necessidade_especial" name="necessidade_especial" value="Não">
                         <div class="health-details-input" id="details_esp">
                             <input type="text" name="necessidade_especial_detalhes" class="field-input" placeholder="Qual(is) necessidade(s)?">
                         </div>
@@ -1863,11 +1879,11 @@
                         <div class="health-q-header">
                             <span class="health-q-label">3. Já recebeu ou recebe acompanhamento psicológico ou psiquiátrico? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('psico', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('psico', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('psico', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_acomp_psicologico" name="acomp_psicologico" value="">
+                        <input type="hidden" id="health_acomp_psicologico" name="acomp_psicologico" value="Não">
                         <div class="health-details-input" id="details_psico">
                             <input type="text" name="acomp_psicologico_detalhes" class="field-input" placeholder="Qual acompanhamento?">
                         </div>
@@ -1877,11 +1893,11 @@
                         <div class="health-q-header">
                             <span class="health-q-label">4. Faz uso contínuo de medicação? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('med', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('med', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('med', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_uso_medicacao" name="uso_medicacao" value="">
+                        <input type="hidden" id="health_uso_medicacao" name="uso_medicacao" value="Não">
                         <div class="health-details-input" id="details_med">
                             <input type="text" name="uso_medicacao_detalhes" class="field-input" placeholder="Qual(is) medicamento(s)?">
                         </div>
@@ -1891,11 +1907,11 @@
                         <div class="health-q-header">
                             <span class="health-q-label">5. O beneficiário possui alergias? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('alerg', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('alerg', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('alerg', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_possui_alergias" name="possui_alergias" value="">
+                        <input type="hidden" id="health_possui_alergias" name="possui_alergias" value="Não">
                         <div class="health-details-input" id="details_alerg">
                             <input type="text" name="possui_alergias_detalhes" class="field-input" placeholder="Qual(is) alergia(s)?">
                         </div>
@@ -1905,11 +1921,11 @@
                         <div class="health-q-header">
                             <span class="health-q-label">6. É assistido por algum programa de auxílio governamental? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('aux', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('aux', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('aux', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_auxilio_governamental" name="auxilio_governamental" value="">
+                        <input type="hidden" id="health_auxilio_governamental" name="auxilio_governamental" value="Não">
                         <div class="health-details-input" id="details_aux">
                             <input type="text" name="auxilio_governamental_detalhes" class="field-input" placeholder="Qual(is) programa(s)?">
                         </div>
@@ -1919,22 +1935,22 @@
                         <div class="health-q-header">
                             <span class="health-q-label">7. É morador de zona rural? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('rural', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('rural', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('rural', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_zona_rural" name="zona_rural" value="">
+                        <input type="hidden" id="health_zona_rural" name="zona_rural" value="Não">
                     </div>
 
                     <div class="health-question-box" data-q="net" data-official-q="1">
                         <div class="health-q-header">
                             <span class="health-q-label">8. Possui internet em casa para receber futuros avisos e notificações? <span class="req">*</span></span>
                             <div class="pills-toggle-wrap">
-                                <button type="button" class="pill-btn-yn" onclick="setHealthOption('net', 'Não')">Não</button>
+                                <button type="button" class="pill-btn-yn active-nao" onclick="setHealthOption('net', 'Não')">Não</button>
                                 <button type="button" class="pill-btn-yn" onclick="setHealthOption('net', 'Sim')">Sim</button>
                             </div>
                         </div>
-                        <input type="hidden" id="health_possui_internet" name="possui_internet" value="">
+                        <input type="hidden" id="health_possui_internet" name="possui_internet" value="Não">
                     </div>
 
                     <!-- 9. Envio Opcional de Laudo Médico -->
@@ -2151,7 +2167,7 @@
             <div id="sucessoAutoReturnNotice" style="background: rgba(16, 185, 129, 0.08); border: 1.5px dashed rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 16px; margin: 4px auto 14px auto; max-width: 440px; text-align: center;">
                 <div style="font-size: 13.5px; font-weight: 700; color: #065f46; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <svg class="spin" style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                    <span>Retornando ao seu painel em <strong id="sucessoContadorSegundos" style="font-size: 16px; color: var(--c-verde-escuro);">6</strong> segundos...</span>
+                    <span>Retornando ao seu painel em <strong id="sucessoContadorSegundos" style="font-size: 16px; color: var(--c-verde-escuro);">300</strong> segundos...</span>
                 </div>
                 <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Sua nova ficha já estará listada abaixo e os projetos serão atualizados.</p>
             </div>
@@ -3186,7 +3202,9 @@
 
                 // Prossegue INSTANTANEAMENTE sem refazer consultas na rede!
                 const { dadosAluno, matriculasEncontradas, nomeAluno, temNomeBanco } = _lastCpfCache;
-                currentMatriculasList = matriculasEncontradas;
+                currentMatriculasList = (currentMatriculasList && currentMatriculasList.length > 0)
+                    ? currentMatriculasList
+                    : (matriculasEncontradas || []);
                 currentStudentData = {
                     cpf: cpfNum,
                     nome: nomeAluno,
@@ -3210,25 +3228,25 @@
             if (btnConsultar) btnConsultar.disabled = true;
 
             try {
-                const urlCPF = `${API.consultarCPF}?cpf=${encodeURIComponent(cpfNum)}&instituicao=IVEM&instituto=IVEM`;
-                const urlMat = `${API.buscarMatriculas}&cpf=${encodeURIComponent(cpfNum)}`;
+                const urlCPF = `${API.consultarCPF}?cpf=${encodeURIComponent(cpfNum)}&instituicao=IVEM&instituto=IVEM&t=${Date.now()}`;
+                const urlMat = `${API.buscarMatriculas}&cpf=${encodeURIComponent(cpfNum)}&t=${Date.now()}`;
 
-                // Busca de matrículas ativas em paralelo (sem travar a liberação do aluno)
-                const promMat = fetchJsonWithTimeout(urlMat, {}, 4000);
+                // Busca de matrículas ativas em paralelo
+                const promMat = fetchJsonWithTimeout(urlMat, {}, 10000);
 
-                // Consulta oficial na Receita Federal
-                const resCPF = await fetchJsonWithTimeout(urlCPF, {}, 4000);
+                // Consulta oficial + banco unificado
+                const resCPF = await fetchJsonWithTimeout(urlCPF, {}, 10000);
 
-                // Se as matrículas já chegaram, aproveita imediatamente; senão atualiza em segundo plano
+                // Aguarda até 2.5s pelas matrículas caso consultarcpf já tenha retornado
                 let resMat = null;
                 try {
                     resMat = await Promise.race([
                         promMat,
-                        new Promise(resolve => setTimeout(() => resolve(null), 800))
+                        new Promise(resolve => setTimeout(() => resolve(null), 2500))
                     ]);
                 } catch(e) {}
 
-                // Continua ouvindo as matrículas em background se demorarem mais que 800ms
+                // Continua ouvindo as matrículas em background se demorarem mais que 2.5s
                 if (!resMat) {
                     promMat.then(dataM => {
                         if (dataM) {
@@ -3239,6 +3257,9 @@
                             });
                             if (filtradas.length > 0) {
                                 currentMatriculasList = filtradas;
+                                if (_lastCpfCache && _lastCpfConsultado === cpfNum) {
+                                    _lastCpfCache.matriculasEncontradas = filtradas;
+                                }
                                 if (currentStudentData) {
                                     currentStudentData.projetos_inscritos_ids = filtradas.map(m => m.projeto_id).filter(Boolean);
                                 }
@@ -3252,12 +3273,15 @@
                 }
 
                 let dadosAluno = null;
+                let matriculasViaConsultarCpf = [];
                 if (resCPF) {
                     const json = resCPF;
                     const item = Array.isArray(json) ? json[0] : json;
                     dadosAluno = item?.result || item?.dados || item;
                     if (item?.projetos_inscritos_ids) dadosAluno.projetos_inscritos_ids = item.projetos_inscritos_ids;
                     if (item?.dados_recentes) dadosAluno.dados_recentes = item.dados_recentes;
+                    if (Array.isArray(item?.matriculas)) matriculasViaConsultarCpf = item.matriculas;
+                    else if (Array.isArray(item?.data)) matriculasViaConsultarCpf = item.data;
                 }
 
                 let matriculasEncontradas = [];
@@ -3267,6 +3291,12 @@
                     matriculasEncontradas = lista.filter(m => {
                         const mCpf = String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '');
                         return mCpf === cpfNum;
+                    });
+                }
+                if (matriculasEncontradas.length === 0 && matriculasViaConsultarCpf.length > 0) {
+                    matriculasEncontradas = matriculasViaConsultarCpf.filter(m => {
+                        const mCpf = String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '');
+                        return !mCpf || mCpf === cpfNum;
                     });
                 }
 
@@ -3389,10 +3419,32 @@
             await carregarProjetosIVEM(currentStudentData.idade);
             renderizarMatriculasExistentesIVEM();
             if (window.lucide) lucide.createIcons();
+            
+            if ((!currentMatriculasList || currentMatriculasList.length === 0) && currentStudentData && currentStudentData.cpf) {
+                const cpfCheck = String(currentStudentData.cpf).replace(/\D/g, '');
+                fetchJsonWithTimeout(`${API.buscarMatriculas}&cpf=${encodeURIComponent(cpfCheck)}&t=${Date.now()}`, {}, 10000)
+                    .then(dataM => {
+                        if (!dataM) return;
+                        const lista = Array.isArray(dataM) ? dataM : (dataM?.data || dataM?.value || []);
+                        const filtradas = lista.filter(m => String(m.aluno_cpf || m.cpf || '').replace(/\D/g, '') === cpfCheck);
+                        if (filtradas.length > 0) {
+                            currentMatriculasList = filtradas;
+                            if (currentStudentData) {
+                                currentStudentData.projetos_inscritos_ids = filtradas.map(m => m.projeto_id).filter(Boolean);
+                            }
+                            renderizarMatriculasExistentes();
+                            if (typeof carregarProjetosParaAluno === 'function' && currentStudentData) {
+                                carregarProjetosParaAluno(currentStudentData.idade);
+                            }
+                        }
+                    })
+                    .catch(() => {});
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ── RENDERIZAR INSCRIÇÕES EXISTENTES COM JANELA DE 6 HORAS ──
+        function renderizarMatriculasExistentes() { return renderizarMatriculasExistentesIVEM(); }
         function renderizarMatriculasExistentesIVEM() {
             const section = document.getElementById('sectionHistorico');
             const container = document.getElementById('historyListContainer');
@@ -5731,9 +5783,9 @@
 
         function iniciarContadorRetornoPainel() {
             if (_timerContadorRetorno) clearInterval(_timerContadorRetorno);
-            let seg = 6;
+            let seg = 300;
             const elCont = document.getElementById('sucessoContadorSegundos');
-            if (elCont) elCont.textContent = '6';
+            if (elCont) elCont.textContent = '300';
 
             _timerContadorRetorno = setInterval(() => {
                 seg--;
@@ -5848,11 +5900,42 @@
             };
             const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
+            window.toggleNomeSocialField = function(chkId, wrapId, inputId) {
+                const chk = document.getElementById(chkId);
+                const wrap = document.getElementById(wrapId);
+                const inp = document.getElementById(inputId);
+                if (!chk || !wrap || !inp) return;
+                if (chk.checked) {
+                    wrap.style.display = 'block';
+                } else {
+                    wrap.style.display = 'none';
+                    inp.value = '';
+                }
+            };
+
+            window.syncNomeSocialUI = function() {
+                [
+                    ['chk_usar_nome_social', 'wrap_mat_nome_social', 'mat_nome_social'],
+                    ['chk_usar_resp_nome_social', 'wrap_mat_resp_nome_social', 'mat_resp_nome_social']
+                ].forEach(([chkId, wrapId, inputId]) => {
+                    const chk = document.getElementById(chkId);
+                    const wrap = document.getElementById(wrapId);
+                    const inp = document.getElementById(inputId);
+                    if (!chk || !wrap || !inp) return;
+                    const hasVal = Boolean(inp.value && inp.value.trim());
+                    chk.checked = hasVal;
+                    wrap.style.display = hasVal ? 'block' : 'none';
+                });
+            };
+
             function resetOfficialQuestions() {
-                document.querySelectorAll('.health-question-box[data-official-q="1"]').forEach(box => {
-                    box.querySelectorAll('.pill-btn-yn').forEach(b => b.classList.remove('active-nao', 'active-sim'));
+                document.querySelectorAll('.health-question-box').forEach(box => {
+                    box.querySelectorAll('.pill-btn-yn').forEach(b => {
+                        b.classList.remove('active-nao', 'active-sim');
+                        if (b.textContent.trim() === 'Não') b.classList.add('active-nao');
+                    });
                     const hid = box.querySelector('input[type="hidden"]');
-                    if (hid) hid.value = '';
+                    if (hid) hid.value = 'Não';
                     const det = box.querySelector('.health-details-input');
                     if (det) {
                         det.style.display = 'none';
@@ -5860,8 +5943,11 @@
                         if (inp) inp.value = '';
                     }
                 });
+                const boxUpload = document.getElementById('boxUploadLaudo');
+                if (boxUpload) boxUpload.style.display = 'none';
                 const urlInput = document.getElementById('laudo_medico_url');
                 if (urlInput) urlInput.value = '';
+                if (typeof window.syncNomeSocialUI === 'function') window.syncNomeSocialUI();
             }
 
             function hydrateOfficialFieldsFromMat(mat) {
@@ -5877,6 +5963,7 @@
                 preencherSelect('mat_situacao_profissional', normSit(mat.situacao_profissional || mat.profissao || ex.situacao_profissional || ''));
                 preencherSelect('mat_renda_familiar', mat.renda_familiar || mat.faixa_salarial || ex.renda_familiar || '');
                 preencher('mat_resp_nome_social', mat.resp_nome_social || ex.resp_nome_social || '');
+                if (typeof window.syncNomeSocialUI === 'function') window.syncNomeSocialUI();
                 preencher('mat_resp_data_nasc', formatarDataInput(mat.resp_data_nasc || ex.resp_data_nasc || ''));
                 preencherSelect('mat_resp_sexo', mat.resp_sexo || ex.resp_sexo || '');
                 preencherSelect('mat_resp_raca', mat.resp_raca || ex.resp_raca || '');
@@ -5892,7 +5979,7 @@
                     ['alerg', mat.possui_alergias ?? ex.possui_alergias, 'possui_alergias_detalhes', mat.possui_alergias_detalhes ?? ex.possui_alergias_detalhes],
                     ['aux', mat.auxilio_governamental ?? ex.auxilio_governamental, 'auxilio_governamental_detalhes', mat.auxilio_governamental_detalhes ?? ex.auxilio_governamental_detalhes],
                     ['rural', mat.zona_rural ?? ex.zona_rural, null, null],
-                    ['net', mat.possui_internet ?? ex.possui_internet ?? 'Sim', null, null]
+                    ['net', mat.possui_internet ?? ex.possui_internet ?? 'Não', null, null]
                 ].forEach(([qKey, rawVal, detName, detVal]) => {
                     setHealthOption(qKey, String(rawVal || 'Não').trim().toLowerCase() === 'sim' ? 'Sim' : 'Não');
                     if (detName && detVal) {
@@ -6256,7 +6343,7 @@
                     @media print { .no-print { display: none !important; } body { padding: 0; max-width: none; } }
                 </style></head><body>
                 <div class="doc-title">
-                    ${isEventoDoc ? 'FICHA DE MATRÍCULA (PARA EVENTOS)' : 'FICHA DE MATRÍCULA (PARA PROJETOS)'}
+                    ${isEventoDoc ? 'FICHA DE MATRÍCULA (PARA EVENTOS)' : `FICHA DE MATRÍCULA (${esc(meta.sigla)})`}
                     <span class="doc-ref">${esc(meta.sigla)} • #${esc(numMat)}</span>
                 </div>
 
